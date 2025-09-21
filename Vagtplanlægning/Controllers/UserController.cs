@@ -1,8 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Vagtplanlægning.Data;
 using Vagtplanlægning.Models;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace Vagtplanlægning.Controllers
 {
