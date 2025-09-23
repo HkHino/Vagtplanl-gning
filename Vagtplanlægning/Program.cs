@@ -1,6 +1,7 @@
 using Vagtplanlægning.Data;
 using Vagtplanlægning.Repositories;
 using Vagtplanlægning.Services;
+using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 
 namespace Vagtplanlægning
@@ -11,12 +12,16 @@ namespace Vagtplanlægning
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            builder.Services.AddDbContext<AppDbContext>(options =>
+            options.UseMySql(
+                builder.Configuration.GetConnectionString("DefaultConnection"),
+                new MySqlServerVersion(new Version(8, 0, 33))
+            )
+         );
+
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-
-            builder.Services.AddDbContext<AppDbContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IUserService, UserService>();
@@ -34,6 +39,7 @@ namespace Vagtplanlægning
 
             if (app.Environment.IsDevelopment())
             {
+                app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }

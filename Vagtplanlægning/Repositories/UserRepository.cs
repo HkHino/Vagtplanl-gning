@@ -17,12 +17,7 @@ namespace Vagtplanlægning.Repositories
             if (!string.IsNullOrWhiteSpace(search))
                 query = query.Where(u => u.Name.Contains(search));
 
-            query = sort?.ToLowerInvariant() switch
-            {
-                "age" => query.OrderBy(u => u.Age),
-                "age_desc" => query.OrderByDescending(u => u.Age),
-                _ => query.OrderBy(u => u.Name)
-            };
+      
 
             var total = await query.CountAsync();
             var items = await query
