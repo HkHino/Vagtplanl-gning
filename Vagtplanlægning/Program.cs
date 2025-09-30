@@ -1,54 +1,32 @@
-using Vagtplanlægning.Data;
-using Vagtplanlægning.Repositories;
-using Vagtplanlægning.Services;
-using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using Microsoft.EntityFrameworkCore;
+using Vagtplanlægning.Data;
+using Vagtplanlægning.Mapping;
+using Vagtplanlægning.Repositories;
 
-namespace Vagtplanlægning
-{
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-            var builder = WebApplication.CreateBuilder(args);
+var builder = WebApplication.CreateBuilder(args);
 
-            builder.Services.AddDbContext<AppDbContext>(options =>
-            options.UseMySql(
-                builder.Configuration.GetConnectionString("DefaultConnection"),
-                new MySqlServerVersion(new Version(8, 0, 33))
-            )
-         );
+// Connection string navn: DefaultConnection i appsettings.json
+var cs = builder.Configuration.GetConnectionString("DefaultConnection");
 
-            builder.Services.AddControllers();
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+// DbContext (Pomelo for MySQL/MariaDB)
+builder.Services.AddDbContext<AppDbContext>(opts =>
+    opts.UseMySql(cs, ServerVersion.AutoDetect(cs)));
 
-            builder.Services.AddScoped<IUserRepository, UserRepository>();
-            builder.Services.AddScoped<IUserService, UserService>();
-            builder.Services.AddAutoMapper(typeof(Program).Assembly);
+// AutoMapper
+builder.Services.AddAutoMapper(typeof(AutoMapperProfile).Assembly);
 
-            builder.Services.AddCors(options =>
-            {
-                options.AddPolicy("AllowReact",
-                    policy => policy.WithOrigins("http://localhost:3000")
-                                    .AllowAnyHeader()
-                                    .AllowAnyMethod());
-            });
+// Repositories
+builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 
-            var app = builder.Build();
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
-            if (app.Environment.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI();
-            }
+var app = builder.Build();
 
-            app.UseHttpsRedirection();
-            app.UseCors("AllowReact");
-            app.UseAuthorization();
-            app.MapControllers();
-            app.Run();
-        }
-    }
-}
+app.UseSwagger();
+app.UseSwaggerUI();
+
+app.MapControllers();
+
+app.Run();

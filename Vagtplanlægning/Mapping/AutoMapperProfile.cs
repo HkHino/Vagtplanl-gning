@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using Vagtplanlægning.Models;
 using Vagtplanlægning.DTOs;
+using Vagtplanlægning.Models;
 
 namespace Vagtplanlægning.Mapping
 {
@@ -8,9 +8,9 @@ namespace Vagtplanlægning.Mapping
     {
         public AutoMapperProfile()
         {
-            CreateMap<User, UserDto>();
-            CreateMap<CreateUserDto, User>();
-            CreateMap<UpdateUserDto, User>();
+            CreateMap<Employee, EmployeeDto>();
+            CreateMap<CreateEmployeeDto, Employee>();
+            CreateMap<UpdateEmployeeDto, Employee>();
         }
     }
 }
