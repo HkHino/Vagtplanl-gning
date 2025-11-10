@@ -33,6 +33,7 @@ namespace Vagtplanlægning.Data
                 e.Property(x => x.Address).HasColumnName("address");
                 e.Property(x => x.Phone).HasColumnName("phone");
                 e.Property(x => x.Email).HasColumnName("email");
+                e.Property(x => x.ExperienceLevel).HasColumnName("experienceLevel");
             });
 
             // Bicycles

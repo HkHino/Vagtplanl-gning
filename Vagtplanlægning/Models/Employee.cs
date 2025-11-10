@@ -11,5 +11,7 @@ namespace Vagtplanlægning.Models
         [Column("address")] public string Address { get; set; } = "";
         [Column("phone")] public string Phone { get; set; } = "";
         [Column("email")] public string Email { get; set; } = "";
+        [Column("experienceLevel")] public int ExperienceLevel { get; set; } = 1;
     }
 }
+

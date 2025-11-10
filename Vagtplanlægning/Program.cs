@@ -4,6 +4,7 @@ using Neo4j.Driver;
 using Vagtplanlægning.Data;
 using Vagtplanlægning.Mapping;
 using Vagtplanlægning.Repositories;
+using Vagtplanlægning.Services;
 
 
 
@@ -13,10 +14,12 @@ using Vagtplanlægning.Repositories;
 var builder = WebApplication.CreateBuilder(args);
 
 // read which db to use: "MySql", "Mongo", "Neo4j"
-var provider = builder.Configuration["DatabaseProvider"] ?? "MySql";
+var provider = builder.Configuration["DatabaseProvider"] ?? "Mongo"; //Mongo , MySql, Neo4j
 
 // Always add AutoMapper, controllers, swagger
 builder.Services.AddAutoMapper(typeof(AutoMapperProfile).Assembly);
+builder.Services.AddScoped<IShiftPlanService, ShiftPlanService>();
+builder.Services.AddScoped<IShiftExecutionService, ShiftExecutionService>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
