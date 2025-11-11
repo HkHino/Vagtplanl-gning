@@ -20,6 +20,9 @@ var provider = builder.Configuration["DatabaseProvider"] ?? "Mongo"; //Mongo , M
 builder.Services.AddAutoMapper(typeof(AutoMapperProfile).Assembly);
 builder.Services.AddScoped<IShiftPlanService, ShiftPlanService>();
 builder.Services.AddScoped<IShiftExecutionService, ShiftExecutionService>();
+builder.Services.AddScoped<IShiftPlanRepository, MySqlShiftPlanRepository>();
+builder.Services.AddScoped<IRouteRepository, MySqlRouteRepository>();
+builder.Services.AddScoped<IShiftRepository, MySqlShiftRepository>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
