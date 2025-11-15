@@ -14,7 +14,7 @@ using Vagtplanlægning.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 // read which db to use: "MySql", "Mongo", "Neo4j"
-var provider = builder.Configuration["DatabaseProvider"] ?? "Mongo"; //Mongo , MySql, Neo4j
+var provider = builder.Configuration["DatabaseProvider"] ?? "Mysql"; //Mongo , MySql1, Mysql2, Mysql3, Neo4j
 
 // Always add AutoMapper, controllers, swagger
 builder.Services.AddAutoMapper(typeof(AutoMapperProfile).Assembly);
@@ -29,7 +29,7 @@ builder.Services.AddSwaggerGen();
 
 if (provider == "MySql")
 {
-    var cs = builder.Configuration.GetConnectionString("MySql");
+    var cs = builder.Configuration.GetConnectionString("MySql2");
     builder.Services.AddDbContext<AppDbContext>(opts =>
     opts.UseMySql(cs, Microsoft.EntityFrameworkCore.ServerVersion.AutoDetect(cs)));
    
