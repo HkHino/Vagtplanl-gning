@@ -9,7 +9,7 @@ namespace Vagtplanlægning.Models
         [Column("dayId")] public int DayId { get; set; }
         [Column("employeeId")] public int EmployeeId { get; set; }
         [Column("bicycleId")] public int BicycleId { get; set; }
-        [Column("substitutedId")] public int SubstitutedId { get; set; } // NOT NULL i DB
+        [Column("substitutedId")] public int? SubstitutedId { get; set; }
         [Column("routeNumberId")] public int RouteNumberId { get; set; }
         [Column("meetInTime")] public TimeSpan MeetInTime { get; set; }
         [Column("startTime")] public TimeSpan? StartTime { get; set; }

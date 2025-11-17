@@ -24,10 +24,17 @@ public class BicyclesController : ControllerBase
         return CreatedAtAction(nameof(GetAll), new { id = bicycle.BicycleId }, bicycle);
     }
 
-    [HttpPut("{id:int}/status")]
-    public async Task<IActionResult> UpdateStatus(int id, [FromQuery] bool inOperate)
-    {
-        await _db.Database.ExecuteSqlRawAsync("CALL UpdateBicycleStatus({0}, {1})", id, inOperate);
-        return NoContent();
-    }
+   [HttpPut("{id:int}/status")]
+public async Task<IActionResult> UpdateStatus(int id, [FromQuery] bool inOperate)
+{
+    var bicycle = await _db.Bicycles.FindAsync(id);
+    if (bicycle == null)
+        return NotFound();
+
+    bicycle.InOperate = inOperate;
+    await _db.SaveChangesAsync();
+
+    return NoContent();
+}
+
 }

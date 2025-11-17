@@ -25,14 +25,19 @@ public class HealthController : ControllerBase
     {
         try
         {
-            await _db.Database.ExecuteSqlRawAsync("SELECT 1");
-            return Ok(new { status = "Database connection OK" });
+            var canConnect = await _db.Database.CanConnectAsync();
+
+            if (canConnect)
+                return Ok(new { status = "Database connection OK" });
+
+            return StatusCode(500, new { status = "Database connection FAILED" });
         }
         catch (Exception ex)
         {
             return StatusCode(500, new { status = "Database connection FAILED", error = ex.Message });
         }
     }
+
 
     [HttpGet("employee/{id:int}")]
     public async Task<IActionResult> CheckEmployee(int id)

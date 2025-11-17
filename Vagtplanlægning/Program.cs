@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Vagtplanlægning.Data;
+//using MongoDB.Driver;
 using Vagtplanlægning.Mapping;
 using Vagtplanlægning.Repositories;
 
@@ -17,6 +18,8 @@ builder.Services.AddAutoMapper(typeof(AutoMapperProfile).Assembly);
 
 // Repositories
 builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+
+builder.Services.AddScoped<IShiftRepository, MySqlShiftRepository>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

@@ -11,12 +11,14 @@ namespace Vagtplanlægning.Data
         public DbSet<Bicycle> Bicycles => Set<Bicycle>();
         public DbSet<RouteEntity> Routes => Set<RouteEntity>();
         public DbSet<DayEntity> Days => Set<DayEntity>();
-        public DbSet<Substituted> Substituteds => Set<Substituted>();
+        public DbSet<Substituted> Substituteds { get; set; }
+
         public DbSet<Shift> ListOfShift => Set<Shift>();
+        public DbSet<Shift> Shifts { get; set; }
         public DbSet<WorkHoursInMonth> WorkHoursInMonths => Set<WorkHoursInMonth>();
 
         // keyless read-model til GetMonthlyHours
-        public DbSet<MonthlyHoursRow> MonthlyHours => Set<MonthlyHoursRow>();
+        
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -103,19 +105,6 @@ namespace Vagtplanlægning.Data
                 e.Property(x => x.HasSubstituted).HasColumnName("hasSubstituted");
             });
 
-            // MonthlyHoursRow (keyless)
-            modelBuilder.Entity<MonthlyHoursRow>(e =>
-            {
-                e.HasNoKey();
-                e.ToView(null); // ikke bundet til view
-                e.Property(x => x.EmployeeId).HasColumnName("employeeId");
-                e.Property(x => x.FirstName).HasColumnName("firstName");
-                e.Property(x => x.LastName).HasColumnName("lastName");
-                e.Property(x => x.Year).HasColumnName("year");
-                e.Property(x => x.Month).HasColumnName("month");
-                e.Property(x => x.TotalMonthlyHours).HasColumnName("totalMonthlyHours");
-                e.Property(x => x.HasSubstituted).HasColumnName("hasSubstituted");
-            });
         }
     }
 }

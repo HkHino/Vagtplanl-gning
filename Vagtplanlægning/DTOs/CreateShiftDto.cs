@@ -7,6 +7,6 @@
         public int BicycleId { get; set; }
         public int RouteNumberId { get; set; }
         public TimeSpan MeetInTime { get; set; }
-        public int SubstitutedId { get; set; }    
+        public int? SubstitutedId { get; set; }    
     }
 }
