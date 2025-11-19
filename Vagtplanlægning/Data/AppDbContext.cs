@@ -41,7 +41,7 @@ namespace Vagtplanlægning.Data
             });
 
             // Route ------------------------------------------------------------
-            modelBuilder.Entity<RouteEntity>(e =>
+            modelBuilder.Entity<Bicycle>(e =>
             {
                 e.ToTable("Bicycles");
                 e.HasKey(b => b.BicycleId);

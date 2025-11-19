@@ -50,12 +50,12 @@ namespace Vagtplanlægning.Services
 
                     var shift = new Shift
                     {
-                        DayId = 0,
+                        DateOfShift = day,
                         EmployeeId = chosen.EmployeeId,
                         BicycleId = 0,
                         SubstitutedId = 0,
-                        RouteNumberId = route.RouteNumberId,
-                        MeetInTime = new TimeSpan(8, 0, 0),
+                        RouteId = route.RouteNumberId,
+                        //MeetInTime = new TimeSpan(8, 0, 0),
                         StartTime = null,
                         EndTime = null,
                         TotalHours = null
