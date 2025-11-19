@@ -41,18 +41,27 @@ namespace Vagtplanlægning.Data
             modelBuilder.Entity<Bicycle>(e =>
             {
                 e.ToTable("Bicycles");
-                e.HasKey(x => x.BicycleId);
-                e.Property(x => x.BicycleId).HasColumnName("bicycleId");
-                e.Property(x => x.InOperate).HasColumnName("inOperate");
+                e.HasKey(b => b.BicycleId);
+                
+                e.Property(b => b.BicycleId).HasColumnName("id");
+                e.Property(b => b.BicycleNumber).HasColumnName("bicycleNumber");
+                e.Property(b => b.InOperate).HasColumnName("inOperate");
             });
 
-            // Route
+
+            // Routes
             modelBuilder.Entity<RouteEntity>(e =>
             {
                 e.ToTable("Route");
-                e.HasKey(x => x.RouteNumberId);
-                e.Property(x => x.RouteNumberId).HasColumnName("routeNumberId");
+                e.HasKey(r => r.RouteNumberId);
+
+                // Map C# RouteNumberId -> SQL 'id'
+                e.Property(r => r.RouteNumberId).HasColumnName("id");
+
+                // Map C# RouteNumber -> SQL 'routeNumber'
+                e.Property(r => r.RouteNumber).HasColumnName("routeNumber");
             });
+
 
             // Days
             modelBuilder.Entity<DayEntity>(e =>
@@ -73,22 +82,23 @@ namespace Vagtplanlægning.Data
                 e.Property(x => x.HasSubstituted).HasColumnName("hasSubstituted");
             });
 
-            // ListOfShift
+            // Shifts / ListOfShift
             modelBuilder.Entity<Shift>(e =>
             {
                 e.ToTable("ListOfShift");
                 e.HasKey(x => x.ShiftId);
+
                 e.Property(x => x.ShiftId).HasColumnName("shiftId");
-                e.Property(x => x.DayId).HasColumnName("dayId");
+                e.Property(x => x.DateOfShift).HasColumnName("dateOfShift");
                 e.Property(x => x.EmployeeId).HasColumnName("employeeId");
                 e.Property(x => x.BicycleId).HasColumnName("bicycleId");
                 e.Property(x => x.SubstitutedId).HasColumnName("substitutedId");
-                e.Property(x => x.RouteNumberId).HasColumnName("routeNumberId");
-                e.Property(x => x.MeetInTime).HasColumnName("meetInTime");
+                e.Property(x => x.RouteId).HasColumnName("routeId");
                 e.Property(x => x.StartTime).HasColumnName("startTime");
                 e.Property(x => x.EndTime).HasColumnName("endTime");
                 e.Property(x => x.TotalHours).HasColumnName("totalHours");
             });
+
 
             // WorkHoursInMonths
             modelBuilder.Entity<WorkHoursInMonth>(e =>

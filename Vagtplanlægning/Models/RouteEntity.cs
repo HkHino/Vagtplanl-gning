@@ -4,7 +4,11 @@ namespace Vagtplanlægning.Models
 {
     [Table("Route")]
     public class RouteEntity
-    {
-        [Column("routeNumberId")] public int RouteNumberId { get; set; }
+    {        
+        [Column("id")]
+        public int RouteNumberId { get; set; }
+
+        [Column("routeNumber")]
+        public int RouteNumber { get; set; }
     }
 }

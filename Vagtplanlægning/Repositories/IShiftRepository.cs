@@ -1,6 +1,7 @@
-﻿namespace Vagtplanlægning.Repositories;
-
-public interface IShiftRepository
+﻿namespace Vagtplanlægning.Repositories
 {
-    Task MarkShiftSubstitutedAsync(int shiftId, bool hasSubstituted);
+    public interface IShiftRepository
+    {
+        Task MarkShiftSubstitutedAsync(int shiftId, bool hasSubstituted);
+    }
 }

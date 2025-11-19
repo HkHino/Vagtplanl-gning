@@ -2,39 +2,51 @@
 using Vagtplanlægning.Data;
 using Vagtplanlægning.Models;
 
-namespace Vagtplanlægning.Repositories;
-
-public class MySqlShiftRepository : IShiftRepository
+namespace Vagtplanlægning.Repositories
 {
-    private readonly AppDbContext _db;
-
-    public MySqlShiftRepository(AppDbContext db)
+    public class MySqlShiftRepository : IShiftRepository
     {
-        _db = db;
-    }
+        private readonly AppDbContext _db;
 
-    public async Task MarkShiftSubstitutedAsync(int shiftId, bool hasSubstituted)
-    {
-        var shift = await _db.Shifts
-            .AsNoTracking()
-            .SingleOrDefaultAsync(s => s.ShiftId == shiftId);
+        public MySqlShiftRepository(AppDbContext db)
+        {
+            _db = db;
+        }
 
-        if (shift == null)
-            throw new InvalidOperationException($"No shift found with id {shiftId}.");
+        public async Task MarkShiftSubstitutedAsync(int shiftId, bool hasSubstituted)
+        {
+            // 1) Find the shift
+            var shift = await _db.ListOfShift
+                .SingleOrDefaultAsync(s => s.ShiftId == shiftId);
 
-        if (!shift.SubstitutedId.HasValue)
-            throw new InvalidOperationException("This shift has no substitutedId set, cannot mark substitution.");
+            if (shift == null)
+            {
+                throw new KeyNotFoundException($"Shift with id {shiftId} not found.");
+            }
 
-        var substitutedId = shift.SubstitutedId.Value;
+            // If you ever use 0 as "no substitute", you can guard like this:
+            if (shift.SubstitutedId == 0)
+            {
+                throw new InvalidOperationException(
+                    $"Shift {shiftId} has substitutedId = 0, cannot update hasSubstituted.");
+            }
 
-        var substituted = await _db.Substituteds
-            .SingleOrDefaultAsync(s => s.SubstitutedId == substitutedId);
+            var subsId = shift.SubstitutedId;
 
-        if (substituted == null)
-            throw new InvalidOperationException($"No Substituted row found for substitutedId {substitutedId}.");
+            // 2) Find the Substituted row
+            var subs = await _db.Substituteds
+                .SingleOrDefaultAsync(s => s.SubstitutedId == subsId);
 
-        substituted.HasSubstituted = hasSubstituted;
+            if (subs == null)
+            {
+                throw new InvalidOperationException(
+                    $"Substituteds record with id {subsId} not found for shift {shiftId}.");
+            }
 
-        await _db.SaveChangesAsync();
+            // 3) Update flag
+            subs.HasSubstituted = hasSubstituted;
+            await _db.SaveChangesAsync();
+        }
+
     }
 }

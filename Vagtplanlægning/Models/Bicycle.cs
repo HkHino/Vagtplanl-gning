@@ -4,8 +4,14 @@ namespace Vagtplanlægning.Models
 {
     [Table("Bicycles")]
     public class Bicycle
-    {
-        [Column("bicycleId")] public int BicycleId { get; set; }
-        [Column("inOperate")] public bool InOperate { get; set; }
+    {        
+        [Column("id")]
+        public int BicycleId { get; set; }
+
+        [Column("bicycleNumber")]
+        public int BicycleNumber { get; set; }
+
+        [Column("inOperate")]
+        public bool InOperate { get; set; }
     }
 }

@@ -1,4 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using System.Globalization;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Vagtplanlægning.Data;
 using Vagtplanlægning.DTOs;
@@ -20,95 +24,171 @@ namespace Vagtplanlægning.Controllers
             _shiftRepo = shiftRepo;
         }
 
-      
+        // --------------------------------------------------------------------
+        // 1) CREATE SHIFT
+        // --------------------------------------------------------------------
+        [HttpPost]
+        public async Task<IActionResult> Add([FromBody] CreateShiftDto dto)
+        {
+            // ---- Validation: employee ----
+            var employeeExists = await _db.Employees
+                .AnyAsync(e => e.EmployeeId == dto.EmployeeId);
+
+            if (!employeeExists)
+            {
+                var validEmployeeIds = await _db.Employees
+                    .Select(e => e.EmployeeId)
+                    .ToListAsync();
+
+                return BadRequest(new
+                {
+                    error = $"Invalid employeeId: {dto.EmployeeId}.",
+                    validEmployeeIds
+                });
+            }
+
+            // ---- Validation: bicycle ----
+            var bicycleExists = await _db.Bicycles
+                .AnyAsync(b => b.BicycleId == dto.BicycleId);
+
+            if (!bicycleExists)
+            {
+                var validBicycleIds = await _db.Bicycles
+                    .Select(b => b.BicycleId)
+                    .ToListAsync();
+
+                return BadRequest(new
+                {
+                    error = $"Invalid bicycleId: {dto.BicycleId}.",
+                    validBicycleIds
+                });
+            }
+
+            // ---- Validation: route ----
+            var routeExists = await _db.Routes
+                .AnyAsync(r => r.RouteNumberId == dto.RouteId);
+
+            if (!routeExists)
+            {
+                var validRouteIds = await _db.Routes
+                    .Select(r => r.RouteNumberId)
+                    .ToListAsync();
+
+                return BadRequest(new
+                {
+                    error = $"Invalid routeId: {dto.RouteId}.",
+                    validRouteIds
+                });
+            }
+
+            // ---- Validation: substituted ----
+            var substitutedExists = await _db.Substituteds
+                .AnyAsync(s => s.SubstitutedId == dto.SubstitutedId);
+
+            if (!substitutedExists)
+            {
+                var validSubstitutedIds = await _db.Substituteds
+                    .Select(s => s.SubstitutedId)
+                    .ToListAsync();
+
+                return BadRequest(new
+                {
+                    error = $"Invalid substitutedId: {dto.SubstitutedId}.",
+                    validSubstitutedIds
+                });
+            }
+
+            var shift = new Shift
+            {
+                DateOfShift = dto.DateOfShift,
+                EmployeeId = dto.EmployeeId,
+                BicycleId = dto.BicycleId,
+                RouteId = dto.RouteId,
+                SubstitutedId = dto.SubstitutedId
+            };
+
+            try
+            {
+                _db.ListOfShift.Add(shift);
+                await _db.SaveChangesAsync();
+            }
+            catch (DbUpdateException ex)
+            {
+                return StatusCode(500, new
+                {
+                    error = "Failed to save shift due to a database constraint.",
+                    detail = ex.InnerException?.Message ?? ex.Message
+                });
+            }
+
+            return NoContent();
+        }
+
+        // --------------------------------------------------------------------
+        // 2) START SHIFT (flexible time parsing)
+        // --------------------------------------------------------------------
+        [HttpPut("{shiftId:int}/start")]
+        public async Task<IActionResult> SetStart(int shiftId, [FromQuery] TimeSpan startTime)
+        {
+            var shift = await _db.ListOfShift.FindAsync(shiftId);
+
+            if (shift == null)
+                return NotFound(new { error = $"Shift with id {shiftId} not found." });
+
+            shift.StartTime = startTime;
+
+            try
+            {
+                await _db.SaveChangesAsync();
+            }
+            catch (DbUpdateException ex)
+            {
+                return BadRequest(new
+                {
+                    error = "Could not save start time. The computed total hours would be out of allowed range.",
+                    detail = ex.InnerException?.Message ?? ex.Message
+                });
+            }
+
+            return NoContent();
+        }
+
+        [HttpPut("{shiftId:int}/end")]
+        public async Task<IActionResult> SetEnd(int shiftId, [FromQuery] TimeSpan endTime)
+        {
+            var shift = await _db.ListOfShift.FindAsync(shiftId);
+
+            if (shift == null)
+                return NotFound(new { error = $"Shift with id {shiftId} not found." });
+
+            shift.EndTime = endTime;
+
+            try
+            {
+                await _db.SaveChangesAsync();
+            }
+            catch (DbUpdateException ex)
+            {
+                return BadRequest(new
+                {
+                    error = "Could not save end time. The computed total hours would be out of allowed range.",
+                    detail = ex.InnerException?.Message ?? ex.Message
+                });
+            }
+
+            return NoContent();
+        }
+
+
+        // --------------------------------------------------------------------
+        // 4) MARK SHIFT AS SUBSTITUTED (hasSubstituted API)
+        // --------------------------------------------------------------------
         [HttpPut("{shiftId:int}/substitution-flag")]
         public async Task<IActionResult> MarkShiftSubstituted(int shiftId, [FromQuery] bool hasSubstituted)
         {
             await _shiftRepo.MarkShiftSubstitutedAsync(shiftId, hasSubstituted);
             return NoContent();
         }
-
-        
-        [HttpPost]
-        public async Task<IActionResult> Add([FromBody] CreateShiftDto dto)
-        {
-            var date = dto.Day.Date;
-
-            // Find or create DayEntity
-            var day = await _db.Days
-                .SingleOrDefaultAsync(d => d.Day == date);
-
-            if (day == null)
-            {
-                day = new DayEntity { Day = date };
-                _db.Days.Add(day);
-                await _db.SaveChangesAsync();
-            }
-
-            // Handle substitutedId: null / 0 / real ID
-            int? substitutedId = null;
-
-            if (dto.SubstitutedId.HasValue && dto.SubstitutedId.Value != 0)
-            {
-                // Validate that the substitute exists
-                bool exists = await _db.Substituteds
-                    .AnyAsync(s => s.SubstitutedId == dto.SubstitutedId.Value);
-
-                if (!exists)
-                {
-                    return BadRequest(new
-                    {
-                        error = $"Invalid substitutedId: {dto.SubstitutedId.Value}. No such substitute exists."
-                    });
-                }
-
-                substitutedId = dto.SubstitutedId.Value;
-            }
-
-            var shift = new Shift
-            {
-                DayId = day.DayId,
-                EmployeeId = dto.EmployeeId,
-                BicycleId = dto.BicycleId,
-                RouteNumberId = dto.RouteNumberId,
-                MeetInTime = dto.MeetInTime,
-                SubstitutedId = substitutedId
-            };
-
-            _db.Shifts.Add(shift);
-            await _db.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-       
-        [HttpPut("{shiftId:int}/start")]
-        public async Task<IActionResult> SetStart(int shiftId, [FromQuery] TimeSpan startTime)
-        {
-            var shift = await _db.Shifts.FindAsync(shiftId);
-
-            if (shift == null)
-                return NotFound();
-
-            shift.StartTime = startTime;
-
-            await _db.SaveChangesAsync();
-            return NoContent();
-        }
-
-       
-        [HttpPut("{shiftId:int}/end")]
-        public async Task<IActionResult> SetEnd(int shiftId, [FromQuery] TimeSpan endTime)
-        {
-            var shift = await _db.Shifts.FindAsync(shiftId);
-
-            if (shift == null)
-                return NotFound();
-
-            shift.EndTime = endTime;
-
-            await _db.SaveChangesAsync();
-            return NoContent();
-        }
+               
     }
 }
