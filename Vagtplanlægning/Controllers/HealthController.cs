@@ -67,4 +67,13 @@ public class HealthController : ControllerBase
             connected = _db.Database.CanConnect()
         });
     }
+    [HttpGet("config")]
+    public IActionResult GetConfig([FromServices] IConfiguration config)
+    {
+        return Ok(new
+        {
+            provider = config["DatabaseProvider"]
+        });
+    }
+
 }

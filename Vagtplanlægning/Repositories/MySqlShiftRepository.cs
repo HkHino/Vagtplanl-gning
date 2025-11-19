@@ -22,14 +22,14 @@ namespace Vagtplanlægning.Repositories
             if (shift == null)
             {
                 throw new KeyNotFoundException($"Shift with id {shiftId} not found.");
-            }
+        }
 
             // If you ever use 0 as "no substitute", you can guard like this:
             if (shift.SubstitutedId == 0)
-            {
+        {
                 throw new InvalidOperationException(
                     $"Shift {shiftId} has substitutedId = 0, cannot update hasSubstituted.");
-            }
+        }
 
             var subsId = shift.SubstitutedId;
 
@@ -38,10 +38,10 @@ namespace Vagtplanlægning.Repositories
                 .SingleOrDefaultAsync(s => s.SubstitutedId == subsId);
 
             if (subs == null)
-            {
+        {
                 throw new InvalidOperationException(
                     $"Substituteds record with id {subsId} not found for shift {shiftId}.");
-            }
+        }
 
             // 3) Update flag
             subs.HasSubstituted = hasSubstituted;

@@ -5,7 +5,9 @@ namespace Vagtplanlægning.Data
 {
     public class AppDbContext : DbContext
     {
-        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
+        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
+        {
+        }
 
         public DbSet<Employee> Employees => Set<Employee>();
         public DbSet<Bicycle> Bicycles => Set<Bicycle>();
@@ -24,7 +26,7 @@ namespace Vagtplanlægning.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // Employees
+            // Employee ---------------------------------------------------------
             modelBuilder.Entity<Employee>(e =>
             {
                 e.ToTable("Employees");
@@ -35,10 +37,11 @@ namespace Vagtplanlægning.Data
                 e.Property(x => x.Address).HasColumnName("address");
                 e.Property(x => x.Phone).HasColumnName("phone");
                 e.Property(x => x.Email).HasColumnName("email");
+                e.Property(x => x.ExperienceLevel).HasColumnName("experienceLevel");
             });
 
-            // Bicycles
-            modelBuilder.Entity<Bicycle>(e =>
+            // Route ------------------------------------------------------------
+            modelBuilder.Entity<RouteEntity>(e =>
             {
                 e.ToTable("Bicycles");
                 e.HasKey(b => b.BicycleId);
@@ -67,19 +70,19 @@ namespace Vagtplanlægning.Data
             modelBuilder.Entity<DayEntity>(e =>
             {
                 e.ToTable("Days");
-                e.HasKey(x => x.DayId);
-                e.Property(x => x.DayId).HasColumnName("dayId");
-                e.Property(x => x.Day).HasColumnName("day");
+                e.HasKey(d => d.DayId);
+                e.Property(d => d.DayId).HasColumnName("dayId");
+                e.Property(d => d.Day).HasColumnName("day");
             });
 
-            // Substituteds
+            // Substituted ------------------------------------------------------
             modelBuilder.Entity<Substituted>(e =>
             {
                 e.ToTable("Substituteds");
-                e.HasKey(x => x.SubstitutedId);
-                e.Property(x => x.SubstitutedId).HasColumnName("substitutedId");
-                e.Property(x => x.EmployeeId).HasColumnName("employeeId");
-                e.Property(x => x.HasSubstituted).HasColumnName("hasSubstituted");
+                e.HasKey(s => s.SubstitutedId);
+                e.Property(s => s.SubstitutedId).HasColumnName("substitutedId");
+                e.Property(s => s.EmployeeId).HasColumnName("employeeId");
+                e.Property(s => s.HasSubstituted).HasColumnName("hasSubstituted");
             });
 
             // Shifts / ListOfShift
@@ -104,15 +107,15 @@ namespace Vagtplanlægning.Data
             modelBuilder.Entity<WorkHoursInMonth>(e =>
             {
                 e.ToTable("WorkHoursInMonths");
-                e.HasKey(x => x.WorkHoursInMonthId);
-                e.Property(x => x.WorkHoursInMonthId).HasColumnName("workHoursInMonthId");
-                e.Property(x => x.EmployeeId).HasColumnName("employeeId");
-                e.Property(x => x.PayrollYear).HasColumnName("payrollYear");
-                e.Property(x => x.PayrollMonth).HasColumnName("payrollMonth");
-                e.Property(x => x.PeriodStart).HasColumnName("periodStart");
-                e.Property(x => x.PeriodEnd).HasColumnName("periodEnd");
-                e.Property(x => x.TotalHours).HasColumnName("totalHours");
-                e.Property(x => x.HasSubstituted).HasColumnName("hasSubstituted");
+                e.HasKey(w => w.WorkHoursInMonthId);
+                e.Property(w => w.WorkHoursInMonthId).HasColumnName("workHoursInMonthId");
+                e.Property(w => w.EmployeeId).HasColumnName("employeeId");
+                e.Property(w => w.PayrollYear).HasColumnName("payrollYear");
+                e.Property(w => w.PayrollMonth).HasColumnName("payrollMonth");
+                e.Property(w => w.PeriodStart).HasColumnName("periodStart");
+                e.Property(w => w.PeriodEnd).HasColumnName("periodEnd");
+                e.Property(w => w.TotalHours).HasColumnName("totalHours");
+                e.Property(w => w.HasSubstituted).HasColumnName("hasSubstituted");
             });
 
         }

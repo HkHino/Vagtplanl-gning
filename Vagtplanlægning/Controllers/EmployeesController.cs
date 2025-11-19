@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Vagtplanlægning.DTOs;
 using Vagtplanlægning.Models;
 using Vagtplanlægning.Repositories;
+using Microsoft.EntityFrameworkCore;
+using MySqlConnector;
 
 namespace Vagtplanlægning.Controllers;
 
@@ -38,10 +40,28 @@ public class EmployeesController : ControllerBase
     public async Task<ActionResult<EmployeeDto>> Create([FromBody] CreateEmployeeDto dto)
     {
         var entity = _mapper.Map<Employee>(dto);
-        await _repo.AddAsync(entity);
+
+        try
+        {
+            await _repo.AddAsync(entity);
+        }
+        catch (DbUpdateException ex)
+        {
+            if (ex.InnerException is MySqlException mysqlEx &&
+                mysqlEx.ErrorCode == MySqlErrorCode.DuplicateKeyEntry)
+            {
+                // return 409 Conflict
+                return Conflict(new { message = "Email already exists." });
+            }
+
+            throw; // bubble up unknown errors
+        }
+
         var result = _mapper.Map<EmployeeDto>(entity);
+
         return CreatedAtAction(nameof(GetById), new { id = result.EmployeeId }, result);
     }
+
 
     [HttpPut("{id:int}")]
     public async Task<IActionResult> Update(int id, [FromBody] UpdateEmployeeDto dto)
