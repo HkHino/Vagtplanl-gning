@@ -2,11 +2,9 @@ using Microsoft.EntityFrameworkCore;
 using MongoDB.Driver;
 using Neo4j.Driver;
 using Vagtplanlægning.Data;
-//using MongoDB.Driver;
 using Vagtplanlægning.Mapping;
 using Vagtplanlægning.Repositories;
 using Vagtplanlægning.Services;
-
 
 
 //todo : username for Mongodb : mpfugl_db_user
@@ -14,25 +12,37 @@ using Vagtplanlægning.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// read which db to use: "MySql", "Mongo", "Neo4j"
-var provider = builder.Configuration["DatabaseProvider"] ?? "Mysql"; //Mongo , MySql1, Mysql2, Mysql3, Neo4j
-
-builder.Services.AddScoped<IShiftRepository, MySqlShiftRepository>();
+// Læs hvilken provider vi vil bruge: "MySql", "Mongo", "MySqlWithMongoFallback", "Neo4j"
+var providerRaw = builder.Configuration["DatabaseProvider"] ?? "MySql";
+var provider = providerRaw.Trim().ToLowerInvariant();
+Console.WriteLine($"[DB PROVIDER] Raw='{providerRaw}' Normalized='{provider}'");
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-if (provider == "MySql")
+// Fælles services
+builder.Services.AddScoped<IShiftPlanService, ShiftPlanService>();
+
+// --------------------------------------------------------
+// 1) Konfigurer MySQL DbContext, hvis vi har brug for den
+// --------------------------------------------------------
+if (provider == "mysql" || provider == "mysqlwithmongofallback" || provider == "neo4j")
 {
     var cs = builder.Configuration.GetConnectionString("MySql2");
     builder.Services.AddDbContext<AppDbContext>(opts =>
-    opts.UseMySql(cs, Microsoft.EntityFrameworkCore.ServerVersion.AutoDetect(cs)));
-   
+        opts.UseMySql(
+            cs,
+            new MySqlServerVersion(new Version(8, 0, 43))
+        )
+    );
 
-    builder.Services.AddScoped<IEmployeeRepository, MySqlEmployeeRepository>();
 }
-else if (provider == "Mongo")
+
+// --------------------------------------------------------
+// 2) Konfigurer Mongo, hvis vi har brug for det
+// --------------------------------------------------------
+if (provider == "mongo" || provider == "mysqlwithmongofallback")
 {
     var cs = builder.Configuration.GetConnectionString("Mongo");
     var mongoUrl = new MongoUrl(cs);
@@ -43,19 +53,51 @@ else if (provider == "Mongo")
         var client = sp.GetRequiredService<IMongoClient>();
         return client.GetDatabase(mongoUrl.DatabaseName ?? "vagtplan");
     });
-
-    builder.Services.AddScoped<IEmployeeRepository, MongoEmployeeRepository>();
 }
-else if (provider == "Neo4j")
+
+// --------------------------------------------------------
+// 3) Provider-specifik registrering af repositories
+// --------------------------------------------------------
+switch (provider)
 {
-    var uri = builder.Configuration["Neo4j:Uri"];      // e.g. "bolt://localhost:7687"
-    var user = builder.Configuration["Neo4j:User"];    // e.g. "neo4j"
-    var pass = builder.Configuration["Neo4j:Password"];
+    case "mysql":
+        builder.Services.AddScoped<IEmployeeRepository, MySqlEmployeeRepository>();
+        builder.Services.AddScoped<IRouteRepository, MySqlRouteRepository>();
+        builder.Services.AddScoped<IShiftRepository, MySqlShiftRepository>();
+        builder.Services.AddScoped<IShiftPlanRepository, MySqlShiftPlanRepository>();
+        break;
 
-    builder.Services.AddSingleton<IDriver>(_ =>
-        GraphDatabase.Driver(uri, AuthTokens.Basic(user, pass)));
+    case "mongo":
+        builder.Services.AddScoped<IEmployeeRepository, MongoEmployeeRepository>();
+        break;
 
-    builder.Services.AddScoped<IEmployeeRepository, Neo4jEmployeeRepository>();
+    case "mysqlwithmongofallback":
+        builder.Services.AddScoped<MySqlEmployeeRepository>();
+        builder.Services.AddScoped<MongoEmployeeRepository>();
+
+        builder.Services.AddScoped<IEmployeeRepository, EmployeeRepositoryFallback>();
+
+        builder.Services.AddScoped<IRouteRepository, MySqlRouteRepository>();
+        builder.Services.AddScoped<IShiftRepository, MySqlShiftRepository>();
+        builder.Services.AddScoped<IShiftPlanRepository, MySqlShiftPlanRepository>();
+        break;
+
+    case "neo4j":
+        var uri = builder.Configuration["Neo4j:Uri"];
+        var user = builder.Configuration["Neo4j:User"];
+        var pass = builder.Configuration["Neo4j:Password"];
+
+        builder.Services.AddSingleton<IDriver>(_ =>
+            GraphDatabase.Driver(uri, AuthTokens.Basic(user, pass)));
+
+        builder.Services.AddScoped<IEmployeeRepository, Neo4jEmployeeRepository>();
+        builder.Services.AddScoped<IRouteRepository, MySqlRouteRepository>();
+        builder.Services.AddScoped<IShiftRepository, MySqlShiftRepository>();
+        builder.Services.AddScoped<IShiftPlanRepository, MySqlShiftPlanRepository>();
+        break;
+
+    default:
+        throw new InvalidOperationException($"Unknown DatabaseProvider value '{providerRaw}'.");
 }
 
 var app = builder.Build();
@@ -64,5 +106,3 @@ app.UseSwagger();
 app.UseSwaggerUI();
 app.MapControllers();
 app.Run();
-
-

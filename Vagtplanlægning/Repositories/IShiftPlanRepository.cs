@@ -8,5 +8,7 @@
         Task<ShiftPlan?> GetByIdAsync(string id, CancellationToken ct = default);
         Task AddAsync(ShiftPlan plan, CancellationToken ct = default);
         Task<bool> DeleteAsync(string id, CancellationToken ct = default);
+        Task UpdateAsync(ShiftPlan plan, CancellationToken ct = default);
+
     }
 }

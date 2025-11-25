@@ -20,8 +20,11 @@ namespace Vagtplanlægning.Repositories
 
         public async Task<RouteEntity?> GetByIdAsync(int id, CancellationToken ct = default)
         {
-            return await _db.Routes.AsNoTracking().FirstOrDefaultAsync(r => r.RouteNumberId == id, ct);
+            // id = Routes.id (PK)
+            return await _db.Routes.AsNoTracking()
+                .FirstOrDefaultAsync(r => r.Id == id, ct);
         }
+
 
         public async Task AddAsync(RouteEntity route, CancellationToken ct = default)
         {

@@ -37,11 +37,10 @@ namespace Vagtplanlægning.Services
             {
                 var shift = new Shift
                 {
-                    DayId = 0,
+                    DateOfShift = day,
                     EmployeeId = employeeId,
                     BicycleId = bicycleId,
-                    RouteNumberId = routeNumberId,
-                    MeetInTime = meetInTime,
+                    RouteId = routeNumberId,                    
                     StartTime = null,
                     EndTime = null,
                     SubstitutedId = substitutedId,

@@ -1,9 +1,20 @@
-﻿namespace Vagtplanlægning.Repositories
-{
-    using Vagtplanlægning.Models;
+﻿using Vagtplanlægning.Models;
+using System.Threading;
 
+namespace Vagtplanlægning.Repositories
+{
     public interface IShiftRepository
     {
-        Task MarkShiftSubstitutedAsync(int shiftId, bool hasSubstituted);
+        // Simple get by id
+        Task<Shift?> GetByIdAsync(int id, CancellationToken ct = default);
+
+        // Insert a new shift
+        Task AddAsync(Shift shift, CancellationToken ct = default);
+
+        // Update an existing shift
+        Task UpdateAsync(Shift shift, CancellationToken ct = default);
+
+        // Update substituted flag for a shift
+        Task MarkShiftSubstitutedAsync(int shiftId, bool hasSubstituted, CancellationToken ct = default);
     }
 }

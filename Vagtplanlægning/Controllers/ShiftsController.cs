@@ -66,12 +66,12 @@ namespace Vagtplanlægning.Controllers
 
             // ---- Validation: route ----
             var routeExists = await _db.Routes
-                .AnyAsync(r => r.RouteNumberId == dto.RouteId);
+                .AnyAsync(r => r.Id == dto.RouteId);
 
             if (!routeExists)
             {
                 var validRouteIds = await _db.Routes
-                    .Select(r => r.RouteNumberId)
+                    .Select(r => r.Id)
                     .ToListAsync();
 
                 return BadRequest(new
@@ -81,21 +81,56 @@ namespace Vagtplanlægning.Controllers
                 });
             }
 
-            // ---- Validation: substituted ----
-            var substitutedExists = await _db.Substituteds
-                .AnyAsync(s => s.SubstitutedId == dto.SubstitutedId);
+            // ---- Håndtering af substitutedId ----
+            //  - dto.SubstitutedId <= 0  => brug employee'ens egen række i Substituteds
+            //  - dto.SubstitutedId > 0   => valider eksplicit id
+            int effectiveSubstitutedId;
 
-            if (!substitutedExists)
+            if (dto.SubstitutedId <= 0)
             {
-                var validSubstitutedIds = await _db.Substituteds
-                    .Select(s => s.SubstitutedId)
-                    .ToListAsync();
+                // Find række for employee i Substituteds
+                var subRow = await _db.Substituteds
+                    .FirstOrDefaultAsync(s => s.EmployeeId == dto.EmployeeId);
 
-                return BadRequest(new
+                if (subRow == null)
                 {
-                    error = $"Invalid substitutedId: {dto.SubstitutedId}.",
-                    validSubstitutedIds
-                });
+                    // Hvis der mod forventning ikke findes én, opret en
+                    var newSub = new Substituted
+                    {
+                        EmployeeId = dto.EmployeeId,
+                        HasSubstituted = false
+                    };
+
+                    _db.Substituteds.Add(newSub);
+                    await _db.SaveChangesAsync();
+
+                    effectiveSubstitutedId = newSub.SubstitutedId;
+                }
+                else
+                {
+                    effectiveSubstitutedId = subRow.SubstitutedId;
+                }
+            }
+            else
+            {
+                // Klienten sender et konkret substitutedId > 0 -> tjek om det findes
+                var substitutedExists = await _db.Substituteds
+                    .AnyAsync(s => s.SubstitutedId == dto.SubstitutedId);
+
+                if (!substitutedExists)
+                {
+                    var validSubstitutedIds = await _db.Substituteds
+                        .Select(s => s.SubstitutedId)
+                        .ToListAsync();
+
+                    return BadRequest(new
+                    {
+                        error = $"Invalid substitutedId: {dto.SubstitutedId}.",
+                        validSubstitutedIds
+                    });
+                }
+
+                effectiveSubstitutedId = dto.SubstitutedId;
             }
 
             var shift = new Shift
@@ -104,7 +139,7 @@ namespace Vagtplanlægning.Controllers
                 EmployeeId = dto.EmployeeId,
                 BicycleId = dto.BicycleId,
                 RouteId = dto.RouteId,
-                SubstitutedId = dto.SubstitutedId
+                SubstitutedId = effectiveSubstitutedId
             };
 
             try
@@ -189,6 +224,9 @@ namespace Vagtplanlægning.Controllers
             await _shiftRepo.MarkShiftSubstitutedAsync(shiftId, hasSubstituted);
             return NoContent();
         }
+
+
                
     }
+
 }
