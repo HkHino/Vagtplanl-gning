@@ -51,7 +51,7 @@ if (provider == "mongo" || provider == "mysqlwithmongofallback")
     builder.Services.AddSingleton<IMongoDatabase>(sp =>
     {
         var client = sp.GetRequiredService<IMongoClient>();
-        return client.GetDatabase(mongoUrl.DatabaseName ?? "vagtplan");
+        return client.GetDatabase(mongoUrl.DatabaseName ?? "vagtplanlaegning");
     });
 }
 

@@ -1,228 +1,205 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Vagtplanlægning.Data;
 using Vagtplanlægning.DTOs;
 using Vagtplanlægning.Models;
-using System.Text.RegularExpressions;
+using Vagtplanlægning.Repositories;
 
-namespace Vagtplanlægning.Controllers;
-
-[ApiController]
-[Route("api/[controller]")]
-public class EmployeesController : ControllerBase
+namespace Vagtplanlægning.Controllers
 {
-    private readonly AppDbContext _db;
-
-    public EmployeesController(AppDbContext db)
+    [ApiController]
+    [Route("api/[controller]")]
+    public class EmployeesController : ControllerBase
     {
-        _db = db;
-    }
+        private readonly IEmployeeRepository _employeeRepo;
+        private readonly ILogger<EmployeesController> _logger;
 
-    // GET: api/employees
-    [HttpGet]
-    public async Task<ActionResult<IEnumerable<EmployeeDto>>> GetAll()
-    {
-        var employees = await _db.Employees
-            .AsNoTracking()
-            .Select(e => new EmployeeDto
-            {
-                EmployeeId = e.EmployeeId,
-                FirstName = e.FirstName,
-                LastName = e.LastName,
-                Address = e.Address,
-                Phone = e.Phone,
-                Email = e.Email
-            })
-            .ToListAsync();
-
-        return Ok(employees);
-    }
-
-    // GET: api/employees/5
-    [HttpGet("{id:int}")]
-    public async Task<ActionResult<EmployeeDto>> GetById(int id)
-    {
-        var employee = await _db.Employees
-            .AsNoTracking()
-            .Where(e => e.EmployeeId == id)
-            .Select(e => new EmployeeDto
-            {
-                EmployeeId = e.EmployeeId,
-                FirstName = e.FirstName,
-                LastName = e.LastName,
-                Address = e.Address,
-                Phone = e.Phone,
-                Email = e.Email
-            })
-            .FirstOrDefaultAsync();
-
-        if (employee == null)
-            return NotFound(new { error = $"Employee with id {id} not found." });
-
-        return Ok(employee);
-    }
-
-    // POST: api/employees
-    [HttpPost]
-    public async Task<ActionResult<EmployeeDto>> Create([FromBody] CreateEmployeeDto dto)
-    {
-        try
+        public EmployeesController(
+            IEmployeeRepository employeeRepo,
+            ILogger<EmployeesController> logger)
         {
-            if (dto == null)
+            _employeeRepo = employeeRepo;
+            _logger = logger;
+        }
+
+        // GET: api/Employees
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<EmployeeDto>>> GetAll(CancellationToken ct)
+        {
+            try
             {
+                var employees = await _employeeRepo.GetAllAsync(ct);
+
+                var dtos = employees.Select(e => new EmployeeDto
+                {
+                    EmployeeId = e.EmployeeId,
+                    FirstName = e.FirstName,
+                    LastName = e.LastName,
+                    Address = e.Address,
+                    Phone = e.Phone,
+                    Email = e.Email,
+                    ExperienceLevel = e.ExperienceLevel
+                }).ToList();
+
+                return Ok(dtos);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error while reading employees.");
+                return StatusCode(500, new { error = "Error while reading employees." });
+            }
+        }
+
+        // GET: api/Employees/5
+        [HttpGet("{id:int}")]
+        public async Task<ActionResult<EmployeeDto>> GetById(int id, CancellationToken ct)
+        {
+            try
+            {
+                var employee = await _employeeRepo.GetByIdAsync(id, ct);
+                if (employee == null)
+                    return NotFound(new { error = $"Employee with id {id} not found." });
+
+                var dto = new EmployeeDto
+                {
+                    EmployeeId = employee.EmployeeId,
+                    FirstName = employee.FirstName,
+                    LastName = employee.LastName,
+                    Address = employee.Address,
+                    Phone = employee.Phone,
+                    Email = employee.Email,
+                    ExperienceLevel = employee.ExperienceLevel
+                };
+
+                return Ok(dto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error while reading employee {EmployeeId}.", id);
+                return StatusCode(500, new { error = "Error while reading employee." });
+            }
+        }
+
+        // POST: api/Employees
+        [HttpPost]
+        public async Task<ActionResult<EmployeeDto>> Create(CreateEmployeeDto dto, CancellationToken ct)
+        {
+            try
+            {
+                var employee = new Employee
+                {
+                    FirstName = dto.FirstName,
+                    LastName = dto.LastName,
+                    Address = dto.Address,
+                    Phone = dto.Phone,
+                    Email = dto.Email,
+                    ExperienceLevel = 1 // default
+                };
+
+                await _employeeRepo.AddAsync(employee, ct);
+
+                var createdDto = new EmployeeDto
+                {
+                    EmployeeId = employee.EmployeeId,
+                    FirstName = employee.FirstName,
+                    LastName = employee.LastName,
+                    Address = employee.Address,
+                    Phone = employee.Phone,
+                    Email = employee.Email,
+                    ExperienceLevel = employee.ExperienceLevel
+                };
+
+                return CreatedAtAction(nameof(GetById), new { id = employee.EmployeeId }, createdDto);
+            }
+            catch (DbUpdateException dbEx) when (dbEx.InnerException is MySqlConnector.MySqlException mySqlEx
+                                                 && mySqlEx.Message.Contains("Duplicate entry")
+                                                 && mySqlEx.Message.Contains("employees.email"))
+            {
+                return BadRequest(new { error = $"Email '{dto.Email}' already exists." });
+            }
+            catch (DbUpdateException dbEx) when (dbEx.InnerException is MySqlConnector.MySqlException mySqlEx
+                                                 && mySqlEx.Message.Contains("Duplicate entry")
+                                                 && mySqlEx.Message.Contains("employees.phone"))
+            {
+                return BadRequest(new { error = $"Phone '{dto.Phone}' already exists." });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error while creating employee.");
+                return StatusCode(500, new { error = "Error while creating employee." });
+            }
+        }
+
+
+        // PUT: api/Employees/5
+        [HttpPut("{id:int}")]
+        public async Task<IActionResult> Update(int id, UpdateEmployeeDto dto, CancellationToken ct)
+        {
+            try
+            {
+                var existing = await _employeeRepo.GetByIdAsync(id, ct);
+                if (existing == null)
+                    return NotFound(new { error = $"Employee with id {id} not found." });
+
+                // Opdater felter
+                existing.FirstName = dto.FirstName;
+                existing.LastName = dto.LastName;
+                existing.Address = dto.Address;
+                existing.Phone = dto.Phone;
+                existing.Email = dto.Email;
+                // ExperienceLevel kan du enten lade være som den er, eller tage fra dto
+
+                await _employeeRepo.UpdateAsync(existing, ct);
+
+                return NoContent();
+            }
+            catch (DbUpdateException dbEx) when (
+                dbEx.InnerException is MySqlConnector.MySqlException mySqlEx &&
+                mySqlEx.Message.Contains("Duplicate entry") &&
+                mySqlEx.Message.Contains("employees.email"))
+            {
+                // E-mailen rammer UNIQUE constraint
                 return BadRequest(new
                 {
-                    error = "Request body is missing or invalid."
+                    error = $"Email '{dto.Email}' already exists."
                 });
             }
-
-            // Basic input-validering
-            if (string.IsNullOrWhiteSpace(dto.FirstName))
+            catch (DbUpdateException dbEx) when (
+                dbEx.InnerException is MySqlConnector.MySqlException mySqlEx &&
+                mySqlEx.Message.Contains("Duplicate entry") &&
+                mySqlEx.Message.Contains("employees.phone"))
             {
-                return BadRequest(new { error = "FirstName is required." });
-            }
-
-            if (string.IsNullOrWhiteSpace(dto.LastName))
-            {
-                return BadRequest(new { error = "LastName is required." });
-            }
-
-            if (string.IsNullOrWhiteSpace(dto.Phone))
-            {
-                return BadRequest(new { error = "Phone is required." });
-            }
-
-            if (string.IsNullOrWhiteSpace(dto.Email))
-            {
-                return BadRequest(new { error = "Email is required." });
-            }
-
-            var trimmedEmail = dto.Email.Trim();
-            var trimmedPhone = dto.Phone.Trim();
-
-            // --- Telefon-validering ---
-            // Tilladt:
-            //  - 8 cifre: "12345678"
-            //  - "+45" efterfulgt af 8 cifre: "+4512345678"
-            bool phoneValid =
-                Regex.IsMatch(trimmedPhone, @"^[0-9]{8}$") ||
-                Regex.IsMatch(trimmedPhone, @"^\+45[0-9]{8}$");
-
-            if (!phoneValid)
-            {
+                // Hvis du også har gjort phone unik i databasen
                 return BadRequest(new
                 {
-                    error = "Phone must be 8 digits, or '+45' followed by 8 digits."
+                    error = $"Phone '{dto.Phone}' already exists."
                 });
             }
-
-            // --- Email-validering ---
-            // Simpelt mønster: noget@noget.noget
-            bool emailValid = Regex.IsMatch(
-                trimmedEmail,
-                @"^[^@\s]+@[^@\s]+\.[^@\s]+$"
-            );
-
-            if (!emailValid)
+            catch (Exception ex)
             {
-                return BadRequest(new
-                {
-                    error = "Email must be in the form 'name@example.com'."
-                });
+                _logger.LogError(ex, "Error while updating employee {EmployeeId}.", id);
+                return StatusCode(500, new { error = "Error while updating employee." });
             }
-
-            // Tjek om email allerede findes
-            var emailExists = await _db.Employees
-                .AnyAsync(e => e.Email == trimmedEmail);
-
-            if (emailExists)
-            {
-                return Conflict(new
-                {
-                    error = $"An employee with email '{trimmedEmail}' already exists."
-                });
-            }
-
-            var entity = new Employee
-            {
-                FirstName = dto.FirstName.Trim(),
-                LastName = dto.LastName.Trim(),
-                Address = dto.Address?.Trim(),
-                Phone = trimmedPhone,
-                Email = trimmedEmail,
-                ExperienceLevel = 1 // alle starter på level 1
-            };
-
-            _db.Employees.Add(entity);
-            await _db.SaveChangesAsync();
-
-            var result = new EmployeeDto
-            {
-                EmployeeId = entity.EmployeeId,
-                FirstName = entity.FirstName,
-                LastName = entity.LastName,
-                Address = entity.Address,
-                Phone = entity.Phone,
-                Email = entity.Email,
-                ExperienceLevel = entity.ExperienceLevel
-            };
-
-            return CreatedAtAction(
-                nameof(GetById),
-                new { id = result.EmployeeId },
-                result);
         }
-        catch (MySqlConnector.MySqlException ex)
-            when (ex.ErrorCode == MySqlConnector.MySqlErrorCode.DuplicateKeyEntry)
+
+
+        // DELETE: api/Employees/5
+        [HttpDelete("{id:int}")]
+        public async Task<IActionResult> Delete(int id, CancellationToken ct)
         {
-            return Conflict(new
+            try
             {
-                error = "An employee with this email already exists.",
-                details = ex.Message
-            });
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new
+                var existing = await _employeeRepo.GetByIdAsync(id, ct);
+                if (existing == null)
+                    return NotFound(new { error = $"Employee with id {id} not found." });
+
+                await _employeeRepo.DeleteAsync(id, ct);
+                return NoContent();
+            }
+            catch (Exception ex)
             {
-                error = "Unexpected server error while creating employee.",
-                details = ex.Message
-            });
+                _logger.LogError(ex, "Error while deleting employee {EmployeeId}.", id);
+                return StatusCode(500, new { error = "Error while deleting employee." });
+            }
         }
-    }
-
-
-
-
-    // PUT: api/employees/5
-    [HttpPut("{id:int}")]
-    public async Task<IActionResult> Update(int id, UpdateEmployeeDto dto)
-    {
-        var entity = await _db.Employees.FindAsync(id);
-        if (entity == null)
-            return NotFound(new { error = $"Employee with id {id} not found." });
-
-        entity.FirstName = dto.FirstName;
-        entity.LastName = dto.LastName;
-        entity.Address = dto.Address;
-        entity.Phone = dto.Phone;
-        entity.Email = dto.Email;
-        entity.ExperienceLevel = dto.ExperienceLevel;
-
-        await _db.SaveChangesAsync();
-        return NoContent();
-    }
-
-    // DELETE: api/employees/5
-    [HttpDelete("{id:int}")]
-    public async Task<IActionResult> Delete(int id)
-    {
-        var entity = await _db.Employees.FindAsync(id);
-        if (entity == null)
-            return NotFound(new { error = $"Employee with id {id} not found." });
-
-        _db.Employees.Remove(entity);
-        await _db.SaveChangesAsync();
-        return NoContent();
     }
 }

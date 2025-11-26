@@ -1,46 +1,50 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Vagtplanlægning.Models;
 
-/// <summary>
-/// Courier / employee entity backed by Employees table.
-/// </summary>
-[Table("Employees")]
-public class Employee
+namespace Vagtplanlægning.Models
 {
-    [Key]
-    [Column("employeeId")]
-    public int EmployeeId { get; set; }
+    // Mongo må gerne ignorere felter vi ikke har properties til
+    [BsonIgnoreExtraElements]
+    public class Employee
+    {
+        // MongoDBs interne _id
+        [NotMapped]             //<- vigtigt for EF skal ignorere den
+        [BsonId]
+        [BsonIgnoreIfDefault]
+        public ObjectId? MongoId { get; set; }
 
-    [Column("firstName")]
-    [MaxLength(255)]
-    public string FirstName { get; set; } = string.Empty;
+        // Link til det oprindelige SQL-id i dine Mongo-dokumenter (sqlEmployeeId)
+        [BsonElement("sqlEmployeeId")]
+        public int EmployeeId { get; set; }
 
-    [Column("lastName")]
-    [MaxLength(255)]
-    public string LastName { get; set; } = string.Empty;
+        [BsonElement("firstName")]
+        public string FirstName { get; set; } = "";
 
-    [Column("address")]
-    [MaxLength(255)]
-    public string Address { get; set; } = string.Empty;
+        [BsonElement("lastName")]
+        public string LastName { get; set; } = "";
 
-    [Column("phone")]
-    [MaxLength(20)]
-    public string Phone { get; set; } = string.Empty;
+        [BsonElement("address")]
+        public string Address { get; set; } = "";
 
-    [Column("email")]
-    [MaxLength(255)]
-    public string Email { get; set; } = string.Empty;
+        [BsonElement("phone")]
+        public string Phone { get; set; } = "";
 
-    /// <summary>
-    /// Experience level 1..n (column: experienceLevel).
-    /// </summary>
-    [Column("experienceLevel")]
-    public int ExperienceLevel { get; set; } = 1;
+        [BsonElement("email")]
+        public string Email { get; set; } = "";
 
-    // Navigation properties
-    public ICollection<Shift> Shifts { get; set; } = new List<Shift>();
-    public ICollection<Substituted> SubstitutionRecords { get; set; } = new List<Substituted>();
+        [BsonElement("experienceLevel")]
+        public int ExperienceLevel { get; set; } = 1;
+
+        // ---------- EF navigation properties (bruges IKKE af Mongo) ----------
+
+        [BsonIgnore]
+        public ICollection<Shift> Shifts { get; set; } = new List<Shift>();
+
+        [BsonIgnore]
+        public ICollection<Substituted> SubstitutionRecords { get; set; } = new List<Substituted>();
+    }
 }
