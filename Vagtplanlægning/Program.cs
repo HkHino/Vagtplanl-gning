@@ -19,6 +19,16 @@ Console.WriteLine($"[DB PROVIDER] Raw='{providerRaw}' Normalized='{provider}'");
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddScoped<MySqlRouteRepository>();
+builder.Services.AddScoped<MongoRouteRepository>();
+builder.Services.AddScoped<IRouteRepository, RouteRepositoryFallback>();
+builder.Services.AddScoped<IBicycleRepository, BicycleRepositoryFallback>();
+builder.Services.AddScoped<MySqlBicycleRepository>();
+builder.Services.AddScoped<MongoBicycleRepository>();
+builder.Services.AddScoped<IBicycleRepository, BicycleRepositoryFallback>();
+builder.Services.AddScoped<IShiftPlanRepository, MySqlShiftPlanRepository>();
+
+
 builder.Services.AddSwaggerGen();
 
 // Fælles services
@@ -72,15 +82,26 @@ switch (provider)
         break;
 
     case "mysqlwithmongofallback":
+        // EMPLOYEES
         builder.Services.AddScoped<MySqlEmployeeRepository>();
         builder.Services.AddScoped<MongoEmployeeRepository>();
-
         builder.Services.AddScoped<IEmployeeRepository, EmployeeRepositoryFallback>();
 
-        builder.Services.AddScoped<IRouteRepository, MySqlRouteRepository>();
-        builder.Services.AddScoped<IShiftRepository, MySqlShiftRepository>();
+        // ROUTES
+        builder.Services.AddScoped<MySqlRouteRepository>();
+        builder.Services.AddScoped<MongoRouteRepository>();
+        builder.Services.AddScoped<IRouteRepository, RouteRepositoryFallback>();
+
+        // BICYCLES
+        builder.Services.AddScoped<MySqlBicycleRepository>();
+        builder.Services.AddScoped<MongoBicycleRepository>();
+        builder.Services.AddScoped<IBicycleRepository, BicycleRepositoryFallback>();
+
+        // SHIFT PLANS – **ny linje her**
         builder.Services.AddScoped<IShiftPlanRepository, MySqlShiftPlanRepository>();
+
         break;
+
 
     case "neo4j":
         var uri = builder.Configuration["Neo4j:Uri"];
@@ -100,8 +121,22 @@ switch (provider)
         throw new InvalidOperationException($"Unknown DatabaseProvider value '{providerRaw}'.");
 }
 
-var app = builder.Build();
+//-----------------allow cors -------------------
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy
+            .AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader();
+    });
 
+});
+
+
+var app = builder.Build();
+app.UseCors("AllowAll");
 app.UseSwagger();
 app.UseSwaggerUI();
 app.MapControllers();

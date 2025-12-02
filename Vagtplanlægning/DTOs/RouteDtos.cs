@@ -10,4 +10,10 @@
     {
         public int RouteNumber { get; set; }
     }
+    public class UpdateRouteDto
+    {
+        public int RouteNumber { get; set; }
+    }
+
+
 }

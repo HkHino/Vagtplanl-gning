@@ -10,7 +10,7 @@ namespace Vagtplanlægning.Repositories
         public MongoEmployeeRepository(IMongoDatabase database)
         {
             // Brug en collection med samme navn som tabellen i MySQL for sanity
-            _employees = database.GetCollection<Employee>("employees");
+            _employees = database.GetCollection<Employee>("Employees");
         }
 
         public async Task<IEnumerable<Employee>> GetAllAsync(CancellationToken ct = default)

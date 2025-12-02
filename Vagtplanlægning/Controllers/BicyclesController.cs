@@ -1,8 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Vagtplanlægning.Data;
 using Vagtplanlægning.DTOs;
 using Vagtplanlægning.Models;
+using Vagtplanlægning.Repositories;
 
 namespace Vagtplanlægning.Controllers
 {
@@ -10,174 +9,91 @@ namespace Vagtplanlægning.Controllers
     [Route("api/[controller]")]
     public class BicyclesController : ControllerBase
     {
-        private readonly AppDbContext _db;
+        private readonly IBicycleRepository _bicycleRepo;
 
-        public BicyclesController(AppDbContext db)
+        public BicyclesController(IBicycleRepository bicycleRepo)
         {
-            _db = db;
+            _bicycleRepo = bicycleRepo;
         }
 
-        // GET: api/bicycles
+        // GET: /api/Bicycles
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<BicycleDto>>> GetAll()
+        public async Task<ActionResult<IEnumerable<BicycleDto>>> GetAll(CancellationToken ct)
         {
-            var bikes = await _db.Bicycles
-                .AsNoTracking()
-                .Select(b => new BicycleDto
-                {
-                    BicycleId = b.BicycleId,
-                    BicycleNumber = b.BicycleNumber,
-                    InOperate = b.InOperate
-                })
-                .ToListAsync();
+            var bicycles = await _bicycleRepo.GetAllAsync(ct);
 
-            return Ok(bikes);
+            var result = bicycles.Select(b => new BicycleDto
+            {
+                BicycleId = b.BicycleId,
+                BicycleNumber = b.BicycleNumber,
+                InOperate = b.InOperate
+            });
+
+            return Ok(result);
         }
 
-        // GET: api/bicycles/5
+        // GET: /api/Bicycles/{id}
         [HttpGet("{id:int}")]
-        public async Task<ActionResult<BicycleDto>> GetById(int id)
+        public async Task<ActionResult<BicycleDto>> GetById(int id, CancellationToken ct)
         {
-            var bike = await _db.Bicycles
-                .AsNoTracking()
-                .Where(b => b.BicycleId == id)
-                .Select(b => new BicycleDto
-                {
-                    BicycleId = b.BicycleId,
-                    BicycleNumber = b.BicycleNumber,
-                    InOperate = b.InOperate
-                })
-                .FirstOrDefaultAsync();
-
-            if (bike == null)
-            {
+            var b = await _bicycleRepo.GetByIdAsync(id, ct);
+            if (b == null)
                 return NotFound(new { error = $"Bicycle with id {id} not found." });
-            }
 
-            return Ok(bike);
+            return Ok(new BicycleDto
+            {
+                BicycleId = b.BicycleId,
+                BicycleNumber = b.BicycleNumber,
+                InOperate = b.InOperate
+            });
         }
 
-        // POST: api/bicycles
+        // POST: /api/Bicycles
         [HttpPost]
-        public async Task<ActionResult<BicycleDto>> Create([FromBody] CreateBicycleDto dto)
+        public async Task<ActionResult<BicycleDto>> Create(CreateBicycleDto dto, CancellationToken ct)
         {
-            try
+            var entity = new Bicycle
             {
-                if (dto == null)
-                {
-                    return BadRequest(new
-                    {
-                        error = "Request body is missing or invalid."
-                    });
-                }
+                BicycleNumber = dto.BicycleNumber,
+                InOperate = dto.InOperate
+            };
 
-                if (dto.BicycleNumber < 0)
-                {
-                    return BadRequest(new
-                    {
-                        error = "BicycleNumber cannot be negative."
-                    });
-                }
+            await _bicycleRepo.AddAsync(entity, ct);
 
-                // Autogenerér nummer hvis dto.BicycleNumber == 0
-                int bicycleNumber;
-
-                if (dto.BicycleNumber == 0)
-                {
-                    var maxNumber = await _db.Bicycles
-                        .Select(b => (int?)b.BicycleNumber)
-                        .MaxAsync();
-
-                    bicycleNumber = (maxNumber ?? 0) + 1;
-                }
-                else
-                {
-                    // Tjek om nummer allerede findes
-                    bool exists = await _db.Bicycles
-                        .AnyAsync(b => b.BicycleNumber == dto.BicycleNumber);
-
-                    if (exists)
-                    {
-                        return Conflict(new
-                        {
-                            error = $"BicycleNumber {dto.BicycleNumber} already exists."
-                        });
-                    }
-
-                    bicycleNumber = dto.BicycleNumber;
-                }
-
-                var entity = new Bicycle
-                {
-                    BicycleNumber = bicycleNumber,
-                    InOperate = dto.InOperate
-                };
-
-                _db.Bicycles.Add(entity);
-                await _db.SaveChangesAsync();
-
-                var result = new BicycleDto
-                {
-                    BicycleId = entity.BicycleId,
-                    BicycleNumber = entity.BicycleNumber,
-                    InOperate = entity.InOperate
-                };
-
-                return CreatedAtAction(
-                    nameof(GetById),
-                    new { id = result.BicycleId },
-                    result);
-            }
-            catch (MySqlConnector.MySqlException ex) when (ex.ErrorCode == MySqlConnector.MySqlErrorCode.DuplicateKeyEntry)
+            var result = new BicycleDto
             {
-                // MySQLs egen duplicate key fejl (sikkerhedsnet)
-                return Conflict(new
-                {
-                    error = "A bicycle with this number already exists.",
-                    details = ex.Message
-                });
-            }
-            catch (Exception ex)
-            {
-                // Alt andet — 500
-                return StatusCode(500, new
-                {
-                    error = "Unexpected server error. Contact support.",
-                    details = ex.Message
-                });
-            }
+                BicycleId = entity.BicycleId,
+                BicycleNumber = entity.BicycleNumber,
+                InOperate = entity.InOperate
+            };
+
+            return CreatedAtAction(nameof(GetById), new { id = entity.BicycleId }, result);
         }
 
-
-        // PUT: api/bicycles/5
+        // PUT: /api/Bicycles/{id}
         [HttpPut("{id:int}")]
-        public async Task<IActionResult> Update(int id, [FromBody] CreateBicycleDto dto)
+        public async Task<IActionResult> Update(int id, UpdateBicycleDto dto, CancellationToken ct)
         {
-            var entity = await _db.Bicycles.FindAsync(id);
-            if (entity == null)
-            {
+            var existing = await _bicycleRepo.GetByIdAsync(id, ct);
+            if (existing == null)
                 return NotFound(new { error = $"Bicycle with id {id} not found." });
-            }
 
-            entity.BicycleNumber = dto.BicycleNumber;
-            entity.InOperate = dto.InOperate;
+            existing.BicycleNumber = dto.BicycleNumber;
+            existing.InOperate = dto.InOperate;
 
-            await _db.SaveChangesAsync();
+            await _bicycleRepo.UpdateAsync(existing, ct);
+
             return NoContent();
         }
 
-        // DELETE: api/bicycles/5
+        // DELETE: /api/Bicycles/{id}
         [HttpDelete("{id:int}")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(int id, CancellationToken ct)
         {
-            var entity = await _db.Bicycles.FindAsync(id);
-            if (entity == null)
-            {
+            var deleted = await _bicycleRepo.DeleteAsync(id, ct);
+            if (!deleted)
                 return NotFound(new { error = $"Bicycle with id {id} not found." });
-            }
 
-            _db.Bicycles.Remove(entity);
-            await _db.SaveChangesAsync();
             return NoContent();
         }
     }

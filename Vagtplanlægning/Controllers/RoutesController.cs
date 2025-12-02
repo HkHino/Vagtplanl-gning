@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Vagtplanlægning.Data;
 using Vagtplanlægning.DTOs;
 using Vagtplanlægning.Models;
+using Vagtplanlægning.Repositories;
 
 namespace Vagtplanlægning.Controllers;
 
@@ -10,121 +11,145 @@ namespace Vagtplanlægning.Controllers;
 [Route("api/[controller]")]
 public class RoutesController : ControllerBase
 {
-    private readonly AppDbContext _db;
-    public RoutesController(AppDbContext db) => _db = db;
+    private readonly IRouteRepository _routeRepo;
+    private readonly ILogger<RoutesController> _logger;
+    public RoutesController(IRouteRepository routeRepo,ILogger<RoutesController> logger)
+        {
+            _routeRepo = routeRepo;
+            _logger = logger;
+        }
 
     // GET: api/routes
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<RouteDto>>> GetAll()
+    public async Task<ActionResult<IEnumerable<RouteDto>>> GetAll(CancellationToken ct)
     {
         try
         {
-            var routes = await _db.Routes
-                .OrderBy(r => r.RouteNumber)
+            var entities = await _routeRepo.GetAllAsync(ct);
+
+            var result = entities
                 .Select(r => new RouteDto
                 {
                     Id = r.Id,
                     RouteNumber = r.RouteNumber
                 })
-                .ToListAsync();
+                .ToList();
 
-            return Ok(routes);
-        }
-        catch (MySqlConnector.MySqlException ex)
-        {
-            return StatusCode(500, new
-            {
-                error = "Database error while reading routes.",
-                details = ex.Message
-            });
+            return Ok(result);
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new
-            {
-                error = "Unexpected server error while reading routes.",
-                details = ex.Message
-            });
+            _logger.LogError(ex, "Error while reading routes.");
+            return StatusCode(500, new { error = "Unexpected server error while reading routes." });
         }
     }
+
 
 
     // GET: api/routes/5
     [HttpGet("{id:int}")]
-    public async Task<ActionResult<RouteDto>> GetById(int id)
+    public async Task<ActionResult<RouteDto>> GetById(int id, CancellationToken ct)
     {
-        var route = await _db.Routes
-            .AsNoTracking()
-            .Where(r => r.Id == id)
-            .Select(r => new RouteDto
-            {
-                Id = r.Id,
-                RouteNumber = r.RouteNumber
-            })
-            .FirstOrDefaultAsync();
-
-        if (route == null)
+        try
         {
-            return NotFound(new { error = $"Route with id {id} not found." });
-        }
+            var entity = await _routeRepo.GetByIdAsync(id, ct);
 
-        return Ok(route);
+            if (entity == null)
+            {
+                return NotFound(new { error = $"Route with id {id} not found." });
+            }
+
+            var dto = new RouteDto
+            {
+                Id = entity.Id,
+                RouteNumber = entity.RouteNumber
+            };
+
+            return Ok(dto);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error while reading route {RouteId}.", id);
+            return StatusCode(500, new { error = "Unexpected server error while reading route." });
+        }
     }
 
     // POST: api/routes
     [HttpPost]
-    public async Task<ActionResult<RouteDto>> Create([FromBody] CreateRouteDto dto)
+    public async Task<ActionResult<RouteDto>> Create([FromBody] CreateRouteDto dto, CancellationToken ct)
     {
-        var entity = new RouteEntity
+        try
         {
-            // Id sættes af databasen (AUTO_INCREMENT)
-            RouteNumber = dto.RouteNumber
-        };
+            var entity = new RouteEntity
+            {
+                // Id sættes af databasen eller Mongo-repoet
+                RouteNumber = dto.RouteNumber
+            };
 
-        _db.Routes.Add(entity);
-        await _db.SaveChangesAsync();
+            await _routeRepo.AddAsync(entity, ct);
 
-        var result = new RouteDto
+            var result = new RouteDto
+            {
+                Id = entity.Id,
+                RouteNumber = entity.RouteNumber
+            };
+
+            return CreatedAtAction(
+                nameof(GetById),
+                new { id = result.Id },
+                result
+            );
+        }
+        catch (Exception ex)
         {
-            Id = entity.Id,
-            RouteNumber = entity.RouteNumber
-        };
-
-        // Vi peger på GetById, fordi den faktisk bruger id'et
-        return CreatedAtAction(
-            nameof(GetById),
-            new { id = result.Id },
-            result
-        );
+            _logger.LogError(ex, "Error while creating route.");
+            return StatusCode(500, new { error = "Unexpected server error while creating route." });
+        }
     }
 
     // PUT: api/routes/5
     [HttpPut("{id:int}")]
-    public async Task<IActionResult> Update(int id, [FromBody] CreateRouteDto dto)
+    public async Task<IActionResult> Update(int id, [FromBody] CreateRouteDto dto, CancellationToken ct)
     {
-        var entity = await _db.Routes.FindAsync(id);
-        if (entity == null)
+        try
         {
-            return NotFound(new { error = $"Route with id {id} not found." });
-        }
+            var entity = await _routeRepo.GetByIdAsync(id, ct);
+            if (entity == null)
+            {
+                return NotFound(new { error = $"Route with id {id} not found." });
+            }
 
-        entity.RouteNumber = dto.RouteNumber;
-        await _db.SaveChangesAsync();
-        return NoContent();
+            entity.RouteNumber = dto.RouteNumber;
+
+            await _routeRepo.UpdateAsync(entity, ct);
+
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error while updating route {RouteId}.", id);
+            return StatusCode(500, new { error = "Unexpected server error while updating route." });
+        }
     }
 
     // DELETE: api/routes/5
     [HttpDelete("{id:int}")]
-    public async Task<IActionResult> Delete(int id)
+    public async Task<IActionResult> Delete(int id, CancellationToken ct)
     {
-        var entity = await _db.Routes.FindAsync(id);
-        if (entity == null)
+        try
         {
-            return NotFound(new { error = $"Route with id {id} not found." });
-        }
+            var deleted = await _routeRepo.DeleteAsync(id, ct);
+            if (!deleted)
+            {
+                return NotFound(new { error = $"Route with id {id} not found." });
+            }
 
-        _db.Routes.Remove(entity);
-        await _db.SaveChangesAsync();
-        return NoContent();
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error while deleting route {RouteId}.", id);
+            return StatusCode(500, new { error = "Unexpected server error while deleting route." });
+        }
     }
 }

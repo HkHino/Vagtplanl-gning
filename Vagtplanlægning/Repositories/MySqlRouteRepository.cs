@@ -15,16 +15,17 @@ namespace Vagtplanlægning.Repositories
 
         public async Task<IEnumerable<RouteEntity>> GetAllAsync(CancellationToken ct = default)
         {
-            return await _db.Routes.AsNoTracking().ToListAsync(ct);
+            return await _db.Routes
+                .AsNoTracking()
+                .ToListAsync(ct);
         }
 
         public async Task<RouteEntity?> GetByIdAsync(int id, CancellationToken ct = default)
         {
-            // id = Routes.id (PK)
-            return await _db.Routes.AsNoTracking()
+            return await _db.Routes
+                .AsNoTracking()
                 .FirstOrDefaultAsync(r => r.Id == id, ct);
         }
-
 
         public async Task AddAsync(RouteEntity route, CancellationToken ct = default)
         {
@@ -32,10 +33,18 @@ namespace Vagtplanlægning.Repositories
             await _db.SaveChangesAsync(ct);
         }
 
+        public async Task UpdateAsync(RouteEntity route, CancellationToken ct = default)
+        {
+            _db.Routes.Update(route);
+            await _db.SaveChangesAsync(ct);
+        }
+
         public async Task<bool> DeleteAsync(int id, CancellationToken ct = default)
         {
-            var entity = await _db.Routes.FindAsync(new object?[] { id }, ct);
-            if (entity == null) return false;
+            var entity = await _db.Routes.FirstOrDefaultAsync(r => r.Id == id, ct);
+            if (entity == null)
+                return false;
+
             _db.Routes.Remove(entity);
             await _db.SaveChangesAsync(ct);
             return true;
