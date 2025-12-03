@@ -1,6 +1,10 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using MongoDB.Driver;
 using Neo4j.Driver;
+using Vagtplanlægning.Authentication;
+using Vagtplanlægning.Authentication.Policies;
+using Vagtplanlægning.Configurations;
 using Vagtplanlægning.Data;
 using Vagtplanlægning.Mapping;
 using Vagtplanlægning.Repositories;
@@ -13,7 +17,7 @@ using Vagtplanlægning.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 // Læs hvilken provider vi vil bruge: "MySql", "Mongo", "MySqlWithMongoFallback", "Neo4j"
-var providerRaw = builder.Configuration["DatabaseProvider"] ?? "MySql";
+var providerRaw = builder.Configuration["DatabaseProvider"] ?? "mysqlwithmongofallback";
 var provider = providerRaw.Trim().ToLowerInvariant();
 Console.WriteLine($"[DB PROVIDER] Raw='{providerRaw}' Normalized='{provider}'");
 
@@ -100,8 +104,60 @@ switch (provider)
         throw new InvalidOperationException($"Unknown DatabaseProvider value '{providerRaw}'.");
 }
 
+// --------------------------------------------------------
+// 4) Allow CORS
+// --------------------------------------------------------
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy
+            .AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader();
+    });
+});
+
+// --------------------------------------------------------
+// 5) Setup Authentication etc.
+// --------------------------------------------------------
+var issuer = builder.Configuration["Issuer"] ?? "Hard-Test-Vagtplan.dk";
+var audience = builder.Configuration["Audience"] ?? "Hard-Vagtplan.dk";
+var key = builder.Configuration["Key"] ?? "ZNztR3p+MCOCLtOQe5yTJNJHC1JkiqNfLs6vhaNVzAw=";
+
+// Checks if any of the configuration values are missing
+if (issuer is null || audience is null || key is null)
+{
+    throw new Exception("Missing configuration");
+}
+
+Console.WriteLine("Start");
+Console.WriteLine("Issuer:  + " + issuer);
+Console.WriteLine("Audience: " + audience);
+Console.WriteLine("Key: " + key);
+
+// Setup of Services
+AuthenticationConfig.Configure(builder.Services, issuer, audience, key);
+AuthorizationConfig.Configure(builder.Services);
+SwaggerConfig.Configure(builder.Services);
+
+// Dependency Injection
+
+void DependencyInjections(IServiceCollection services)
+{
+    // Authorization
+    services.AddSingleton<IAuthorizationHandler, IsUserHandler>();
+    services.AddSingleton<IAuthorizationHandler, IsAdminHandler>();
+    
+    // JWT
+    services.AddSingleton<JwtHelper>();
+}
+
+DependencyInjections(builder.Services);
+
 var app = builder.Build();
 
+app.UseCors("AllowAll");
 app.UseSwagger();
 app.UseSwaggerUI();
 app.MapControllers();
