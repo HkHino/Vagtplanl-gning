@@ -52,39 +52,28 @@ namespace Vagtplanlægning.Services
 
         public async Task SetStartTimeAsync(int shiftId, TimeSpan start, CancellationToken ct = default)
         {
-            if (_provider == "MySql" && _db != null)
-            {
-                await _db.Database.ExecuteSqlRawAsync("CALL SetStartTime({0},{1})", shiftId, start);
-            }
-            else
-            {
-                var shift = await _shiftRepo.GetByIdAsync(shiftId, ct);
-                if (shift == null) return;
-                shift.StartTime = start;
-                await _shiftRepo.UpdateAsync(shift, ct);
-            }
+            var shift = await _shiftRepo.GetByIdAsync(shiftId, ct);
+            if (shift == null) return;
+
+            shift.StartTime = start;
+            await _shiftRepo.UpdateAsync(shift, ct);
         }
 
         public async Task SetEndTimeAsync(int shiftId, TimeSpan end, CancellationToken ct = default)
         {
-            if (_provider == "MySql" && _db != null)
-            {
-                await _db.Database.ExecuteSqlRawAsync("CALL SetEndTime({0},{1})", shiftId, end);
-            }
-            else
-            {
-                var shift = await _shiftRepo.GetByIdAsync(shiftId, ct);
-                if (shift == null) return;
-                shift.EndTime = end;
+            var shift = await _shiftRepo.GetByIdAsync(shiftId, ct);
+            if (shift == null) return;
 
-                if (shift.StartTime.HasValue)
-                {
-                    var total = end - shift.StartTime.Value;
-                    shift.TotalHours = (decimal)total.TotalHours;
-                }
+            shift.EndTime = end;
 
-                await _shiftRepo.UpdateAsync(shift, ct);
+            if (shift.StartTime.HasValue)
+            {
+                var total = end - shift.StartTime.Value;
+                shift.TotalHours = (decimal)total.TotalHours;
             }
+
+            await _shiftRepo.UpdateAsync(shift, ct);
         }
+
     }
 }

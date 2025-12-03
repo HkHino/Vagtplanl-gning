@@ -1,13 +1,10 @@
-﻿using System;
-using System.Globalization;
+﻿using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Vagtplanlægning.Data;
 using Vagtplanlægning.DTOs;
-using Vagtplanlægning.Models;
 using Vagtplanlægning.Repositories;
+using Vagtplanlægning.Services;
 
 namespace Vagtplanlægning.Controllers
 {
@@ -15,31 +12,39 @@ namespace Vagtplanlægning.Controllers
     [Route("api/[controller]")]
     public class ShiftController : ControllerBase
     {
-        private readonly AppDbContext _db;
         private readonly IShiftRepository _shiftRepo;
+        private readonly IShiftExecutionService _shiftExec;
+        private readonly IEmployeeRepository _employeeRepo;
+        private readonly IBicycleRepository _bicycleRepo;
+        private readonly IRouteRepository _routeRepo;
 
-        public ShiftController(AppDbContext db, IShiftRepository shiftRepo)
+        public ShiftController(
+            IShiftRepository shiftRepo,
+            IShiftExecutionService shiftExec,
+            IEmployeeRepository employeeRepo,
+            IBicycleRepository bicycleRepo,
+            IRouteRepository routeRepo)
         {
-            _db = db;
             _shiftRepo = shiftRepo;
+            _shiftExec = shiftExec;
+            _employeeRepo = employeeRepo;
+            _bicycleRepo = bicycleRepo;
+            _routeRepo = routeRepo;
         }
 
         // --------------------------------------------------------------------
-        // 1) CREATE SHIFT
+        // 1) CREATE SHIFT - nu via repositories (med fallback) i stedet for DbContext
         // --------------------------------------------------------------------
         [HttpPost]
         public async Task<IActionResult> Add([FromBody] CreateShiftDto dto)
         {
-            // ---- Validation: employee ----
-            var employeeExists = await _db.Employees
-                .AnyAsync(e => e.EmployeeId == dto.EmployeeId);
+            // ---------- Validation: employee ----------
+            var employees = (await _employeeRepo.GetAllAsync()).ToList();
+            var employeeExists = employees.Any(e => e.EmployeeId == dto.EmployeeId);
 
             if (!employeeExists)
             {
-                var validEmployeeIds = await _db.Employees
-                    .Select(e => e.EmployeeId)
-                    .ToListAsync();
-
+                var validEmployeeIds = employees.Select(e => e.EmployeeId).ToList();
                 return BadRequest(new
                 {
                     error = $"Invalid employeeId: {dto.EmployeeId}.",
@@ -47,16 +52,13 @@ namespace Vagtplanlægning.Controllers
                 });
             }
 
-            // ---- Validation: bicycle ----
-            var bicycleExists = await _db.Bicycles
-                .AnyAsync(b => b.BicycleId == dto.BicycleId);
+            // ---------- Validation: bicycle ----------
+            var bicycles = (await _bicycleRepo.GetAllAsync()).ToList();
+            var bicycleExists = bicycles.Any(b => b.BicycleId == dto.BicycleId);
 
             if (!bicycleExists)
             {
-                var validBicycleIds = await _db.Bicycles
-                    .Select(b => b.BicycleId)
-                    .ToListAsync();
-
+                var validBicycleIds = bicycles.Select(b => b.BicycleId).ToList();
                 return BadRequest(new
                 {
                     error = $"Invalid bicycleId: {dto.BicycleId}.",
@@ -64,16 +66,13 @@ namespace Vagtplanlægning.Controllers
                 });
             }
 
-            // ---- Validation: route ----
-            var routeExists = await _db.Routes
-                .AnyAsync(r => r.Id == dto.RouteId);
+            // ---------- Validation: route ----------
+            var routes = (await _routeRepo.GetAllAsync()).ToList();
+            var routeExists = routes.Any(r => r.Id == dto.RouteId);
 
             if (!routeExists)
             {
-                var validRouteIds = await _db.Routes
-                    .Select(r => r.Id)
-                    .ToListAsync();
-
+                var validRouteIds = routes.Select(r => r.Id).ToList();
                 return BadRequest(new
                 {
                     error = $"Invalid routeId: {dto.RouteId}.",
@@ -81,78 +80,40 @@ namespace Vagtplanlægning.Controllers
                 });
             }
 
-            // ---- Håndtering af substitutedId ----
-            //  - dto.SubstitutedId <= 0  => brug employee'ens egen række i Substituteds
-            //  - dto.SubstitutedId > 0   => valider eksplicit id
-            int effectiveSubstitutedId;
+            // ---------- SubstitutedId håndtering ----------
+            // For nu: simpelt fallback:
+            // - Hvis klient ikke sender noget (0 eller negativt) → bind til employeeId
+            // - Hvis klient sender et positivt id → brug det som det er
+            int effectiveSubstitutedId =
+                dto.SubstitutedId > 0
+                    ? dto.SubstitutedId
+                    : dto.EmployeeId;
 
-            if (dto.SubstitutedId <= 0)
-            {
-                // Find række for employee i Substituteds
-                var subRow = await _db.Substituteds
-                    .FirstOrDefaultAsync(s => s.EmployeeId == dto.EmployeeId);
-
-                if (subRow == null)
-                {
-                    // Hvis der mod forventning ikke findes én, opret en
-                    var newSub = new Substituted
-                    {
-                        EmployeeId = dto.EmployeeId,
-                        HasSubstituted = false
-                    };
-
-                    _db.Substituteds.Add(newSub);
-                    await _db.SaveChangesAsync();
-
-                    effectiveSubstitutedId = newSub.SubstitutedId;
-                }
-                else
-                {
-                    effectiveSubstitutedId = subRow.SubstitutedId;
-                }
-            }
-            else
-            {
-                // Klienten sender et konkret substitutedId > 0 -> tjek om det findes
-                var substitutedExists = await _db.Substituteds
-                    .AnyAsync(s => s.SubstitutedId == dto.SubstitutedId);
-
-                if (!substitutedExists)
-                {
-                    var validSubstitutedIds = await _db.Substituteds
-                        .Select(s => s.SubstitutedId)
-                        .ToListAsync();
-
-                    return BadRequest(new
-                    {
-                        error = $"Invalid substitutedId: {dto.SubstitutedId}.",
-                        validSubstitutedIds
-                    });
-                }
-
-                effectiveSubstitutedId = dto.SubstitutedId;
-            }
-
-            var shift = new Shift
-            {
-                DateOfShift = dto.DateOfShift,
-                EmployeeId = dto.EmployeeId,
-                BicycleId = dto.BicycleId,
-                RouteId = dto.RouteId,
-                SubstitutedId = effectiveSubstitutedId
-            };
-
+            // ---------- Selve oprettelsen ----------
             try
             {
-                _db.ListOfShift.Add(shift);
-                await _db.SaveChangesAsync();
+                // Her bruger vi _shiftRepo (som er FallbackShiftRepository),
+                // så hvis MySQL er nede, prøver den Mongo som fallback.
+                var shift = new Models.Shift
+                {
+                    DateOfShift = dto.DateOfShift,
+                    EmployeeId = dto.EmployeeId,
+                    BicycleId = dto.BicycleId,
+                    RouteId = dto.RouteId,
+                    SubstitutedId = effectiveSubstitutedId,
+                    StartTime = null,
+                    EndTime = null,
+                    TotalHours = null
+                };
+
+                await _shiftRepo.AddAsync(shift);
             }
-            catch (DbUpdateException ex)
+            catch (Exception ex)
             {
                 return StatusCode(500, new
                 {
-                    error = "Failed to save shift due to a database constraint.",
-                    detail = ex.InnerException?.Message ?? ex.Message
+                    error = "Failed to save shift via primary/fallback repositories.",
+                    detail = ex.Message
                 });
             }
 
@@ -160,63 +121,62 @@ namespace Vagtplanlægning.Controllers
         }
 
         // --------------------------------------------------------------------
-        // 2) START SHIFT (flexible time parsing)
+        // 2) START SHIFT – nu 100% via repo + service (med fallback)
         // --------------------------------------------------------------------
         [HttpPut("{shiftId:int}/start")]
         public async Task<IActionResult> SetStart(int shiftId, [FromQuery] TimeSpan startTime)
         {
-            var shift = await _db.ListOfShift.FindAsync(shiftId);
-
-            if (shift == null)
+            // Tjek først om shift findes via repository (som selv klarer fallback)
+            var existing = await _shiftRepo.GetByIdAsync(shiftId);
+            if (existing == null)
+            {
                 return NotFound(new { error = $"Shift with id {shiftId} not found." });
-
-            shift.StartTime = startTime;
+            }
 
             try
             {
-                await _db.SaveChangesAsync();
+                await _shiftExec.SetStartTimeAsync(shiftId, startTime);
+                return NoContent();
             }
-            catch (DbUpdateException ex)
+            catch (Exception ex)
             {
-                return BadRequest(new
+                return StatusCode(500, new
                 {
-                    error = "Could not save start time. The computed total hours would be out of allowed range.",
-                    detail = ex.InnerException?.Message ?? ex.Message
+                    error = "Unexpected error while setting start time.",
+                    detail = ex.Message
                 });
             }
-
-            return NoContent();
         }
 
+        // --------------------------------------------------------------------
+        // 3) END SHIFT – samme mønster
+        // --------------------------------------------------------------------
         [HttpPut("{shiftId:int}/end")]
         public async Task<IActionResult> SetEnd(int shiftId, [FromQuery] TimeSpan endTime)
         {
-            var shift = await _db.ListOfShift.FindAsync(shiftId);
-
-            if (shift == null)
+            var existing = await _shiftRepo.GetByIdAsync(shiftId);
+            if (existing == null)
+            {
                 return NotFound(new { error = $"Shift with id {shiftId} not found." });
-
-            shift.EndTime = endTime;
+            }
 
             try
             {
-                await _db.SaveChangesAsync();
+                await _shiftExec.SetEndTimeAsync(shiftId, endTime);
+                return NoContent();
             }
-            catch (DbUpdateException ex)
+            catch (Exception ex)
             {
-                return BadRequest(new
+                return StatusCode(500, new
                 {
-                    error = "Could not save end time. The computed total hours would be out of allowed range.",
-                    detail = ex.InnerException?.Message ?? ex.Message
+                    error = "Unexpected error while setting end time.",
+                    detail = ex.Message
                 });
             }
-
-            return NoContent();
         }
 
-
         // --------------------------------------------------------------------
-        // 4) MARK SHIFT AS SUBSTITUTED (hasSubstituted API)
+        // 4) MARK SHIFT AS SUBSTITUTED – bruger repo med fallback
         // --------------------------------------------------------------------
         [HttpPut("{shiftId:int}/substitution-flag")]
         public async Task<IActionResult> MarkShiftSubstituted(int shiftId, [FromQuery] bool hasSubstituted)
@@ -224,9 +184,5 @@ namespace Vagtplanlægning.Controllers
             await _shiftRepo.MarkShiftSubstitutedAsync(shiftId, hasSubstituted);
             return NoContent();
         }
-
-
-               
     }
-
 }
