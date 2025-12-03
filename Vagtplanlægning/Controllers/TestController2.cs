@@ -14,7 +14,6 @@ public class TestController2 : BaseUserController
     
     public TestController2(AppDbContext _db, JwtHelper jwtHelper) : base(_db)
     {
-        Console.WriteLine("Okay Step 1");
         _jwtHelper = jwtHelper;
     }
 
@@ -22,7 +21,6 @@ public class TestController2 : BaseUserController
     [Route("test")]
     public async Task<IActionResult> Start()
     {
-        Console.WriteLine("Reached Task");
         // Should only return this text if logged in as Admin
         var result = new
         {
@@ -38,19 +36,14 @@ public class TestController2 : BaseUserController
     {   
         
         var user = await _db.Employees.FindAsync(1);
-        Console.WriteLine(user?.FirstName);
         if (user == null)
         {
             const string errorMsg = "Employee not found";
-            Console.WriteLine(errorMsg);
             return BadRequest(errorMsg);
         }
         else
         {
-            Console.WriteLine("User Found!");
-            Console.WriteLine(user.EmployeeId);
             var token = _jwtHelper.GenerateToken(user);
-            Console.WriteLine("token?", token);
             return Ok(token);
         }
         

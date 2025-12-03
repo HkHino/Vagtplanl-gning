@@ -19,7 +19,6 @@ var builder = WebApplication.CreateBuilder(args);
 // Læs hvilken provider vi vil bruge: "MySql", "Mongo", "MySqlWithMongoFallback", "Neo4j"
 var providerRaw = builder.Configuration["DatabaseProvider"] ?? "mysqlwithmongofallback";
 var provider = providerRaw.Trim().ToLowerInvariant();
-Console.WriteLine($"[DB PROVIDER] Raw='{providerRaw}' Normalized='{provider}'");
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -121,8 +120,8 @@ builder.Services.AddCors(options =>
 // --------------------------------------------------------
 // 5) Setup Authentication etc.
 // --------------------------------------------------------
-var issuer = builder.Configuration["Issuer"] ?? "Hard-Test-Vagtplan.dk";
-var audience = builder.Configuration["Audience"] ?? "Hard-Vagtplan.dk";
+var issuer = builder.Configuration["Issuer"] ?? "Vagtplan.dk";
+var audience = builder.Configuration["Audience"] ?? "Vagtplan.dk";
 var key = builder.Configuration["Key"] ?? "ZNztR3p+MCOCLtOQe5yTJNJHC1JkiqNfLs6vhaNVzAw=";
 
 // Checks if any of the configuration values are missing
@@ -130,11 +129,6 @@ if (issuer is null || audience is null || key is null)
 {
     throw new Exception("Missing configuration");
 }
-
-Console.WriteLine("Start");
-Console.WriteLine("Issuer:  + " + issuer);
-Console.WriteLine("Audience: " + audience);
-Console.WriteLine("Key: " + key);
 
 // Setup of Services
 AuthenticationConfig.Configure(builder.Services, issuer, audience, key);

@@ -29,12 +29,6 @@ public class JwtHelper
     // TODO: Create user or use the employee?
     public string GenerateToken(Employee user)
     {
-        // Json Stringify user
-        Console.WriteLine($"Employee ID: {user.EmployeeId}");
-        Console.WriteLine($"First Name: {user.FirstName}");
-        Console.WriteLine($"Last Name: {user.LastName}");
-        Console.WriteLine($"Email: {user.Email}");
-        
         var authClaims = new List<Claim>
         {
             new(ClaimTypes.NameIdentifier, user.EmployeeId.ToString()!),
@@ -46,11 +40,8 @@ public class JwtHelper
             // new(ClaimTypes.Role, user.Role.ToString()),
         };
 
-        var theKey = _configuration["Jwt:Key"] ?? "ZNztR3p+MCOCLtOQe5yTJNJHC1JkiqNfLs6vhaNVzAw=";
-        Console.WriteLine($"Key: {theKey}");
-        Console.WriteLine($"Claims created: {string.Join(", ", authClaims)}");
+        var theKey = _configuration["Key"];
         var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(theKey));
-        Console.WriteLine($"Key: {authSigningKey.Key}");
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Expires = DateTime.UtcNow.AddDays(30),
@@ -59,7 +50,6 @@ public class JwtHelper
             SigningCredentials = new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256),
             Subject = new ClaimsIdentity(authClaims)
         };
-        Console.WriteLine($"Token created: {tokenDescriptor}");
         var tokenHandler = new JwtSecurityTokenHandler();
         var token = tokenHandler.CreateToken(tokenDescriptor);
         return tokenHandler.WriteToken(token);
