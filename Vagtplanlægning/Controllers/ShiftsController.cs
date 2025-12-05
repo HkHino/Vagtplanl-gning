@@ -1,7 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 using Vagtplanlægning.DTOs;
 using Vagtplanlægning.Repositories;
 using Vagtplanlægning.Services;

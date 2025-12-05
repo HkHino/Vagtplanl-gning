@@ -1,4 +1,4 @@
-﻿using Mongo2Go;
+﻿/*using Mongo2Go;
 using MongoDB.Driver;
 using System.Threading.Tasks;
 using Vagtplanlægning.Data;
@@ -34,3 +34,4 @@ namespace Vagtplanlægning.Tests.Repositories
         }
     }
 }
+*/

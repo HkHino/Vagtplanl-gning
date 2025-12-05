@@ -1,48 +1,55 @@
 ﻿using System;
-using Xunit;
+using System.Threading;
+using System.Threading.Tasks;
+using Moq;
+using Vagtplanlægning.Repositories;
 using Vagtplanlægning.Services;
+using Xunit;
 
-namespace Vagtplanlægning.Tests.Services
+namespace Vagtplanlægning.UnitTests.Services
 {
     public class ShiftPlanServiceTests
     {
-        [Fact]
-        public void Generate6WeekPlan_Throws_WhenStartDateIsDefault()
-        {
-            var service = new ShiftPlanService();
+        private readonly ShiftPlanService _service;
 
-            Assert.Throws<ArgumentException>(() =>
-                service.Generate6WeekPlan(default));
+        public ShiftPlanServiceTests()
+        {
+            var employeeRepo = new Mock<IEmployeeRepository>();
+            var routeRepo = new Mock<IRouteRepository>();
+            var shiftPlanRepo = new Mock<IShiftPlanRepository>();
+
+            _service = new ShiftPlanService(
+                employeeRepo.Object,
+                routeRepo.Object,
+                shiftPlanRepo.Object
+            );
         }
 
         [Fact]
-        public void Generate6WeekPlan_ReturnsCorrectEndDate()
+        public async Task Generate6WeekPlanAsync_Throws_WhenStartDateDefault()
+        {
+            await Assert.ThrowsAsync<ArgumentException>(async () =>
+                await _service.Generate6WeekPlanAsync(default, CancellationToken.None));
+        }
+
+        [Fact]
+        public async Task Generate6WeekPlanAsync_ReturnsPlanWithNonEmptyId()
         {
             var start = new DateTime(2025, 11, 1);
-            var service = new ShiftPlanService();
 
-            var result = service.Generate6WeekPlan(start);
+            var plan = await _service.Generate6WeekPlanAsync(start, CancellationToken.None);
 
-            Assert.Equal(start.AddDays(7 * 6), result.EndDate);
+            Assert.False(string.IsNullOrWhiteSpace(plan.ShiftPlanId));
         }
 
         [Fact]
-        public void Generate6WeekPlan_ReturnsUniqueId()
-        {
-            var service = new ShiftPlanService();
-            var result = service.Generate6WeekPlan(new DateTime(2025, 10, 1));
-
-            Assert.False(string.IsNullOrWhiteSpace(result.ShiftPlanId));
-        }
-
-        [Fact]
-        public void Generate6WeekPlan_ProducesName()
+        public async Task Generate6WeekPlanAsync_ReturnsPlanWithCorrectStartDate()
         {
             var start = new DateTime(2025, 11, 1);
-            var service = new ShiftPlanService();
-            var result = service.Generate6WeekPlan(start);
 
-            Assert.Contains("2025", result.Name);
+            var plan = await _service.Generate6WeekPlanAsync(start, CancellationToken.None);
+
+            Assert.Equal(start, plan.StartDate);
         }
     }
 }

@@ -10,7 +10,7 @@ using Xunit;
 
 namespace Vagtplanlægning.UnitTests.Controllers
 {
-    public class ReportsControllerTests
+    public class ReportsControllerTests1 //todo fix this naming cause this is bad AF
     {
         [Fact]
         public async Task MonthlyHours_ValidRequest_ReturnsOkAndList()
