@@ -18,7 +18,7 @@ namespace Vagtplanlægning.Models
 
         // Fælles nøgle:
         //  - EF: kolonnen "id" i MySQL
-        //  - Mongo: feltet "Id" (som på dit screenshot)
+        //  - Mongo: feltet "Id" 
         [Key]
         [Column("id")]
         [BsonElement("Id")]

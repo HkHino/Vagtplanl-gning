@@ -13,9 +13,7 @@ namespace Vagtplanlægning.Controllers
         private readonly IShiftPlanRepository _planRepo;
         private readonly IShiftPlanService _planService;
 
-        public ShiftPlansController(
-            IShiftPlanRepository planRepo,
-            IShiftPlanService planService)
+        public ShiftPlansController(IShiftPlanRepository planRepo, IShiftPlanService planService)
         {
             _planRepo = planRepo;
             _planService = planService;
@@ -49,7 +47,7 @@ namespace Vagtplanlægning.Controllers
         // --------------------------------------------------------------------
         [HttpGet("{id}")]
         public async Task<ActionResult<ShiftPlanDetailDto>> GetById(
-        string id, CancellationToken ct)
+            string id, CancellationToken ct)
         {
             var plan = await _planRepo.GetByIdAsync(id, ct);
             if (plan == null)
@@ -64,15 +62,14 @@ namespace Vagtplanlægning.Controllers
             return Ok(dto);
         }
 
-
         // --------------------------------------------------------------------
         // POST: api/shiftplans/generate-6weeks
         // Body: { "startDate": "2025-11-25T00:00:00" }
         // --------------------------------------------------------------------
         [HttpPost("generate-6weeks")]
         public async Task<ActionResult<ShiftPlanDetailDto>> Generate6Weeks(
-        [FromBody] GenerateShiftPlanRequestDto request,
-        CancellationToken ct)
+            [FromBody] GenerateShiftPlanRequestDto request,
+            CancellationToken ct)
         {
             if (request == null || request.StartDate == default)
             {
@@ -94,7 +91,6 @@ namespace Vagtplanlægning.Controllers
                 dto);
         }
 
-
         // --------------------------------------------------------------------
         // DELETE: api/shiftplans/{id}
         // --------------------------------------------------------------------
@@ -111,6 +107,76 @@ namespace Vagtplanlægning.Controllers
             }
 
             return NoContent();
+        }
+
+        // --------------------------------------------------------------------
+        // PUT: api/shiftplans/{id}/name
+        // --------------------------------------------------------------------
+        [HttpPut("{id}/name")]
+        public async Task<IActionResult> UpdateName(
+            string id,
+            [FromBody] UpdateShiftPlanNameDto dto,
+            CancellationToken ct = default)
+        {
+            if (dto == null || string.IsNullOrWhiteSpace(dto.Name))
+            {
+                return BadRequest(new { error = "Name is required." });
+            }
+
+            var plan = await _planRepo.GetByIdAsync(id, ct);
+            if (plan == null)
+            {
+                return NotFound(new { error = $"ShiftPlan with id '{id}' not found." });
+            }
+
+            plan.Name = dto.Name.Trim();
+            await _planRepo.UpdateAsync(plan, ct);
+
+            return NoContent();
+        }
+
+        // --------------------------------------------------------------------
+        // PUT: api/shiftplans/{id}/shifts/{index}
+        // --------------------------------------------------------------------
+        [HttpPut("{id}/shifts/{index:int}")]
+        public async Task<ActionResult<ShiftPlanDetailDto>> UpdateShiftInPlan(
+            string id,
+            int index,
+            [FromBody] UpdateShiftInPlanDto dto,
+            CancellationToken ct = default)
+        {
+            if (dto == null)
+            {
+                return BadRequest(new { error = "Request body is missing or invalid." });
+            }
+
+            var plan = await _planRepo.GetByIdAsync(id, ct);
+            if (plan == null)
+            {
+                return NotFound(new { error = $"ShiftPlan with id '{id}' not found." });
+            }
+
+            if (plan.Shifts == null || index < 0 || index >= plan.Shifts.Count)
+            {
+                return BadRequest(new
+                {
+                    error = $"Shift index {index} is out of range.",
+                    maxIndex = (plan.Shifts?.Count ?? 0) - 1
+                });
+            }
+
+            var shift = plan.Shifts[index];
+
+            shift.DateOfShift = dto.DateOfShift;
+            shift.EmployeeId = dto.EmployeeId;
+            shift.BicycleId = dto.BicycleId;
+            shift.RouteId = dto.RouteId;
+            shift.SubstitutedId = dto.SubstitutedId;
+
+            await _planRepo.UpdateAsync(plan, ct);
+
+            var detailDto = ToDto(plan);
+            return Ok(detailDto);
         }
 
         // ====================================================================
@@ -139,72 +205,6 @@ namespace Vagtplanlægning.Controllers
                     })
                     .ToList()
             };
-        }
-        // --------------------------------------------------------------------
-        [HttpPut("{id}/name")]
-        public async Task<IActionResult> UpdateName(string id,
-        [FromBody] UpdateShiftPlanNameDto dto,CancellationToken ct = default)
-        {
-            if (dto == null || string.IsNullOrWhiteSpace(dto.Name))
-            {
-                return BadRequest(new { error = "Name is required." });
-            }
-
-            var plan = await _planRepo.GetByIdAsync(id, ct);
-            if (plan == null)
-            {
-                return NotFound(new { error = $"ShiftPlan with id '{id}' not found." });
-            }
-
-            plan.Name = dto.Name.Trim();
-
-            await _planRepo.UpdateAsync(plan, ct);
-
-            return NoContent();
-        }
-
-        [HttpPut("{id}/shifts/{index:int}")]
-        public async Task<ActionResult<ShiftPlanDetailDto>> UpdateShiftInPlan(
-        string id,
-        int index,
-        [FromBody] UpdateShiftInPlanDto dto,
-        CancellationToken ct = default)
-        {
-            if (dto == null)
-            {
-                return BadRequest(new { error = "Request body is missing or invalid." });
-            }
-
-            var plan = await _planRepo.GetByIdAsync(id, ct);
-            if (plan == null)
-            {
-                return NotFound(new { error = $"ShiftPlan with id '{id}' not found." });
-            }
-
-            if (plan.Shifts == null || index < 0 || index >= plan.Shifts.Count)
-            {
-                return BadRequest(new
-                {
-                    error = $"Shift index {index} is out of range.",
-                    maxIndex = (plan.Shifts?.Count ?? 0) - 1
-                });
-            }
-
-            var shift = plan.Shifts[index];
-
-            // Her kunne vi også validere EmployeeId/BicycleId/RouteId mod databasen,
-            // men det kan du vælge til/fra alt efter ambitionsniveau.
-            shift.DateOfShift = dto.DateOfShift;
-            shift.EmployeeId = dto.EmployeeId;
-            shift.BicycleId = dto.BicycleId;
-            shift.RouteId = dto.RouteId;
-            shift.SubstitutedId = dto.SubstitutedId;
-
-            await _planRepo.UpdateAsync(plan, ct);
-
-            // Returner den opdaterede detalje-visning
-            var detailDto = ToDto(plan);
-            return Ok(detailDto);
         }
     }
 }

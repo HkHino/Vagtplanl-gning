@@ -1,13 +1,14 @@
-﻿using System;
+﻿using MongoDB.Bson.Serialization.Attributes;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Vagtplanlægning.Models
 {
-    [NotMapped] 
+    [BsonIgnoreExtraElements] // Ignorér fx _id og andre felter, vi ikke har properties til
     public class ShiftPlan
     {
-        public string ShiftPlanId { get; set; } = Guid.NewGuid().ToString();
+        // Almindelig string – IKKE BsonId
+        public string ShiftPlanId { get; set; } = string.Empty;
 
         public string Name { get; set; } = string.Empty;
 
@@ -15,7 +16,6 @@ namespace Vagtplanlægning.Models
 
         public DateTime EndDate { get; set; }
 
-        [NotMapped] // just to doubly guarantee EF ignores it
-        public List<Shift> Shifts { get; set; } = new();
+        public List<Shift>? Shifts { get; set; } = new();
     }
 }

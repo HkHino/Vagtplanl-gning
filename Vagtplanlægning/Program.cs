@@ -6,10 +6,6 @@ using Vagtplanlægning.Mapping;
 using Vagtplanlægning.Repositories;
 using Vagtplanlægning.Services;
 
-
-//todo : username for Mongodb : mpfugl_db_user
-//todo : password for Mongodb: Wy0ngZaAEtoUZLbA
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Læs hvilken provider vi vil bruge: "MySql", "Mongo", "MySqlWithMongoFallback", "Neo4j"
@@ -19,20 +15,11 @@ Console.WriteLine($"[DB PROVIDER] Raw='{providerRaw}' Normalized='{provider}'");
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddScoped<MySqlRouteRepository>();
-builder.Services.AddScoped<MongoRouteRepository>();
-builder.Services.AddScoped<IRouteRepository, RouteRepositoryFallback>();
-builder.Services.AddScoped<IBicycleRepository, BicycleRepositoryFallback>();
-builder.Services.AddScoped<MySqlBicycleRepository>();
-builder.Services.AddScoped<MongoBicycleRepository>();
-builder.Services.AddScoped<IBicycleRepository, BicycleRepositoryFallback>();
-builder.Services.AddScoped<IShiftPlanRepository, MySqlShiftPlanRepository>();
-
-
 builder.Services.AddSwaggerGen();
 
-// Fælles services
-builder.Services.AddScoped<IShiftPlanService, ShiftPlanService>();
+// Fælles services (uafhængige af provider)
+builder.Services.AddScoped<IShiftPlanService, ShiftPlanService>();      // <--- beholdt
+builder.Services.AddScoped<IShiftExecutionService, ShiftExecutionService>(); // <--- beholdt
 
 // --------------------------------------------------------
 // 1) Konfigurer MySQL DbContext, hvis vi har brug for den
@@ -46,7 +33,6 @@ if (provider == "mysql" || provider == "mysqlwithmongofallback" || provider == "
             new MySqlServerVersion(new Version(8, 0, 43))
         )
     );
-
 }
 
 // --------------------------------------------------------
@@ -63,7 +49,12 @@ if (provider == "mongo" || provider == "mysqlwithmongofallback")
         var client = sp.GetRequiredService<IMongoClient>();
         return client.GetDatabase(mongoUrl.DatabaseName ?? "vagtplanlaegning");
     });
+
+    builder.Services.AddSingleton<MongoDbContext>();
+    builder.Services.AddScoped<MongoDbContext>();
+
 }
+
 
 // --------------------------------------------------------
 // 3) Provider-specifik registrering af repositories
@@ -73,13 +64,27 @@ switch (provider)
     case "mysql":
         builder.Services.AddScoped<IEmployeeRepository, MySqlEmployeeRepository>();
         builder.Services.AddScoped<IRouteRepository, MySqlRouteRepository>();
+        builder.Services.AddScoped<IBicycleRepository, MySqlBicycleRepository>();
         builder.Services.AddScoped<IShiftRepository, MySqlShiftRepository>();
         builder.Services.AddScoped<IShiftPlanRepository, MySqlShiftPlanRepository>();
+
+        // Monthly hours via MySQL
+        builder.Services.AddScoped<IMonthlyHoursReportService, MySqlMonthlyHoursReportService>();
         break;
+
+
 
     case "mongo":
         builder.Services.AddScoped<IEmployeeRepository, MongoEmployeeRepository>();
+        builder.Services.AddScoped<IRouteRepository, MongoRouteRepository>();
+        builder.Services.AddScoped<IBicycleRepository, MongoBicycleRepository>();
+        builder.Services.AddScoped<IShiftRepository, MongoShiftRepository>();
+        
+        // Monthly hours kun via Mongo
+        builder.Services.AddScoped<IMonthlyHoursReportService, MongoMonthlyHoursReportService>();
         break;
+
+
 
     case "mysqlwithmongofallback":
         // EMPLOYEES
@@ -97,10 +102,34 @@ switch (provider)
         builder.Services.AddScoped<MongoBicycleRepository>();
         builder.Services.AddScoped<IBicycleRepository, BicycleRepositoryFallback>();
 
-        // SHIFT PLANS – **ny linje her**
-        builder.Services.AddScoped<IShiftPlanRepository, MySqlShiftPlanRepository>();
+        // SHIFT PLANS
+        builder.Services.AddScoped<MySqlShiftPlanRepository>();
+        builder.Services.AddScoped<MongoShiftPlanRepository>();
+        builder.Services.AddScoped<IShiftPlanRepository, FallbackShiftPlanRepository>();
 
+        // SHIFTS – fallback: MySQL primær, Mongo sekundær
+        builder.Services.AddScoped<MySqlShiftRepository>();
+        builder.Services.AddScoped<MongoShiftRepository>();
+        builder.Services.AddScoped<IShiftRepository>(sp =>
+        {
+            var primary = sp.GetRequiredService<MySqlShiftRepository>();
+            var fallback = sp.GetRequiredService<MongoShiftRepository>();
+            var logger = sp.GetRequiredService<ILogger<FallbackShiftRepository>>();
+            return new FallbackShiftRepository(primary, fallback, logger);
+        });
+
+        // Monthly hours: fallback
+        builder.Services.AddScoped<MySqlMonthlyHoursReportService>();
+        builder.Services.AddScoped<MongoMonthlyHoursReportService>();
+        builder.Services.AddScoped<IMonthlyHoursReportService>(sp =>
+        {
+            var primary = sp.GetRequiredService<MySqlMonthlyHoursReportService>();
+            var fallback = sp.GetRequiredService<MongoMonthlyHoursReportService>();
+            var logger = sp.GetRequiredService<ILogger<FallbackMonthlyHoursReportService>>();
+            return new FallbackMonthlyHoursReportService(primary, fallback, logger);
+        });
         break;
+
 
 
     case "neo4j":
@@ -113,6 +142,7 @@ switch (provider)
 
         builder.Services.AddScoped<IEmployeeRepository, Neo4jEmployeeRepository>();
         builder.Services.AddScoped<IRouteRepository, MySqlRouteRepository>();
+        builder.Services.AddScoped<IBicycleRepository, MySqlBicycleRepository>();
         builder.Services.AddScoped<IShiftRepository, MySqlShiftRepository>();
         builder.Services.AddScoped<IShiftPlanRepository, MySqlShiftPlanRepository>();
         break;
@@ -131,9 +161,7 @@ builder.Services.AddCors(options =>
             .AllowAnyMethod()
             .AllowAnyHeader();
     });
-
 });
-
 
 var app = builder.Build();
 app.UseCors("AllowAll");

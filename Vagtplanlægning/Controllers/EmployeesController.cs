@@ -146,8 +146,7 @@ namespace Vagtplanlægning.Controllers
                 existing.Address = dto.Address;
                 existing.Phone = dto.Phone;
                 existing.Email = dto.Email;
-                // ExperienceLevel kan du enten lade være som den er, eller tage fra dto
-
+                
                 await _employeeRepo.UpdateAsync(existing, ct);
 
                 return NoContent();
@@ -168,7 +167,7 @@ namespace Vagtplanlægning.Controllers
                 mySqlEx.Message.Contains("Duplicate entry") &&
                 mySqlEx.Message.Contains("employees.phone"))
             {
-                // Hvis du også har gjort phone unik i databasen
+                // E-mailen rammer UNIQUE constraint
                 return BadRequest(new
                 {
                     error = $"Phone '{dto.Phone}' already exists."

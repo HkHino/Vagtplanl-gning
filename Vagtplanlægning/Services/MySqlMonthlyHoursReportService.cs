@@ -1,43 +1,26 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Vagtplanlægning.Data;
-using Vagtplanlægning.Models;
 using Vagtplanlægning.DTOs;
 
-namespace Vagtplanlægning.Controllers
+namespace Vagtplanlægning.Services
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class ReportsController : ControllerBase
+    public class MySqlMonthlyHoursReportService : IMonthlyHoursReportService
     {
         private readonly AppDbContext _db;
-        public ReportsController(AppDbContext db) => _db = db;
 
-        [HttpGet("monthly-hours")]
-        public async Task<ActionResult<IEnumerable<MonthlyHoursRow>>> GetMonthlyHours(
-           [FromQuery] int? employeeId,
-           [FromQuery] int year,
-           [FromQuery] int month)
+        public MySqlMonthlyHoursReportService(AppDbContext db)
         {
-            // ==== VALIDATION (Fix for invalid DateTime) ====
-            if (year < 2020)
-            {
-                return BadRequest(new
-                {
-                    error = "Data is only available from January 2020 and onwards."
-                });
-            }
+            _db = db;
+        }
 
-            if (month < 1 || month > 12)
-            {
-                return BadRequest(new
-                {
-                    error = "Month must be between 1 and 12."
-                });
-            }
-
+        public async Task<List<MonthlyHoursRow>> GetMonthlyHoursAsync(
+            int? employeeId,
+            int year,
+            int month,
+            CancellationToken ct = default)
+        {
             var periodEnd = new DateTime(year, month, 25);
-            var periodStart = periodEnd.AddMonths(-1).AddDays(1); // 26th of previous month
+            var periodStart = periodEnd.AddMonths(-1).AddDays(1); // 26. forrige måned
 
             var employees = _db.Employees.AsQueryable();
             if (employeeId.HasValue)
@@ -56,7 +39,7 @@ namespace Vagtplanlægning.Controllers
                     Month = month,
 
                     TotalMonthlyHours =
-                        // Try WorkHoursInMonths first
+                        // Prøv WorkHoursInMonths først
                         (
                             from w in _db.WorkHoursInMonths
                             where w.EmployeeId == e.EmployeeId
@@ -65,15 +48,17 @@ namespace Vagtplanlægning.Controllers
                             select (decimal?)w.TotalHours
                         ).FirstOrDefault()
                         ??
-                        // Otherwise compute from shifts
+                        // Ellers beregn ud fra ListOfShift + Substituteds
                         (
                             from s in _db.ListOfShift
-                            join sub in _db.Substituteds on s.SubstitutedId equals sub.SubstitutedId into subGroup
+                            join sub in _db.Substituteds
+                                on s.SubstitutedId equals sub.SubstitutedId into subGroup
                             from sub in subGroup.DefaultIfEmpty()
-                            where s.DateOfShift >= periodStart && s.DateOfShift <= periodEnd
+                            where s.DateOfShift >= periodStart
+                                  && s.DateOfShift <= periodEnd
                                   && (
-                                          (s.SubstitutedId != null && sub != null && sub.EmployeeId == e.EmployeeId)
-                                       || (s.SubstitutedId == null && s.EmployeeId == e.EmployeeId)
+                                         (s.SubstitutedId != null && sub != null && sub.EmployeeId == e.EmployeeId)
+                                      || (s.SubstitutedId == null && s.EmployeeId == e.EmployeeId)
                                      )
                             select (decimal?)s.TotalHours
                         ).Sum() ?? 0m,
@@ -89,9 +74,11 @@ namespace Vagtplanlægning.Controllers
                         ??
                         (
                             from s in _db.ListOfShift
-                            join sub in _db.Substituteds on s.SubstitutedId equals sub.SubstitutedId into subGroup
+                            join sub in _db.Substituteds
+                                on s.SubstitutedId equals sub.SubstitutedId into subGroup
                             from sub in subGroup.DefaultIfEmpty()
-                            where s.DateOfShift >= periodStart && s.DateOfShift <= periodEnd
+                            where s.DateOfShift >= periodStart
+                                  && s.DateOfShift <= periodEnd
                                   && s.SubstitutedId != null
                                   && sub != null
                                   && sub.EmployeeId == e.EmployeeId
@@ -99,8 +86,7 @@ namespace Vagtplanlægning.Controllers
                         ).Any()
                 };
 
-            var rows = await query.ToListAsync();
-            return Ok(rows);
+            return await query.ToListAsync(ct);
         }
     }
 }
