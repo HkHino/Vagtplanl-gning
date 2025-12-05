@@ -71,6 +71,7 @@ switch (provider)
         builder.Services.AddScoped<IBicycleRepository, MySqlBicycleRepository>();
         builder.Services.AddScoped<IShiftRepository, MySqlShiftRepository>();
         builder.Services.AddScoped<IShiftPlanRepository, MySqlShiftPlanRepository>();
+        builder.Services.AddScoped<IUserRepository, MySqlUserRepository>();
 
         // Monthly hours via MySQL
         builder.Services.AddScoped<IMonthlyHoursReportService, MySqlMonthlyHoursReportService>();
@@ -91,6 +92,11 @@ switch (provider)
 
 
     case "mysqlwithmongofallback":
+        // USERS
+        builder.Services.AddScoped<MySqlUserRepository>();
+        // builder.Services.AddScoped<MongoUserRepository>();
+        builder.Services.AddScoped<IUserRepository, MySqlUserRepository>();
+        
         // EMPLOYEES
         builder.Services.AddScoped<MySqlEmployeeRepository>();
         builder.Services.AddScoped<MongoEmployeeRepository>();
@@ -173,9 +179,14 @@ builder.Services.AddCors(options =>
 // --------------------------------------------------------
 // 5) Setup Authentication etc.
 // --------------------------------------------------------
-var issuer = builder.Configuration["Issuer"] ?? "Vagtplan.dk";
-var audience = builder.Configuration["Audience"] ?? "Vagtplan.dk";
-var key = builder.Configuration["Key"] ?? "ZNztR3p+MCOCLtOQe5yTJNJHC1JkiqNfLs6vhaNVzAw=";
+var issuer = builder.Configuration["Issuer"];
+var audience = builder.Configuration["Audience"];
+var key = builder.Configuration["Key"];
+
+if (issuer == null || audience == null || key == null)
+{
+    throw new InvalidOperationException($"Missing required configuration parameter.");
+}
 
 // Checks if any of the configuration values are missing
 if (issuer is null || audience is null || key is null)
@@ -183,25 +194,28 @@ if (issuer is null || audience is null || key is null)
     throw new Exception("Missing configuration");
 }
 
+// --------------------------------------------------------
+// 5) Setup Services / Dependency Injection
+// --------------------------------------------------------
+
 // Setup of Services
 AuthenticationConfig.Configure(builder.Services, issuer, audience, key);
 AuthorizationConfig.Configure(builder.Services);
 SwaggerConfig.Configure(builder.Services);
 
-// Dependency Injection
+// Authorization
+builder.Services.AddSingleton<IAuthorizationHandler, IsUserHandler>();
+builder.Services.AddSingleton<IAuthorizationHandler, IsAdminHandler>();
 
-void DependencyInjections(IServiceCollection services)
-{
-    // Authorization
-    services.AddSingleton<IAuthorizationHandler, IsUserHandler>();
-    services.AddSingleton<IAuthorizationHandler, IsAdminHandler>();
-    
-    // JWT
-    services.AddSingleton<JwtHelper>();
-}
+// JWT
+builder.Services.AddSingleton<JwtHelper>();
 
-DependencyInjections(builder.Services);
+// Mapper
+builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
 
+// --------------------------------------------------------
+// 6) Setup App
+// --------------------------------------------------------
 var app = builder.Build();
 app.UseCors("AllowAll");
 app.UseSwagger();

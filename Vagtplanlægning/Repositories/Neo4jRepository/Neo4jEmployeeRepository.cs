@@ -143,5 +143,25 @@ namespace Vagtplanlægning.Repositories
                 Email = node.Properties.TryGetValue("email", out var e) ? e?.ToString() ?? "" : "",
             };
         }
+        
+        // Checks if Email is in use
+        public async Task<bool> EmailInUse(string email, CancellationToken ct = default)
+        {
+            var session = _driver.AsyncSession();
+            try
+            {
+                // Query: find at least 1 employee with this email
+                var cursor = await session.RunAsync(
+                    "MATCH (e:Employee {email: $email}) RETURN e LIMIT 1",
+                    new { email }
+                );
+
+                return await cursor.FetchAsync(); // true if a record exists
+            }
+            finally
+            {
+                await session.CloseAsync();
+            }
+        }
     }
 }

@@ -20,28 +20,27 @@ public class JwtHelper
         var user = new UserPrincipal
         {
             Id = Convert.ToInt32(claims.FindFirst(ClaimTypes.NameIdentifier)!.Value),
-            FirstName = claims.FindFirst(ClaimTypes.GivenName)!.Value,
+            Username = claims.FindFirst(ClaimTypes.Name)!.Value,
             Role = claims.FindFirst(ClaimTypes.Role)!.Value
         };
         return user;
     }
 
     // TODO: Create user or use the employee?
-    public string GenerateToken(Employee user)
+    public string GenerateToken(User user)
     {
         var authClaims = new List<Claim>
         {
-            new(ClaimTypes.NameIdentifier, user.EmployeeId.ToString()!),
-            new(ClaimTypes.GivenName, user.FirstName!),
-            new(ClaimTypes.Surname, user.LastName!),
-            new(ClaimTypes.Email, user.Email!),
-            new(ClaimTypes.Role, "Admin"),
-            // Either use an enum in Employee, or insert another model into the function containing this
-            // new(ClaimTypes.Role, user.Role.ToString()),
+            new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
+            new Claim(ClaimTypes.Name, user.Username),
+            new Claim(ClaimTypes.Role, user.Role.ToString())
+            
         };
-
-        var theKey = _configuration["Key"];
-        var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(theKey));
+        
+        var jwtKey = _configuration["Key"];
+        if(string.IsNullOrEmpty(jwtKey)) throw new Exception("JWT Key not set");
+        
+        var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Expires = DateTime.UtcNow.AddDays(30),

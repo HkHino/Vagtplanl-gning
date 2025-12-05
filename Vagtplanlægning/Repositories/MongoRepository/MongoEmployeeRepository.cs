@@ -70,5 +70,12 @@ namespace Vagtplanlægning.Repositories
             var result = await _employees.DeleteOneAsync(filter, ct);
             return result.DeletedCount > 0;
         }
+
+        // Checks if email is in use
+        public async Task<bool> EmailInUse(string email, CancellationToken ct = default)
+        {
+            var filter = Builders<Employee>.Filter.Eq(e => e.Email, email);
+            return await _employees.Find(filter).Limit(1).AnyAsync(ct);
+        }
     }
 }

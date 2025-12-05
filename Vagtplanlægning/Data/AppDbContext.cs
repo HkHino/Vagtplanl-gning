@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Vagtplanlægning.Models;
+
 namespace Vagtplanlægning.Data;
 
 /// <summary>
@@ -26,8 +27,8 @@ public class AppDbContext : DbContext
     public DbSet<Substituted> Substituteds => Set<Substituted>();
     public DbSet<RouteEntity> Routes => Set<RouteEntity>();
     public DbSet<ShiftPlanRow> ShiftPlans => Set<ShiftPlanRow>();
+    public DbSet<User> Users => Set<User>();
     
-
     /// <summary>
     /// Represents rows in the ListOfShift table.
     /// </summary>
@@ -40,6 +41,15 @@ public class AppDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+        
+        // Users ---------------------------------------------------------------
+        modelBuilder.Entity<User>(e =>
+        {
+            e.Property(u => u.Role)
+                .HasConversion<string>()
+                .HasMaxLength(50);
+        });
+        
 
         // Bicycles ------------------------------------------------------------
         modelBuilder.Entity<Bicycle>(e =>
@@ -225,5 +235,6 @@ public class AppDbContext : DbContext
             e.Property(x => x.HasSubstituted)
                 .HasColumnName("hasSubstituted");
         });
+
     }
 }

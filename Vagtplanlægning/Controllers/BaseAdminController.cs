@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Vagtplanlægning.Authentication;
 using Vagtplanlægning.Data;
 
@@ -8,9 +9,7 @@ namespace Vagtplanlægning.Controllers;
 [Authorize(Policy = "IsAdmin")]
 public class BaseAdminController : BaseController
 {
-    public BaseAdminController(AppDbContext _db) : base(_db)
+    public BaseAdminController(AppDbContext db, IMapper mapper) : base(db, mapper)
     {
-        
     }
-    
 }
