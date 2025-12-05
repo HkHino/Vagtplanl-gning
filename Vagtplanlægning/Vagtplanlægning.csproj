@@ -5,6 +5,8 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>c39cb9dc-20d3-4596-9abb-7256c5942679</UserSecretsId>
+	  <AnalysisMode>AllEnabledByDefault</AnalysisMode>
+	  <AnalysisLevel>latest</AnalysisLevel>
   </PropertyGroup>
 
   <ItemGroup>

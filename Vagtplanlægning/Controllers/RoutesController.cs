@@ -1,6 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Vagtplanlægning.Data;
 using Vagtplanlægning.DTOs;
 using Vagtplanlægning.Models;
 using Vagtplanlægning.Repositories;

@@ -22,8 +22,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // Fælles services (uafhængige af provider)
-builder.Services.AddScoped<IShiftPlanService, ShiftPlanService>();      // <--- beholdt
-builder.Services.AddScoped<IShiftExecutionService, ShiftExecutionService>(); // <--- beholdt
+builder.Services.AddScoped<IShiftPlanService, ShiftPlanService>(); 
+builder.Services.AddScoped<IShiftExecutionService, ShiftExecutionService>(); 
 
 // --------------------------------------------------------
 // 1) Konfigurer MySQL DbContext, hvis vi har brug for den
