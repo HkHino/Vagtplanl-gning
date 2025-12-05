@@ -51,5 +51,12 @@ namespace Vagtplanlægning.Repositories
             await _db.SaveChangesAsync(ct);
             return true;
         }
+        
+        // Check if email exists
+        public async Task<bool> EmailInUse(string email, CancellationToken ct = default)
+        {
+            return await _db.Employees
+                .AnyAsync(e => e.Email == email, ct);
+        }
     }
 }

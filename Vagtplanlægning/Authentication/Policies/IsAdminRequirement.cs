@@ -1,13 +1,14 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Vagtplanlægning.Models;
 
 namespace Vagtplanlægning.Authentication.Policies;
 
 // Here we make the requirements for the authorization
 public class IsAdminRequirement : IAuthorizationRequirement
 {
-    public string RoleOfAdmin { get; }
+    public UserRole RoleOfAdmin { get; }
 
-    public IsAdminRequirement(string roleOfAdmin)
+    public IsAdminRequirement(UserRole roleOfAdmin)
     {
         RoleOfAdmin = roleOfAdmin;
     }
@@ -19,7 +20,7 @@ public class IsAdminHandler : AuthorizationHandler<IsAdminRequirement>
 {
     protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, IsAdminRequirement requirement)
     {
-        if (context.User.IsInRole(requirement.RoleOfAdmin))
+        if (context.User.IsInRole(nameof(requirement.RoleOfAdmin)))
         {
             context.Succeed(requirement);
         }

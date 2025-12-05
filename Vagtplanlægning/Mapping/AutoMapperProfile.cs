@@ -8,6 +8,7 @@ namespace Vagtplanlægning.Mapping
     {
         public AutoMapperProfile()
         {
+            CreateMap<User, UserDto>();
             CreateMap<Employee, EmployeeDto>();
             CreateMap<CreateEmployeeDto, Employee>();
             CreateMap<UpdateEmployeeDto, Employee>();

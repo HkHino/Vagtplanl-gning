@@ -4,32 +4,15 @@ namespace Vagtplanlægning.Authentication;
 
 public static class PasswordHelper
 {
-    // Message: Password in string form? Salt: Salt uden pepper
-    // -- 1st: GenerateSalt();
-    // -- 2nd: HashPassword
-    
-    /*
-     var hashedPassword = PasswordHelper.HashPassword(request.Password, user.Salt);
-        if (hashedPassword != user.Hash)
-        {
-            return BadRequest("Incorrect password");
-        }
-     
-     
-     
-     */
-    
-    public static string HashPassword(string message, string salt)
+    public static string HashPassword(string message)
     {
-        var hashedPassword = BCryptHelper.HashPassword(message, salt);
-        return hashedPassword;
+        var hashPassword = BCrypt.Net.BCrypt.HashPassword(message);
+        return hashPassword;
     }
-    
-    public static string GenerateSalt()
+
+    public static bool VerifyHash(string password, string storedHash)
     {
-        const int workFactor = 5;
-        var salt = BCryptHelper.GenerateSalt(workFactor);
-        return salt;
+        return BCrypt.Net.BCrypt.Verify(password, storedHash);
     }
     
 }

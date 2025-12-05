@@ -7,10 +7,14 @@ namespace Vagtplanlægning.Controllers;
 
 
 [Authorize(Policy = "IsUser")]
-public class BaseUserController : BaseController
+public class BaseEmployeeController : BaseController
 {
     
     // This I took from my internship so can't explain it
+    public BaseEmployeeController(AppDbContext db, IMapper mapper) : base(db, mapper)
+    {
+    }
+
     protected UserPrincipal UserPrincipal
     {
         get
@@ -20,9 +24,7 @@ public class BaseUserController : BaseController
         }
     }
 
-    public BaseUserController(AppDbContext _db) : base(_db)
-    {
-    }
+
 
 
 }

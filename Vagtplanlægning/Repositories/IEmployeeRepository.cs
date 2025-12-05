@@ -9,5 +9,7 @@ namespace Vagtplanlægning.Repositories
         Task AddAsync(Employee employee, CancellationToken ct = default);
         Task UpdateAsync(Employee employee, CancellationToken ct = default);
         Task<bool> DeleteAsync(int id, CancellationToken ct = default);
+        // Checks if mail is in use
+        Task<bool> EmailInUse(string email, CancellationToken ct = default);
     }
 }

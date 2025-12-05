@@ -77,4 +77,7 @@ public class EmployeeRepositoryFallback : IEmployeeRepository
 
     public Task<bool> DeleteAsync(int id, CancellationToken ct = default) =>
         ExecuteWithFallbackAsync(repo => repo.DeleteAsync(id, ct), ct);
+
+    public Task<bool> EmailInUse(string email, CancellationToken ct = default) =>
+        ExecuteWithFallbackAsync(repo => repo.EmailInUse(email, ct), ct);
 }
