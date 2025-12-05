@@ -18,7 +18,7 @@ public class IsUserHandler : AuthorizationHandler<IsEmployeeRequirement>
     protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, IsEmployeeRequirement requirement)
     {
         // Checks if user is an Employee. Also will let in users with the admin role
-        if (context.User.IsInRole(nameof(requirement.RoleOfEmployee)) || context.User.IsInRole(nameof(UserRole.Admin)))
+        if (context.User.IsInRole(requirement.RoleOfEmployee.ToString()) || context.User.IsInRole(UserRole.Admin.ToString()))
         {
             context.Succeed(requirement);
         }
