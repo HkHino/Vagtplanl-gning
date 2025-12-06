@@ -6,7 +6,7 @@ using Vagtplanlægning.Data;
 namespace Vagtplanlægning.Controllers;
 
 
-[Authorize(Policy = "IsUser")]
+[Authorize(Policy = "IsEmployee")]
 public class BaseEmployeeController : BaseController
 {
     

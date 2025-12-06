@@ -20,7 +20,8 @@ public class IsAdminHandler : AuthorizationHandler<IsAdminRequirement>
 {
     protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, IsAdminRequirement requirement)
     {
-        if (context.User.IsInRole(nameof(requirement.RoleOfAdmin)))
+
+        if (context.User.IsInRole(requirement.RoleOfAdmin.ToString()))
         {
             context.Succeed(requirement);
         }
