@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.AspNetCore.Mvc;
+using Moq;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Moq;
 using Vagtplanlægning.Controllers;
 using Vagtplanlægning.DTOs;
 using Vagtplanlægning.Services;
@@ -10,80 +10,101 @@ using Xunit;
 
 namespace Vagtplanlægning.UnitTests.Controllers
 {
-    public class ReportsControllerTests1 //todo fix this naming cause this is bad AF
+    public class ReportsControllerTests
     {
+        private readonly Mock<IMonthlyHoursReportService> _serviceMock;
+        private readonly ReportsController _controller;
+
+        public ReportsControllerTests()
+        {
+            _serviceMock = new Mock<IMonthlyHoursReportService>();
+            _controller = new ReportsController(_serviceMock.Object);
+        }
+
+        // BVA: år lige under grænsen (2019) -> BadRequest
         [Fact]
-        public async Task MonthlyHours_ValidRequest_ReturnsOkAndList()
+        public async Task GetMonthlyHours_YearBelow2020_ReturnsBadRequest()
+        {
+            var result = await _controller.GetMonthlyHours(
+                employeeId: null, year: 2019, month: 11, CancellationToken.None);
+
+            var badReq = Assert.IsType<BadRequestObjectResult>(result.Result);
+            Assert.Contains("2020", badReq.Value!.ToString());
+
+            _serviceMock.Verify(
+                s => s.GetMonthlyHoursAsync(
+                    It.IsAny<int?>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()),
+                Times.Never);
+        }
+
+        // BVA: month = 0 -> BadRequest
+        [Fact]
+        public async Task GetMonthlyHours_MonthZero_ReturnsBadRequest()
+        {
+            var result = await _controller.GetMonthlyHours(null, 2025, 0, CancellationToken.None);
+
+            var badReq = Assert.IsType<BadRequestObjectResult>(result.Result);
+            Assert.Contains("Month must be between 1 and 12", badReq.Value!.ToString());
+
+            _serviceMock.Verify(
+                s => s.GetMonthlyHoursAsync(
+                    It.IsAny<int?>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()),
+                Times.Never);
+        }
+
+        // BVA: month = 13 -> BadRequest
+        [Fact]
+        public async Task GetMonthlyHours_MonthThirteen_ReturnsBadRequest()
+        {
+            var result = await _controller.GetMonthlyHours(null, 2025, 13, CancellationToken.None);
+
+            Assert.IsType<BadRequestObjectResult>(result.Result);
+
+            _serviceMock.Verify(
+                s => s.GetMonthlyHoursAsync(
+                    It.IsAny<int?>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()),
+                Times.Never);
+        }
+
+        // EP + positiv test: gyldige data -> Ok + kalder service
+        [Fact]
+        public async Task GetMonthlyHours_ValidInput_ReturnsOkWithData()
         {
             // Arrange
-            var mockService = new Mock<IMonthlyHoursReportService>();
-
-            var expected = new List<MonthlyHoursRow>
+            var rows = new List<MonthlyHoursRow>
             {
                 new MonthlyHoursRow
                 {
                     EmployeeId = 2,
-                    FirstName = "Test",
-                    LastName = "Person",
-                    Year = 2025,
-                    Month = 11,
-                    TotalMonthlyHours = 8,
-                    HasSubstituted = true
+                    FirstName   = "Test",
+                    LastName    = "Person",
+                    Year        = 2025,
+                    Month       = 11,
+                    TotalMonthlyHours = 8m,
+                    HasSubstituted    = true
                 }
             };
 
-            mockService
+            _serviceMock
                 .Setup(s => s.GetMonthlyHoursAsync(2, 2025, 11, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(expected);
-
-            var controller = new ReportsController(mockService.Object);
+                .ReturnsAsync(rows);
 
             // Act
-            var result = await controller.GetMonthlyHours(2, 2025, 11, CancellationToken.None);
+            var result = await _controller.GetMonthlyHours(2, 2025, 11, CancellationToken.None);
 
             // Assert
-            var okResult = Assert.IsType<OkObjectResult>(result.Result);
-            var model = Assert.IsType<List<MonthlyHoursRow>>(okResult.Value);
-            Assert.Single(model);
-            Assert.Equal(2, model[0].EmployeeId);
+            var ok = Assert.IsType<OkObjectResult>(result.Result);
+            var model = Assert.IsAssignableFrom<IEnumerable<MonthlyHoursRow>>(ok.Value);
 
-            mockService.Verify(
+            var single = Assert.Single(model); // sikrer præcis 1 element
+            Assert.Equal(2, single.EmployeeId);
+            Assert.Equal("Test", single.FirstName);
+            Assert.Equal("Person", single.LastName);
+            Assert.Equal(8m, single.TotalMonthlyHours);
+
+            _serviceMock.Verify(
                 s => s.GetMonthlyHoursAsync(2, 2025, 11, It.IsAny<CancellationToken>()),
                 Times.Once);
-        }
-
-        [Fact]
-        public async Task MonthlyHours_InvalidMonth_ReturnsBadRequest()
-        {
-            // Arrange
-            var mockService = new Mock<IMonthlyHoursReportService>();
-            var controller = new ReportsController(mockService.Object);
-
-            // Act
-            var result = await controller.GetMonthlyHours(2, 2025, 13, CancellationToken.None);
-
-            // Assert
-            var badRequest = Assert.IsType<BadRequestObjectResult>(result.Result);
-            var body = badRequest.Value as dynamic;
-
-            // Vi tjekker bare at der ER en error property
-            Assert.NotNull(body);
-        }
-
-        [Fact]
-        public async Task MonthlyHours_InvalidYear_ReturnsBadRequest()
-        {
-            // Arrange
-            var mockService = new Mock<IMonthlyHoursReportService>();
-            var controller = new ReportsController(mockService.Object);
-
-            // Act
-            var result = await controller.GetMonthlyHours(2, 2010, 11, CancellationToken.None);
-
-            // Assert
-            var badRequest = Assert.IsType<BadRequestObjectResult>(result.Result);
-            var body = badRequest.Value as dynamic;
-            Assert.NotNull(body);
         }
     }
 }

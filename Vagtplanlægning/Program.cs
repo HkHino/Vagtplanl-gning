@@ -183,16 +183,26 @@ var issuer = builder.Configuration["Issuer"];
 var audience = builder.Configuration["Audience"];
 var key = builder.Configuration["Key"];
 
-if (issuer == null || audience == null || key == null)
+// Brug mildere regler i testmiljøer
+var isTestEnv =
+    builder.Environment.IsEnvironment("Test") ||
+    builder.Environment.IsEnvironment("Testing") ||
+    builder.Environment.IsEnvironment("IntegrationTests");
+
+// Kun i "rigtige" miljøer må vi fail'e hårdt på manglende config
+if (!isTestEnv)
 {
-    throw new InvalidOperationException($"Missing required configuration parameter.");
+    if (issuer == null || audience == null || key == null)
+    {
+        throw new InvalidOperationException("Missing required configuration parameter.");
+    }
+
+    if (issuer is null || audience is null || key is null)
+    {
+        throw new Exception("Missing configuration");
+    }
 }
 
-// Checks if any of the configuration values are missing
-if (issuer is null || audience is null || key is null)
-{
-    throw new Exception("Missing configuration");
-}
 
 // --------------------------------------------------------
 // 5) Setup Services / Dependency Injection
@@ -222,3 +232,5 @@ app.UseSwagger();
 app.UseSwaggerUI();
 app.MapControllers();
 app.Run();
+
+public partial class Program { }

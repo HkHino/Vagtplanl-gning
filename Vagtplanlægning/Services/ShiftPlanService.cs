@@ -25,6 +25,11 @@ namespace Vagtplanlægning.Services
 
         public async Task<ShiftPlan> Generate6WeekPlanAsync(DateTime startDate, CancellationToken ct = default)
         {
+            if (startDate == default)
+            {
+                throw new ArgumentException("StartDate must be a valid date.", nameof(startDate));
+            }
+
             // 1) Hent data vi skal bruge
             var employees = (await _employeeRepo.GetAllAsync(ct)).ToList();
             var routesFromDb = (await _routeRepo.GetAllAsync(ct)).ToList();

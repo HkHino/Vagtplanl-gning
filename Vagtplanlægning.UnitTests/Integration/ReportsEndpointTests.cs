@@ -1,21 +1,21 @@
-﻿using Microsoft.AspNetCore.Mvc.Testing;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
-using Vagtplanlægning;
 using Vagtplanlægning.DTOs;
-using Vagtplanlægning.UnitTests.Integration;
 using Xunit;
+using Microsoft.AspNetCore.Mvc.Testing;
+using Vagtplanlægning;
+using Vagtplanlægning.UnitTests.Integration;
 
-namespace Vagtplanlægning.Tests.Integration
+namespace Vagtplanlægning.UnitTests.Integration
 {
-    public class ReportsEndpointTests : IClassFixture<WebApplicationFactory<Program>>
+    public class ReportsEndpointTests : IClassFixture<TestWebApplicationFactory>
     {
         private readonly HttpClient _client;
 
-        public ReportsEndpointTests(WebApplicationFactory<Program> factory)
+        public ReportsEndpointTests(TestWebApplicationFactory factory)
         {
             _client = factory.CreateClient();
         }
@@ -23,8 +23,8 @@ namespace Vagtplanlægning.Tests.Integration
         [Fact]
         public async Task MonthlyHours_ValidRequest_ReturnsOkAndJson()
         {
-            // Tilpas parametre efter noget du VED findes
-            var response = await _client.GetAsync("/api/reports/monthly-hours?employeeId=2&year=2025&month=11");
+            var response = await _client.GetAsync(
+                "/api/reports/monthly-hours?employeeId=2&year=2025&month=11");
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
@@ -35,7 +35,8 @@ namespace Vagtplanlægning.Tests.Integration
         [Fact]
         public async Task MonthlyHours_InvalidMonth_ReturnsBadRequest()
         {
-            var response = await _client.GetAsync("/api/reports/monthly-hours?employeeId=2&year=2025&month=13");
+            var response = await _client.GetAsync(
+                "/api/reports/monthly-hours?employeeId=2&year=2025&month=13");
 
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         }

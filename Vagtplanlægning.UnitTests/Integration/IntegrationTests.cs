@@ -1,23 +1,24 @@
-﻿using Microsoft.AspNetCore.Mvc.Testing;
-using System.Net;
-using System.Net.Http.Json;
-using Vagtplanlægning.DTOs;
-using Xunit;
+﻿/*using Microsoft.AspNetCore.Mvc.Testing;
 using System;
+using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
+using System.Net.Http.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Collections.Generic;
+using Vagtplanlægning.DTOs;
+using Vagtplanlægning.Tests.Integration;
+using Xunit;
 
 
 namespace Vagtplanlægning.UnitTests.Integration
 {
     public class ReportsEndpointTests :
-        IClassFixture<WebApplicationFactory<Program>>
+        IClassFixture<TestWebApplicationFactory>
     {
         private readonly HttpClient _client;
 
-        public ReportsEndpointTests(WebApplicationFactory<Program> factory)
+        public ReportsEndpointTests(TestWebApplicationFactory factory)
         {
             _client = factory.CreateClient();
         }
@@ -25,7 +26,7 @@ namespace Vagtplanlægning.UnitTests.Integration
         [Fact]
         public async Task MonthlyHours_ValidRequest_ReturnsOkAndJson()
         {
-            // Arrange: brug en kombination, som du ved giver data (employeeId=2, year=2025, month=11)
+            // Arrange: brug en kombination, som vi ved giver data (employeeId=2, year=2025, month=11)
             var url = "/api/reports/monthly-hours?employeeId=2&year=2025&month=11";
 
             // Act
@@ -38,7 +39,7 @@ namespace Vagtplanlægning.UnitTests.Integration
             Assert.NotNull(rows);
             Assert.NotEmpty(rows);
 
-            // Her kan du også logge / måle execution time, hvis du vil.
+            //todo Her kan vi også logge / måle execution time, hvis vi vil.
         }
 
         [Fact]
@@ -53,4 +54,4 @@ namespace Vagtplanlægning.UnitTests.Integration
     }
     public partial class Program { }
 
-}
+}*/
