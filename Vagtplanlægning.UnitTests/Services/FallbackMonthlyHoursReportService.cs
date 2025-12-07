@@ -1,33 +1,36 @@
 ﻿using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using Vagtplanlægning.DTOs;
 
 namespace Vagtplanlægning.Services
 {
     public class FallbackMonthlyHoursReportService : IMonthlyHoursReportService
     {
-        private readonly IMonthlyHoursReportService _primary;
-        private readonly IMonthlyHoursReportService _fallback;
+        private readonly IMonthlyHoursReportService _mysql;
+        private readonly IMonthlyHoursReportService _mongo;
         private readonly ILogger<FallbackMonthlyHoursReportService> _logger;
 
-        // ✅ Ny, generel + test-venlig constructor
+        // TEST-venlig constructor (interfaces)
         public FallbackMonthlyHoursReportService(
-            IMonthlyHoursReportService primary,
-            IMonthlyHoursReportService fallback,
+            IMonthlyHoursReportService mysql,
+            IMonthlyHoursReportService mongo,
             ILogger<FallbackMonthlyHoursReportService> logger)
         {
-            _primary = primary ?? throw new ArgumentNullException(nameof(primary));
-            _fallback = fallback ?? throw new ArgumentNullException(nameof(fallback));
+            _mysql = mysql ?? throw new ArgumentNullException(nameof(mysql));
+            _mongo = mongo ?? throw new ArgumentNullException(nameof(mongo));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        // ✅ Din gamle DI-constructor – stadig brugt af Program.cs
-        //    Den kalder bare den nye constructor
+        // DI-venlig convenience-constructor (konkrete typer)
         public FallbackMonthlyHoursReportService(
-            MySqlMonthlyHoursReportService primary,
-            MongoMonthlyHoursReportService fallback,
+            MySqlMonthlyHoursReportService mysql,
+            MongoMonthlyHoursReportService mongo,
             ILogger<FallbackMonthlyHoursReportService> logger)
-            : this((IMonthlyHoursReportService)primary,
-                   (IMonthlyHoursReportService)fallback,
+            : this((IMonthlyHoursReportService)mysql,
+                   (IMonthlyHoursReportService)mongo,
                    logger)
         {
         }
@@ -40,7 +43,8 @@ namespace Vagtplanlægning.Services
         {
             try
             {
-                return await _primary.GetMonthlyHoursAsync(employeeId, year, month, ct);
+                // Prøv MySQL først
+                return await _mysql.GetMonthlyHoursAsync(employeeId, year, month, ct);
             }
             catch (Exception ex)
             {
@@ -50,7 +54,8 @@ namespace Vagtplanlægning.Services
                     employeeId, year, month
                 );
 
-                return await _fallback.GetMonthlyHoursAsync(employeeId, year, month, ct);
+                // Fallback til Mongo
+                return await _mongo.GetMonthlyHoursAsync(employeeId, year, month, ct);
             }
         }
     }

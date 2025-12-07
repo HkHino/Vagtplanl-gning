@@ -1,62 +1,51 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Moq;
 using Vagtplanlægning.DTOs;
+using Vagtplanlægning.Services;
+using Xunit;
 
-namespace Vagtplanlægning.Services
+namespace Vagtplanlægning.UnitTests.Services
 {
-    public class FallbackMonthlyHoursReportService : IMonthlyHoursReportService
+    public class FallbackMonthlyHoursReportServiceTests
     {
-        private readonly IMonthlyHoursReportService _mysql;
-        private readonly IMonthlyHoursReportService _mongo;
-        private readonly ILogger<FallbackMonthlyHoursReportService> _logger;
-
-        // ✅ TEST-venlig constructor (interfaces)
-        public FallbackMonthlyHoursReportService(
-            IMonthlyHoursReportService mysql,
-            IMonthlyHoursReportService mongo,
-            ILogger<FallbackMonthlyHoursReportService> logger)
+        [Fact]
+        public async Task UsesMongo_WhenMySqlThrows()
         {
-            _mysql = mysql ?? throw new ArgumentNullException(nameof(mysql));
-            _mongo = mongo ?? throw new ArgumentNullException(nameof(mongo));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        }
+            // Arrange
+            var mysql = new Mock<IMonthlyHoursReportService>();
+            var mongo = new Mock<IMonthlyHoursReportService>();
+            var logger = Mock.Of<ILogger<FallbackMonthlyHoursReportService>>();
 
-        // ✅ DI-venlig convenience-constructor (konkrete typer)
-        public FallbackMonthlyHoursReportService(
-            MySqlMonthlyHoursReportService mysql,
-            MongoMonthlyHoursReportService mongo,
-            ILogger<FallbackMonthlyHoursReportService> logger)
-            : this((IMonthlyHoursReportService)mysql,
-                   (IMonthlyHoursReportService)mongo,
-                   logger)
-        {
-        }
+            mysql.Setup(s => s.GetMonthlyHoursAsync(
+                    It.IsAny<int?>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
+                 .ThrowsAsync(new System.Exception("db meltdown"));
 
-        public async Task<List<MonthlyHoursRow>> GetMonthlyHoursAsync(
-            int? employeeId,
-            int year,
-            int month,
-            CancellationToken ct = default)
-        {
-            try
+            var expectedMongo = new List<MonthlyHoursRow>
             {
-                // Prøv MySQL først
-                return await _mysql.GetMonthlyHoursAsync(employeeId, year, month, ct);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogWarning(
-                    ex,
-                    "MySQL unavailable - using MongoDB fallback for MonthlyHours (employee {EmployeeId}, {Year}-{Month})",
-                    employeeId, year, month
-                );
+                new MonthlyHoursRow { EmployeeId = 1, TotalMonthlyHours = 99 }
+            };
 
-                // Fallback til Mongo
-                return await _mongo.GetMonthlyHoursAsync(employeeId, year, month, ct);
-            }
+            mongo.Setup(s => s.GetMonthlyHoursAsync(1, 2025, 11, It.IsAny<CancellationToken>()))
+                 .ReturnsAsync(expectedMongo);
+
+            var service = new FallbackMonthlyHoursReportService(
+                mysql.Object,
+                mongo.Object,
+                logger
+            );
+
+            // Act
+            var result = await service.GetMonthlyHoursAsync(1, 2025, 11, default);
+
+            // Assert
+            Assert.Equal(99, result[0].TotalMonthlyHours);
+            mongo.Verify(
+                s => s.GetMonthlyHoursAsync(1, 2025, 11, It.IsAny<CancellationToken>()),
+                Times.Once
+            );
         }
     }
 }

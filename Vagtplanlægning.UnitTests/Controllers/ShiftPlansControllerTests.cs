@@ -235,5 +235,207 @@ namespace Vagtplanlægning.UnitTests.Controllers
                 It.IsAny<CancellationToken>()),
                 Times.Once);
         }
+        // ------------------------------------------------------------
+        // PUT: api/shiftplans/{id}/shifts/{index} – ugyldigt index
+        // ------------------------------------------------------------
+        [Fact]
+        public async Task UpdateShiftInPlan_InvalidIndex_ReturnsBadRequest()
+        {
+            var plan = new ShiftPlan
+            {
+                ShiftPlanId = "plan-1",
+                Shifts = new List<Shift>
+                {
+                    new Shift { ShiftId = 1 }
+                }
+            };
+
+            _repoMock
+                .Setup(r => r.GetByIdAsync("plan-1", It.IsAny<CancellationToken>()))
+                .ReturnsAsync(plan);
+
+            var dto = new UpdateShiftInPlanDto
+            {
+                DateOfShift = new DateTime(2025, 1, 1),
+                EmployeeId = 1,
+                BicycleId = 1,
+                RouteId = 1,
+                SubstitutedId = 0
+            };
+
+            // index = 5 er out-of-range (vi har kun 1 shift)
+            var result = await _controller.UpdateShiftInPlan(
+                "plan-1", 5, dto, CancellationToken.None);
+
+            var badReq = Assert.IsType<BadRequestObjectResult>(result.Result);
+            Assert.Contains("out of range", badReq.Value!.ToString());
+
+            _repoMock.Verify(r => r.GetByIdAsync("plan-1", It.IsAny<CancellationToken>()), Times.Once);
+            _repoMock.Verify(r => r.UpdateAsync(It.IsAny<ShiftPlan>(), It.IsAny<CancellationToken>()), Times.Never);
+        }
+
+        // ------------------------------------------------------------
+        // PUT: api/shiftplans/{id}/shifts/{index} – gyldigt index
+        // ------------------------------------------------------------
+        [Fact]
+        public async Task UpdateShiftInPlan_ValidIndex_UpdatesAndReturnsDetail()
+        {
+            var plan = new ShiftPlan
+            {
+                ShiftPlanId = "plan-1",
+                Shifts = new List<Shift>
+                {
+                    new Shift
+                    {
+                        ShiftId = 10,
+                        DateOfShift = new DateTime(2025, 1, 1),
+                        EmployeeId = 1,
+                        BicycleId = 1,
+                        RouteId = 1,
+                        SubstitutedId = 0
+                    }
+                }
+            };
+
+            _repoMock
+                .Setup(r => r.GetByIdAsync("plan-1", It.IsAny<CancellationToken>()))
+                .ReturnsAsync(plan);
+
+            var dto = new UpdateShiftInPlanDto
+            {
+                DateOfShift = new DateTime(2025, 2, 2),
+                EmployeeId = 2,
+                BicycleId = 3,
+                RouteId = 4,
+                SubstitutedId = 5
+            };
+
+            var result = await _controller.UpdateShiftInPlan(
+                "plan-1", 0, dto, CancellationToken.None);
+
+            var ok = Assert.IsType<OkObjectResult>(result.Result);
+            var detail = Assert.IsType<ShiftPlanDetailDto>(ok.Value);
+
+            // vi forventer at første shift i planen er opdateret
+            var updated = Assert.Single(detail.Shifts);
+            Assert.Equal(new DateTime(2025, 2, 2), updated.DateOfShift);
+            Assert.Equal(2, updated.EmployeeId);
+            Assert.Equal(3, updated.BicycleId);
+            Assert.Equal(4, updated.RouteId);
+            Assert.Equal(5, updated.SubstitutedId);
+
+            _repoMock.Verify(r => r.UpdateAsync(
+                It.Is<ShiftPlan>(p =>
+                    p.Shifts![0].EmployeeId == 2 &&
+                    p.Shifts[0].BicycleId == 3),
+                It.IsAny<CancellationToken>()),
+                Times.Once);
+        }
+
+        // ------------------------------------------------------------
+        // POST: api/shiftplans/generate-6weeks – negative tests (EP/BVA)
+        // ------------------------------------------------------------
+        [Fact]
+        public async Task Generate6Weeks_NullRequest_ReturnsBadRequest()
+        {
+            // Act
+            var result = await _controller.Generate6Weeks(null!, CancellationToken.None);
+
+            // Assert
+            var badReq = Assert.IsType<BadRequestObjectResult>(result.Result);
+            Assert.Contains("StartDate is required", badReq.Value!.ToString());
+
+            _serviceMock.Verify(
+                s => s.Generate6WeekPlanAsync(
+                    It.IsAny<DateTime>(),
+                    It.IsAny<CancellationToken>()),
+                Times.Never);
+        }
+
+        [Fact]
+        public async Task Generate6Weeks_DefaultStartDate_ReturnsBadRequest()
+        {
+            var request = new GenerateShiftPlanRequestDto
+            {
+                StartDate = default // 0001-01-01
+            };
+
+            var result = await _controller.Generate6Weeks(request, CancellationToken.None);
+
+            var badReq = Assert.IsType<BadRequestObjectResult>(result.Result);
+            Assert.Contains("StartDate is required", badReq.Value!.ToString());
+
+            _serviceMock.Verify(
+                s => s.Generate6WeekPlanAsync(
+                    It.IsAny<DateTime>(),
+                    It.IsAny<CancellationToken>()),
+                Times.Never);
+        }
+
+        // ------------------------------------------------------------
+        // PUT: api/shiftplans/{id}/shifts/{index} – dto == null
+        // ------------------------------------------------------------
+        [Fact]
+        public async Task UpdateShiftInPlan_NullDto_ReturnsBadRequest()
+        {
+            var result = await _controller.UpdateShiftInPlan(
+                "plan-1",
+                0,
+                null!,
+                CancellationToken.None);
+
+            var badReq = Assert.IsType<BadRequestObjectResult>(result.Result);
+            Assert.Contains("Request body is missing or invalid", badReq.Value!.ToString());
+
+            _repoMock.Verify(
+                r => r.GetByIdAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()),
+                Times.Never);
+        }
+
+        // ------------------------------------------------------------
+        // PUT: api/shiftplans/{id}/shifts/{index} – BVA på index
+        // ------------------------------------------------------------
+        [Theory]
+        [InlineData(-1)] // lige under nedre grænse
+        [InlineData(1)]  // lige over øvre grænse, når der kun er 1 shift (index 0)
+        public async Task UpdateShiftInPlan_IndexOutOfRange_ReturnsBadRequest(int index)
+        {
+            var plan = new ShiftPlan
+            {
+                ShiftPlanId = "plan-idx",
+                Shifts = new List<Shift>
+                {
+                    new Shift { ShiftId = 10 }
+                }
+            };
+
+            _repoMock
+                .Setup(r => r.GetByIdAsync("plan-idx", It.IsAny<CancellationToken>()))
+                .ReturnsAsync(plan);
+
+            var dto = new UpdateShiftInPlanDto
+            {
+                DateOfShift = new DateTime(2025, 1, 1),
+                EmployeeId = 1,
+                BicycleId = 1,
+                RouteId = 1,
+                SubstitutedId = 0
+            };
+
+            var result = await _controller.UpdateShiftInPlan(
+                "plan-idx", index, dto, CancellationToken.None);
+
+            var badReq = Assert.IsType<BadRequestObjectResult>(result.Result);
+            Assert.Contains("out of range", badReq.Value!.ToString());
+
+            _repoMock.Verify(
+                r => r.GetByIdAsync("plan-idx", It.IsAny<CancellationToken>()),
+                Times.Once);
+
+            _repoMock.Verify(
+                r => r.UpdateAsync(It.IsAny<ShiftPlan>(), It.IsAny<CancellationToken>()),
+                Times.Never);
+        }
+
     }
 }
