@@ -5,8 +5,6 @@ using Vagtplanlægning.Data;
 
 namespace Vagtplanlægning.Controllers;
 
-
-
 public class BaseController : ControllerBase
 {
     protected readonly IMapper _mapper;

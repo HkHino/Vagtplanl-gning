@@ -140,14 +140,20 @@ namespace Vagtplanlægning.Controllers
         // --------------------------------------------------------------------
         [HttpPut("{id}/shifts/{index:int}")]
         public async Task<ActionResult<ShiftPlanDetailDto>> UpdateShiftInPlan(
-            string id,
-            int index,
-            [FromBody] UpdateShiftInPlanDto dto,
-            CancellationToken ct = default)
+    string id,
+    int index,
+    [FromBody] UpdateShiftInPlanDto dto,
+    CancellationToken ct = default)
         {
             if (dto == null)
             {
                 return BadRequest(new { error = "Request body is missing or invalid." });
+            }
+
+            // 🔹 NYT: valider at datoen faktisk er sat
+            if (dto.DateOfShift == default)
+            {
+                return BadRequest(new { error = "DateOfShift is required." });
             }
 
             var plan = await _planRepo.GetByIdAsync(id, ct);
@@ -178,6 +184,7 @@ namespace Vagtplanlægning.Controllers
             var detailDto = ToDto(plan);
             return Ok(detailDto);
         }
+
 
         // ====================================================================
         // Mapping helpers: Domain -> DTO

@@ -392,6 +392,49 @@ namespace Vagtplanlægning.UnitTests.Controllers
                 Times.Never);
         }
 
+        [Fact]
+        public async Task Generate6Weeks_StartDateMinValue_ReturnsBadRequest()
+        {
+            var dto = new GenerateShiftPlanRequestDto
+            {
+                StartDate = default
+            };
+
+            var result = await _controller.Generate6Weeks(dto, CancellationToken.None);
+
+            Assert.IsType<BadRequestObjectResult>(result.Result);
+
+            _serviceMock.Verify(
+                s => s.Generate6WeekPlanAsync(It.IsAny<DateTime>(), It.IsAny<CancellationToken>()),
+                Times.Never);
+        }
+        [Fact]
+        public async Task UpdateShiftInPlan_MissingDate_ReturnsBadRequest()
+        {
+            var plan = new ShiftPlan
+            {
+                ShiftPlanId = "plan-1",
+                Shifts = new List<Shift> { new Shift { ShiftId = 10 } }
+            };
+
+            _repoMock.Setup(r => r.GetByIdAsync("plan-1", It.IsAny<CancellationToken>()))
+                     .ReturnsAsync(plan);
+
+            var dto = new UpdateShiftInPlanDto
+            {
+                DateOfShift = default,
+                EmployeeId = 1,
+                BicycleId = 1,
+                RouteId = 1,
+                SubstitutedId = 0
+            };
+
+            var result = await _controller.UpdateShiftInPlan("plan-1", 0, dto, CancellationToken.None);
+
+            Assert.IsType<BadRequestObjectResult>(result.Result);
+        }
+
+
         // ------------------------------------------------------------
         // PUT: api/shiftplans/{id}/shifts/{index} – BVA på index
         // ------------------------------------------------------------

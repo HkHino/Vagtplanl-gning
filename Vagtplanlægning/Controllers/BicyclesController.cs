@@ -15,7 +15,7 @@ namespace Vagtplanlægning.Controllers
         {
             _bicycleRepo = bicycleRepo;
         }
-
+        
         // GET: /api/Bicycles
         [HttpGet]
         public async Task<ActionResult<IEnumerable<BicycleDto>>> GetAll(CancellationToken ct)

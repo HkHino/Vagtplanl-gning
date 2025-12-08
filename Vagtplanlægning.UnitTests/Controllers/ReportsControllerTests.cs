@@ -123,7 +123,15 @@ namespace Vagtplanlægning.UnitTests.Controllers
                 Times.Once);
         }
 
-        // (Evt. en ekstra positiv test for boundary cases, hvis du vil være ekstra grundig)
+        [Fact]
+        public async Task GetMonthlyHours_NegativeEmployeeId_ReturnsBadRequest()
+        {
+            var result = await _controller.GetMonthlyHours(-5, 2025, 10, CancellationToken.None);
+
+            var badReq = Assert.IsType<BadRequestObjectResult>(result.Result);
+            Assert.Contains("employee", badReq.Value!.ToString().ToLower());
+        }
+
         [Theory]
         [InlineData(2020, 1)]
         [InlineData(2020, 12)]

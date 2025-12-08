@@ -23,6 +23,14 @@ namespace Vagtplanlægning.Controllers
            [FromQuery] int month,
            CancellationToken ct = default)
         {
+            if (employeeId.HasValue && employeeId.Value <= 0)
+            {
+                return BadRequest(new
+                {
+                    error = "EmployeeId must be a positive integer."
+                });
+            }
+
             if (year < 2020)
             {
                 return BadRequest(new
