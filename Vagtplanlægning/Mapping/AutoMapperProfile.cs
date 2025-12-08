@@ -12,6 +12,7 @@ namespace Vagtplanlægning.Mapping
             CreateMap<Employee, EmployeeDto>();
             CreateMap<CreateEmployeeDto, Employee>();
             CreateMap<UpdateEmployeeDto, Employee>();
+            CreateMap<Shift, ShiftDto>();
         }
     }
 }

@@ -44,4 +44,18 @@ public class MySqlUserRepository : IUserRepository
             .Include(u => u.Employee)
             .SingleOrDefaultAsync(u => u.UserId == id);
     }
+
+    public async Task<Shift[]> GetShiftsAsync(int userId)
+    {
+        // Get the employee Id of the current user
+        var user = await _db.Users
+            .Include(u => u.Employee)
+            .SingleOrDefaultAsync(u => u.UserId == userId);
+        
+        // All shifts which user has
+        var shifts = await _db.ListOfShift
+            .Where(s => s.EmployeeId == user.UserId)
+            .ToArrayAsync();
+        return shifts;
+    }
 }

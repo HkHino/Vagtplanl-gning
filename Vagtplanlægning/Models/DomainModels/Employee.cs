@@ -18,7 +18,7 @@ namespace Vagtplanlægning.Models
         public ObjectId? MongoId { get; set; }
 
         // Link til det oprindelige SQL-id i dine Mongo-dokumenter (sqlEmployeeId)
-        [BsonElement("sqlEmployeeId")]
+        [BsonElement("employeeId")]
         public int EmployeeId { get; set; }
 
         [BsonElement("firstName")]

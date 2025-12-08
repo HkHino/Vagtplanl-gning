@@ -12,4 +12,7 @@ public interface IUserRepository
     Task<bool> UsernameInUse(string username);
     // Get By ID, and includes the employee
     Task<User?> GetByIdWithEmployeesAsync(int id);
+    
+    // Get an employee's shifts based on the Id
+    Task<Shift[]> GetShiftsAsync(int userId);
 }

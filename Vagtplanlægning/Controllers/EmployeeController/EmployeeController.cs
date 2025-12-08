@@ -29,4 +29,16 @@ public class EmployeeController : BaseEmployeeController
         var response = _mapper.Map<UserDto>(currentUser);
         return Ok(response);
     }
+
+    [HttpGet]
+    [Route("get-employee-shifts")]
+    public async Task<IActionResult> GetEmployeeShifts()
+    {
+        // Get list of shifts
+        var shifts = await _userRepository.GetShiftsAsync(UserPrincipal.Id);
+        
+        // Convert the shifts into a DTO
+        var response = _mapper.Map<IEnumerable<ShiftDto>>(shifts);
+        return Ok(response);
+    }
 }
