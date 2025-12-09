@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Vagtplanlægning.Data;
 using Vagtplanlægning.DTOs;
@@ -39,6 +40,23 @@ public class EmployeeController : BaseEmployeeController
         
         // Convert the shifts into a DTO
         var response = _mapper.Map<IEnumerable<ShiftDto>>(shifts);
+        return Ok(response);
+    }
+    
+    [HttpGet]
+    [Route("get-employee-routes-by-id/{employeeId:int}")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetEmployeeRoutesById(int employeeId)
+    {
+        // Get list of routes
+        var routes = await _userRepository.GetRoutesByEmployeeIdAsync(employeeId);
+        Console.WriteLine("Routes:");
+        foreach (var route in routes)
+        {
+            Console.WriteLine($"- {route.RouteNumber}");
+        }
+        // Convert the routes into a DTO
+        var response = _mapper.Map<IEnumerable<RouteDto>>(routes);
         return Ok(response);
     }
 }

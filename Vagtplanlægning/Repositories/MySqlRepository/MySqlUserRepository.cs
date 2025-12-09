@@ -2,7 +2,7 @@
 using Vagtplanlægning.Data;
 using Vagtplanlægning.Models;
 
-namespace Vagtplanlægning.Repositories;
+namespace Vagtplanlægning.Repositories.MySqlRepository;
 
 public class MySqlUserRepository : IUserRepository
 {
@@ -57,5 +57,28 @@ public class MySqlUserRepository : IUserRepository
             .Where(s => s.EmployeeId == user.UserId)
             .ToArrayAsync();
         return shifts;
+    }
+
+    public async Task<RouteEntity[]> GetRoutesByEmployeeIdAsync(int employeeId)
+    {
+        var user = await _db.Users
+            .Include(u => u.Employee)
+            .ThenInclude(e => e.Shifts)
+            .ThenInclude((s => s.Routes))
+            .FirstOrDefaultAsync(i => i.EmployeeId == employeeId);
+        if (user == null) return null;
+        
+        // Make an empty array to store routes in
+        var routesList = new List<RouteEntity>();
+        
+        // Go through all shifts and find routes
+        foreach (var shift in user.Employee.Shifts)
+        {
+            if (shift.Routes != null && !routesList.Contains(shift.Routes))
+            {
+                routesList.Add(shift.Routes);
+            }
+        }
+        return routesList.ToArray();
     }
 }
