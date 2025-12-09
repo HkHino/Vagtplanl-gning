@@ -19,8 +19,9 @@ namespace Vagtplanlægning.Services
             int month,
             CancellationToken ct = default)
         {
+            // Payroll period: 26th of previous month → 25th of this month
             var periodEnd = new DateTime(year, month, 25);
-            var periodStart = periodEnd.AddMonths(-1).AddDays(1); // 26. forrige måned
+            var periodStart = periodEnd.AddMonths(-1).AddDays(1);
 
             var employees = _db.Employees.AsQueryable();
             if (employeeId.HasValue)
@@ -38,8 +39,11 @@ namespace Vagtplanlægning.Services
                     Year = year,
                     Month = month,
 
+                    // -------------------------------
+                    // TOTAL MONTHLY HOURS (FIXED)
+                    // -------------------------------
                     TotalMonthlyHours =
-                        // Prøv WorkHoursInMonths først
+                        // First try the WorkHoursInMonths table
                         (
                             from w in _db.WorkHoursInMonths
                             where w.EmployeeId == e.EmployeeId
@@ -48,21 +52,31 @@ namespace Vagtplanlægning.Services
                             select (decimal?)w.TotalHours
                         ).FirstOrDefault()
                         ??
-                        // Ellers beregn ud fra ListOfShift + Substituteds
+                        // Otherwise compute from ListOfShift
                         (
                             from s in _db.ListOfShift
                             join sub in _db.Substituteds
-                                on s.SubstitutedId equals sub.SubstitutedId into subGroup
+                               on s.SubstitutedId equals sub.SubstitutedId into subGroup
                             from sub in subGroup.DefaultIfEmpty()
                             where s.DateOfShift >= periodStart
                                   && s.DateOfShift <= periodEnd
-                                  && (
-                                         (s.SubstitutedId != null && sub != null && sub.EmployeeId == e.EmployeeId)
-                                      || (s.SubstitutedId == null && s.EmployeeId == e.EmployeeId)
-                                     )
+                                  &&
+                                  (
+                                      // Employee worked the shift
+                                      s.EmployeeId == e.EmployeeId
+                                      ||
+                                      // Employee substituted for someone else
+                                      (sub != null && sub.EmployeeId == e.EmployeeId)
+                                  )
+                                  &&
+                                  // Only count completed shifts
+                                  s.TotalHours != null
                             select (decimal?)s.TotalHours
                         ).Sum() ?? 0m,
 
+                    // -------------------------------
+                    // HAS SUBSTITUTED FLAG
+                    // -------------------------------
                     HasSubstituted =
                         (
                             from w in _db.WorkHoursInMonths
