@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Vagtplanlægning.Models;
+﻿using Vagtplanlægning.Models;
 
 namespace Vagtplanlægning.Services
 {

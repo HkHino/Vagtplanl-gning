@@ -1,5 +1,5 @@
--- create database ------------------------------------------------------------
-CREATE DATABASE IF NOT EXISTS cykelBudDB;
+/*-- create database ------------------------------------------------------------
+drop database cykelbudDB;
 USE cykelBudDB;
 -- drop tables if exist --------------------------------------------------------
 DROP TABLE IF EXISTS AuditLog;
@@ -1135,4 +1135,4 @@ DELIMITER $$
                        );
             END $$
 DELIMITER ;
--- =========================
+-- =========================*/

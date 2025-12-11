@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using Vagtplanlægning.DTOs;
+﻿using Vagtplanlægning.DTOs;
 
 namespace Vagtplanlægning.Services
 {

@@ -1,5 +1,4 @@
 ﻿using Vagtplanlægning.Models;
-using System.Threading;
 
 namespace Vagtplanlægning.Repositories
 {

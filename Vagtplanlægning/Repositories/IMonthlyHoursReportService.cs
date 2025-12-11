@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using Vagtplanlægning.DTOs;
+﻿using Vagtplanlægning.DTOs;
 
 namespace Vagtplanlægning.Services
 {

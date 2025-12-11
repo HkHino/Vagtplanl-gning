@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Vagtplanlægning.Data;
 using Vagtplanlægning.Models;
-using System.Threading;
 
 namespace Vagtplanlægning.Repositories
 {
