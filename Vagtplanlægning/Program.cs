@@ -8,6 +8,7 @@ using Vagtplanlægning.Configurations;
 using Vagtplanlægning.Data;
 using Vagtplanlægning.Mapping;
 using Vagtplanlægning.Repositories;
+using Vagtplanlægning.Repositories.MySqlRepository;
 using Vagtplanlægning.Services;
 
 var builder = WebApplication.CreateBuilder(args);
