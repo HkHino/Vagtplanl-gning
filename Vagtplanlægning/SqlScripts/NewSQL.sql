@@ -92,7 +92,7 @@ CREATE TABLE IF NOT EXISTS Users (
     hash VARCHAR(255) NOT NULL,
     role VARCHAR(50) NOT NULL,
     employeeId INT UNIQUE NULL,
-    CONSTRAINT fk_user_employee FOREIGN KEY (employeeId) REFERENCES Employees(employeeId) ON DELETE SET NULL ON UPDATE CASCADE
+    CONSTRAINT fk_user_employee FOREIGN KEY (employeeId) REFERENCES Employees(employeeId) ON DELETE CASCADE ON UPDATE CASCADE
     );
 -- work hours in months -------------------------------------------------------
 CREATE TABLE IF NOT EXISTS WorkHoursInMonths (
