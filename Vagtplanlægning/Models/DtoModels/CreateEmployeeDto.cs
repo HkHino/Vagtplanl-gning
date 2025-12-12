@@ -2,6 +2,14 @@
 
 namespace Vagtplanlægning.DTOs
 {
+    /// <summary>
+    /// DTO used when creating a new employee.
+    ///
+    /// Contains validation attributes to guard common input errors such as:
+    /// - Missing names.
+    /// - Invalid phone number format.
+    /// - Invalid email format.
+    /// </summary>
     public class CreateEmployeeDto
     {
         public string FirstName { get; set; } = "";
@@ -26,7 +34,9 @@ namespace Vagtplanlægning.DTOs
             public string Phone { get; set; } = "";
 
             public string Email { get; set; } = "";
-
+            /// <summary>
+            /// Initial experience level for the employee. May be ignored by some workflows.
+            /// </summary>
             public int ExperienceLevel { get; set; }
         }
 

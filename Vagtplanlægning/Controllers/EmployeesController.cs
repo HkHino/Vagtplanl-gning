@@ -1,11 +1,31 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿// EmployeesController.cs
+// ----------------------
+// Thin CRUD controller for managing employees from the admin side of the system.
+// It uses IEmployeeRepository for data access and manual mapping between
+// domain models (Employee) and DTOs (EmployeeDto, CreateEmployeeDto, UpdateEmployeeDto).
+
+
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Vagtplanlægning.DTOs;
 using Vagtplanlægning.Models;
 using Vagtplanlægning.Repositories;
 
 namespace Vagtplanlægning.Controllers
-{
+{    /// <summary>
+     /// API controller for the administrative "employee management" part of the system.
+     ///
+     /// Endpoints in this controller:
+     /// - List all employees.
+     /// - Get a single employee by id.
+     /// - Create a new employee.
+     /// - Update an existing employee.
+     /// - Delete an employee.
+     ///
+     /// The controller is intentionally thin:
+     /// - Data access is delegated to <see cref="IEmployeeRepository"/>.
+     /// - Mapping is done manually between <see cref="Employee"/> and the different DTOs.
+     /// </summary>
     [ApiController]
     [Route("api/[controller]")]
     public class EmployeesController : ControllerBase
@@ -21,6 +41,11 @@ namespace Vagtplanlægning.Controllers
             _logger = logger;
         }
 
+        /// <summary>
+        /// Returns all employees.
+        /// </summary>
+        /// <param name="ct">Cancellation token.</param>
+        /// <returns>HTTP 200 with a list of <see cref="EmployeeDto"/>.</returns>
         // GET: api/Employees
         [HttpGet]
         public async Task<ActionResult<IEnumerable<EmployeeDto>>> GetAll(CancellationToken ct)
@@ -49,6 +74,15 @@ namespace Vagtplanlægning.Controllers
             }
         }
 
+        /// <summary>
+        /// Returns a single employee by id.
+        /// </summary>
+        /// <param name="id">The employee id.</param>
+        /// <param name="ct">Cancellation token.</param>
+        /// <returns>
+        /// HTTP 200 with <see cref="EmployeeDto"/> if found,
+        /// otherwise HTTP 404.
+        /// </returns>
         // GET: api/Employees/5
         [HttpGet("{id:int}")]
         public async Task<ActionResult<EmployeeDto>> GetById(int id, CancellationToken ct)
@@ -79,6 +113,15 @@ namespace Vagtplanlægning.Controllers
             }
         }
 
+        /// <summary>
+        /// Creates a new employee.
+        /// </summary>
+        /// <param name="dto">DTO containing data required to create an employee.</param>
+        /// <param name="ct">Cancellation token.</param>
+        /// <returns>
+        /// HTTP 201 with the created <see cref="EmployeeDto"/> if successful.
+        /// HTTP 400 if unique constraints (email/phone) are violated.
+        /// </returns>
         // POST: api/Employees
         [HttpPost]
         public async Task<ActionResult<EmployeeDto>> Create(CreateEmployeeDto dto, CancellationToken ct)
@@ -129,7 +172,17 @@ namespace Vagtplanlægning.Controllers
             }
         }
 
-
+        /// <summary>
+        /// Updates an existing employee.
+        /// </summary>
+        /// <param name="id">The id of the employee to update.</param>
+        /// <param name="dto">DTO containing the new values for the employee.</param>
+        /// <param name="ct">Cancellation token.</param>
+        /// <returns>
+        /// HTTP 204 if update succeeds,
+        /// HTTP 404 if employee does not exist,
+        /// HTTP 400 if unique constraints are violated.
+        /// </returns>
         // PUT: api/Employees/5
         [HttpPut("{id:int}")]
         public async Task<IActionResult> Update(int id, UpdateEmployeeDto dto, CancellationToken ct)
@@ -180,7 +233,15 @@ namespace Vagtplanlægning.Controllers
             }
         }
 
-
+        /// <summary>
+        /// Deletes an employee by id.
+        /// </summary>
+        /// <param name="id">The id of the employee to delete.</param>
+        /// <param name="ct">Cancellation token.</param>
+        /// <returns>
+        /// HTTP 204 if delete succeeds,
+        /// HTTP 404 if employee does not exist.
+        /// </returns>
         // DELETE: api/Employees/5
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id, CancellationToken ct)

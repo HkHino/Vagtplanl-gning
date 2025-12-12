@@ -3,6 +3,13 @@ using MySqlConnector;
 using Vagtplanlægning.Models;
 using Vagtplanlægning.Repositories;
 
+/// <summary>
+/// Fallback wrapper for <see cref="IEmployeeRepository"/> that prefers MySQL,
+/// but transparently falls back to MongoDB when MySQL is temporarily unavailable.
+///
+/// The caller only depends on <see cref="IEmployeeRepository"/> and is unaware
+/// of whether MySQL or MongoDB actually served the request.
+/// </summary>
 public class EmployeeRepositoryFallback : IEmployeeRepository
 {
     private readonly MySqlEmployeeRepository _primary;
@@ -19,6 +26,10 @@ public class EmployeeRepositoryFallback : IEmployeeRepository
         _logger = logger;
     }
 
+    /// <summary>
+    /// Determines whether an exception is considered transient for MySQL access.
+    /// If so, the operation will be retried against MongoDB.
+    /// </summary>
     private static bool IsTransient(Exception ex)
     {
         if (ex is MySqlException)

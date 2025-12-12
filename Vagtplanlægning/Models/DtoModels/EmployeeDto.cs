@@ -1,5 +1,9 @@
 ﻿namespace Vagtplanlægning.DTOs
 {
+    /// <summary>
+    /// Read-only DTO used when returning employee data to clients.
+    /// Mirrors the main fields of the <see cref="Vagtplanlægning.Models.Employee"/> entity.
+    /// </summary>
     public class EmployeeDto
     {
         public int EmployeeId { get; set; }
