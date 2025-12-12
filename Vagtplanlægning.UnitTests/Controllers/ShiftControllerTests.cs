@@ -19,18 +19,21 @@ namespace Vagtplanlægning.UnitTests.Controllers
         private readonly Mock<IEmployeeRepository> _employeeRepo;
         private readonly Mock<IBicycleRepository> _bicycleRepo;
         private readonly Mock<IRouteRepository> _routeRepo;
-        private readonly IMapper _mapper;
 
         private readonly ShiftController _controller;
 
-        public ShiftControllerTests(IMapper mapper)
+        public ShiftControllerTests()
         {
-            _mapper = mapper;
             _shiftRepo = new Mock<IShiftRepository>();
             _shiftExec = new Mock<IShiftExecutionService>();
             _employeeRepo = new Mock<IEmployeeRepository>();
             _bicycleRepo = new Mock<IBicycleRepository>();
             _routeRepo = new Mock<IRouteRepository>();
+
+            var config = new MapperConfiguration(cfg =>
+            {
+                cfg.AddMaps(typeof(Program));
+            });
             
 
             _controller = new ShiftController(
@@ -39,7 +42,7 @@ namespace Vagtplanlægning.UnitTests.Controllers
                 _employeeRepo.Object,
                 _bicycleRepo.Object,
                 _routeRepo.Object,
-                _mapper
+                new Mapper(config)
             );
         }
 
