@@ -19,4 +19,7 @@ public interface IUserRepository
 
     // Get an employee's routes based on the Id
     Task<RouteEntity[]> GetRoutesByEmployeeIdAsync(int employeeId);
+    
+    // Deletes a user by ID
+    Task<bool> DeleteAsync(int id);
 }

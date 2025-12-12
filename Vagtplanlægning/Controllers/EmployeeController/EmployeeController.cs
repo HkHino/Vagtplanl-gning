@@ -99,4 +99,13 @@ public class EmployeeController : BaseEmployeeController
         var response = _mapper.Map<IEnumerable<RouteDto>>(routes);
         return Ok(response);
     }
+    
+    [HttpDelete]
+    [Route("{userId:int}")]
+    [AllowAnonymous]
+    public async Task<IActionResult> Delete(int userId)
+    {
+        var result = await _userRepository.DeleteAsync(userId);
+        return Ok(result);
+    }
 }

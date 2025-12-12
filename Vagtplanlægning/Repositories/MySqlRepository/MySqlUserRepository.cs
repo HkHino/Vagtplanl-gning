@@ -81,4 +81,17 @@ public class MySqlUserRepository : IUserRepository
         }
         return routesList.ToArray();
     }
+
+    public async Task<bool> DeleteAsync(int id)
+    {
+        var existing = await _db.Users
+            .FirstOrDefaultAsync(e => e.UserId == id);
+
+        if (existing == null)
+            return false;
+
+        _db.Users.Remove(existing);
+        await _db.SaveChangesAsync();
+        return true;
+    }
 }
