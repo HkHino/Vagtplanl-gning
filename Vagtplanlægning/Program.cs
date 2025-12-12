@@ -13,7 +13,7 @@ using Vagtplanlægning.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Læs hvilken provider vi vil bruge: "MySql", "Mongo", "MySqlWithMongoFallback", "Neo4j"
+// Read which provider we want to use: "MySql", "Mongo", "MySqlWithMongoFallback", "Neo4j"
 var providerRaw = builder.Configuration["DatabaseProvider"] ?? "mysqlwithmongofallback";
 var provider = providerRaw.Trim().ToLowerInvariant();
 Console.WriteLine($"[DB PROVIDER] Raw='{providerRaw}' Normalized='{provider}'");
@@ -22,12 +22,12 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Fælles services (uafhængige af provider)
+// Common services (independent of provider)
 builder.Services.AddScoped<IShiftPlanService, ShiftPlanService>(); 
-builder.Services.AddScoped<IShiftExecutionService, ShiftExecutionService>(); 
+builder.Services.AddScoped<IShiftExecutionService, ShiftExecutionService>();
 
 // --------------------------------------------------------
-// 1) Konfigurer MySQL DbContext, hvis vi har brug for den
+// 1) Configure MySQL DbContext, if it is needed
 // --------------------------------------------------------
 if (provider == "mysql" || provider == "mysqlwithmongofallback" || provider == "neo4j")
 {
@@ -41,7 +41,7 @@ if (provider == "mysql" || provider == "mysqlwithmongofallback" || provider == "
 }
 
 // --------------------------------------------------------
-// 2) Konfigurer Mongo, hvis vi har brug for det
+// 2) Configure MongoDB, if it is needed
 // --------------------------------------------------------
 if (provider == "mongo" || provider == "mysqlwithmongofallback")
 {
@@ -60,9 +60,8 @@ if (provider == "mongo" || provider == "mysqlwithmongofallback")
 
 }
 
-
 // --------------------------------------------------------
-// 3) Provider-specifik registrering af repositories
+// 3) Provider-specific registration of repositories
 // --------------------------------------------------------
 switch (provider)
 {
@@ -78,8 +77,6 @@ switch (provider)
         builder.Services.AddScoped<IMonthlyHoursReportService, MySqlMonthlyHoursReportService>();
         break;
 
-
-
     case "mongo":
         builder.Services.AddScoped<IEmployeeRepository, MongoEmployeeRepository>();
         builder.Services.AddScoped<IRouteRepository, MongoRouteRepository>();
@@ -89,7 +86,6 @@ switch (provider)
         // Monthly hours kun via Mongo
         builder.Services.AddScoped<IMonthlyHoursReportService, MongoMonthlyHoursReportService>();
         break;
-
 
 
     case "mysqlwithmongofallback":
@@ -178,19 +174,19 @@ builder.Services.AddCors(options =>
 });
 
 // --------------------------------------------------------
-// 5) Setup Authentication etc.
+// 5) Setup Authentication, Authorization, Swagger, AutoMapper
 // --------------------------------------------------------
 var issuer = builder.Configuration["Issuer"];
 var audience = builder.Configuration["Audience"];
 var key = builder.Configuration["Key"];
 
-// Brug mildere regler i testmiljøer
+// Use more relaxed rules in test environments
 var isTestEnv =
     builder.Environment.IsEnvironment("Test") ||
     builder.Environment.IsEnvironment("Testing") ||
     builder.Environment.IsEnvironment("IntegrationTests");
 
-// Kun i "rigtige" miljøer må vi fail'e hårdt på manglende config
+// In "real" environments we must fail hard on missing configuration
 if (!isTestEnv)
 {
     if (issuer == null || audience == null || key == null)
@@ -225,7 +221,7 @@ builder.Services.AddSingleton<JwtHelper>();
 builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
 
 // --------------------------------------------------------
-// 6) Setup App
+// 6) Setup App and run the application
 // --------------------------------------------------------
 var app = builder.Build();
 app.UseCors("AllowAll");

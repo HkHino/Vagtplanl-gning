@@ -3,13 +3,22 @@ using Vagtplanlægning.Models;
 
 namespace Vagtplanlægning.Repositories
 {
+    /// <summary>
+    /// MongoDB-based implementation of <see cref="IEmployeeRepository"/>.
+    ///
+    /// Used either as the primary store (when <c>DatabaseProvider = "mongo"</c>)
+    /// or as a fallback store when MySQL is temporarily unavailable.
+    /// </summary>
     public class MongoEmployeeRepository : IEmployeeRepository
     {
         private readonly IMongoCollection<Employee> _employees;
-
+        /// <summary>
+        /// Creates a new Mongo-backed employee repository.
+        /// </summary>
+        /// <param name="database">Mongo database used for storing employees.</param>
         public MongoEmployeeRepository(IMongoDatabase database)
         {
-            // Brug en collection med samme navn som tabellen i MySQL for sanity
+            // Use a collection name that matches the MySQL table for sanity.
             _employees = database.GetCollection<Employee>("Employees");
         }
 
@@ -30,8 +39,8 @@ namespace Vagtplanlægning.Repositories
 
         public async Task AddAsync(Employee employee, CancellationToken ct = default)
         {
-            // Hvis EmployeeId er 0 (typisk når den kommer fra API’et),
-            // så genererer vi et nyt "pseudo identity" ved at kigge på max EmployeeId i Mongo.
+            // If EmployeeId is 0 (typical when it comes from the API),
+            // generate a new "pseudo identity" by looking at the max EmployeeId in Mongo.
             if (employee.EmployeeId == 0)
             {
                 var sort = Builders<Employee>.Sort.Descending(e => e.EmployeeId);
@@ -61,7 +70,7 @@ namespace Vagtplanlægning.Repositories
                 new ReplaceOptions { IsUpsert = false },
                 ct);
 
-            // Hvis vi ville være ekstra defensive, kunne vi tjekke result.MatchedCount == 0 her.
+            // If we wanted to be extra defensive, we could check result.MatchedCount == 0 here.
         }
 
         public async Task<bool> DeleteAsync(int id, CancellationToken ct = default)

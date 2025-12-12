@@ -4,6 +4,11 @@ using Vagtplanlægning.Models;
 
 namespace Vagtplanlægning.Repositories
 {
+    /// <summary>
+    /// MySQL-based implementation of <see cref="IEmployeeRepository"/> using EF Core.
+    ///
+    /// This is typically the primary data store for employees.
+    /// </summary>
     public class MySqlEmployeeRepository : IEmployeeRepository
     {
         private readonly AppDbContext _db;
