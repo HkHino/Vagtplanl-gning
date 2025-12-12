@@ -16,6 +16,21 @@ namespace Vagtplanlægning.Repositories
             _substituteds = database.GetCollection<Substituted>("Substituteds");
         }
 
+        public async Task<IEnumerable<Shift>> GetAllAsync(CancellationToken ct = default)
+        {
+            var cursor = await _shifts
+                .FindAsync(Builders<Shift>.Filter.Empty, cancellationToken: ct);
+
+            return await cursor.ToListAsync(ct);
+        }
+
+        public async Task<bool> DeleteAsync(int id, CancellationToken ct = default)
+        {
+            var filter = Builders<Shift>.Filter.Eq(e => e.ShiftId, id);
+            var result = await _shifts.DeleteOneAsync(filter, ct);
+            return result.DeletedCount > 0;
+        }
+
         public async Task<Shift?> GetByIdAsync(int id, CancellationToken ct = default)
         {
             var filter = Builders<Shift>.Filter.Eq(s => s.ShiftId, id);

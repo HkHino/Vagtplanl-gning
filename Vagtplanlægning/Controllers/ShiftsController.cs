@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using Vagtplanlægning.DTOs;
 using Vagtplanlægning.Repositories;
 using Vagtplanlægning.Services;
@@ -14,19 +15,21 @@ namespace Vagtplanlægning.Controllers
         private readonly IEmployeeRepository _employeeRepo;
         private readonly IBicycleRepository _bicycleRepo;
         private readonly IRouteRepository _routeRepo;
+        private readonly IMapper _mapper;
 
         public ShiftController(
             IShiftRepository shiftRepo,
             IShiftExecutionService shiftExec,
             IEmployeeRepository employeeRepo,
             IBicycleRepository bicycleRepo,
-            IRouteRepository routeRepo)
+            IRouteRepository routeRepo, IMapper mapper)
         {
             _shiftRepo = shiftRepo;
             _shiftExec = shiftExec;
             _employeeRepo = employeeRepo;
             _bicycleRepo = bicycleRepo;
             _routeRepo = routeRepo;
+            _mapper = mapper;
         }
 
         // --------------------------------------------------------------------
@@ -181,5 +184,24 @@ namespace Vagtplanlægning.Controllers
             await _shiftRepo.MarkShiftSubstitutedAsync(shiftId, hasSubstituted);
             return NoContent();
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            var result = await _shiftRepo.GetAllAsync();
+            
+            // Map
+            var response = _mapper.Map<IEnumerable<ShiftDto>>(result);
+            
+            return Ok(response);
+        }
+        
+        [HttpDelete("shiftId")]
+        public async Task<IActionResult> Delete(int shiftId)
+        {
+            var result = await _shiftRepo.DeleteAsync(shiftId);
+            return Ok(result);
+        }
+        
     }
 }

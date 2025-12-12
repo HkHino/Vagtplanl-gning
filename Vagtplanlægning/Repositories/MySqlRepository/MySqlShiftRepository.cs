@@ -13,6 +13,26 @@ namespace Vagtplanlægning.Repositories
             _db = db;
         }
 
+        public async Task<IEnumerable<Shift>> GetAllAsync(CancellationToken ct = default)
+        {
+            return await _db.ListOfShift
+                .AsNoTracking()
+                .ToListAsync(ct);
+        }
+
+        public async Task<bool> DeleteAsync(int id, CancellationToken ct = default)
+        {
+            var existing = await _db.ListOfShift
+                .FirstOrDefaultAsync(e => e.ShiftId == id, ct);
+
+            if (existing == null)
+                return false;
+
+            _db.ListOfShift.Remove(existing);
+            await _db.SaveChangesAsync(ct);
+            return true;
+        }
+
         public async Task<Shift?> GetByIdAsync(int id, CancellationToken ct = default)
         {
             return await _db.ListOfShift

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Vagtplanlægning.Controllers;
@@ -18,23 +19,27 @@ namespace Vagtplanlægning.UnitTests.Controllers
         private readonly Mock<IEmployeeRepository> _employeeRepo;
         private readonly Mock<IBicycleRepository> _bicycleRepo;
         private readonly Mock<IRouteRepository> _routeRepo;
+        private readonly IMapper _mapper;
 
         private readonly ShiftController _controller;
 
-        public ShiftControllerTests()
+        public ShiftControllerTests(IMapper mapper)
         {
+            _mapper = mapper;
             _shiftRepo = new Mock<IShiftRepository>();
             _shiftExec = new Mock<IShiftExecutionService>();
             _employeeRepo = new Mock<IEmployeeRepository>();
             _bicycleRepo = new Mock<IBicycleRepository>();
             _routeRepo = new Mock<IRouteRepository>();
+            
 
             _controller = new ShiftController(
                 _shiftRepo.Object,
                 _shiftExec.Object,
                 _employeeRepo.Object,
                 _bicycleRepo.Object,
-                _routeRepo.Object
+                _routeRepo.Object,
+                _mapper
             );
         }
 

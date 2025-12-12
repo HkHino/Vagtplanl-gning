@@ -67,6 +67,18 @@ namespace Vagtplanlægning.Repositories
         // IShiftRepository-implementation
         // ----------------------------------------------------
 
+        public Task<IEnumerable<Shift>> GetAllAsync(CancellationToken ct = default)
+            => ExecuteWithFallbackAsync(
+                p => p.GetAllAsync(ct),
+                f => f.GetAllAsync(ct),
+                ct);
+
+        public Task<bool> DeleteAsync(int id, CancellationToken ct = default)
+            => ExecuteWithFallbackAsync(
+                p => p.DeleteAsync(id, ct),
+                f => f.DeleteAsync(id, ct),
+                ct);
+
         public Task<Shift?> GetByIdAsync(int id, CancellationToken ct = default)
             => ExecuteWithFallbackAsync(
                 p => p.GetByIdAsync(id, ct),

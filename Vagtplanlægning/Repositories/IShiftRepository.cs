@@ -4,6 +4,12 @@ namespace Vagtplanlægning.Repositories
 {
     public interface IShiftRepository
     {
+        // Get all shifts 
+        Task<IEnumerable<Shift>> GetAllAsync(CancellationToken ct = default);
+        
+        // Delete a shift
+        Task<bool> DeleteAsync(int id, CancellationToken ct = default);
+        
         // Simple get by id
         Task<Shift?> GetByIdAsync(int id, CancellationToken ct = default);
 
