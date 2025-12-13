@@ -8,11 +8,9 @@ namespace Vagtplanlægning.Controllers;
 public class BaseController : ControllerBase
 {
     protected readonly IMapper _mapper;
-    protected readonly AppDbContext _db;
 
-    public BaseController(AppDbContext db, IMapper mapper)
+    public BaseController(IMapper mapper)
     {
-        _db = db;
         _mapper = mapper;
     }
     

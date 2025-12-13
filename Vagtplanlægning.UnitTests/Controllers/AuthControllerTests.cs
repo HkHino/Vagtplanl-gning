@@ -1,24 +1,57 @@
-﻿/*using Microsoft.AspNetCore.Mvc;
-using Moq;
-using System.Threading;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using Vagtplanlægning.Controllers;
+using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using Moq;
+using Vagtplanlægning.Authentication;
 using Vagtplanlægning.Controllers.PublicControllers;
-using Vagtplanlægning.DTOs;
-using Vagtplanlægning.Services;
+using Vagtplanlægning.Data;
+using Vagtplanlægning.Mapping;
+using Vagtplanlægning.Models;
+using Vagtplanlægning.Models.ApiModels;
+using Vagtplanlægning.Repositories;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Vagtplanlægning.UnitTests.Controllers
 {
     public class AuthControllerTests
     {
-        private readonly Mock<IAuthService> _serviceMock;
         private readonly AuthController _controller;
+        private readonly Mock<IUserRepository> _userRepository;
+        private readonly Mock<IEmployeeRepository> _employeeRepository;
+        private readonly IMapper _mapper;
+        private readonly JwtHelper _jwtHelper;
+        private readonly ITestOutputHelper _output;
 
-        public AuthControllerTests()
+        public AuthControllerTests(ITestOutputHelper output)
         {
-            _serviceMock = new Mock<IAuthService>();
-            _controller = new AuthController(_serviceMock.Object);
+            _output = output;
+            _userRepository = new Mock<IUserRepository>();
+            _employeeRepository = new Mock<IEmployeeRepository>();
+
+            _mapper = new Mapper(
+                new MapperConfiguration(cfg =>
+                    cfg.AddProfile(new AutoMapperProfile()))
+            );
+
+            var configuration = new ConfigurationBuilder()
+                .AddInMemoryCollection(new Dictionary<string, string?>
+                {
+                    { "Key", "ZNztR3p+MCOCLtOQe5yTJNJHC1JkiqNfLs6vhaNVzAw=" }
+                })
+                .Build();
+
+            _jwtHelper = new JwtHelper(configuration);
+            _controller = new AuthController(
+                _mapper,
+                _jwtHelper,
+                _userRepository.Object,
+                _employeeRepository.Object
+            );
+
         }
 
         // --------------------------
@@ -27,15 +60,50 @@ namespace Vagtplanlægning.UnitTests.Controllers
         [Fact]
         public async Task Login_NullBody_ReturnsBadRequest()
         {
-            var result = await _controller.Login(null);
-
-            var badReq = Assert.IsType<BadRequestObjectResult>(result.Result);
-            Assert.Contains("missing", badReq.Value!.ToString().ToLower());
-
-            _serviceMock.Verify(
-                s => s.LoginAsync(It.IsAny<string>(), It.IsAny<string>()),
-                Times.Never);
+            // Act
+            var result = await _controller.SignIn(null);
+            
+            // Assert
+            Assert.IsType<BadRequestObjectResult>(result);
         }
+
+        [Fact]
+        public async Task Login_InvalidCredentials_ReturnsUnauthorized()
+        {
+            // Arrange
+            var request = new SignInRequest
+            {
+                Username = "alice",
+                Password = "bad"
+            };
+
+            var passwordHash = PasswordHelper.HashPassword("1234");
+
+            var existingUser = new User
+            {
+                Username = "alice",
+                Hash = passwordHash,
+                Role = UserRole.Employee
+            };
+
+            _userRepository
+                .Setup(r => r.GetByUsernameAsync("alice"))
+                .ReturnsAsync(existingUser);
+
+            // Act
+            var result = await _controller.SignIn(request);
+
+            // Assert
+            var unauthorized = Assert.IsType<UnauthorizedObjectResult>(result);
+            Assert.Equal("Invalid password", unauthorized.Value);
+
+            _userRepository.Verify(
+                r => r.GetByUsernameAsync("alice"),
+                Times.Once
+            );
+        }
+
+        /*
 
         // --------------------------
         // EP: Invalid credentials → Unauthorized
@@ -107,6 +175,6 @@ namespace Vagtplanlægning.UnitTests.Controllers
                 s => s.LoginAsync(It.IsAny<string>(), It.IsAny<string>()),
                 Times.Never);
         }
+    */
     }
 }
-*/

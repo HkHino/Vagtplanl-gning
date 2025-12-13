@@ -18,7 +18,7 @@ public class AuthController : BaseController
     private readonly IEmployeeRepository _employeeRepository;
 
 
-    public AuthController(AppDbContext db, IMapper mapper, JwtHelper jwtHelper, IUserRepository userRepository, IEmployeeRepository employeeRepository) : base(db, mapper)
+    public AuthController(IMapper mapper, JwtHelper jwtHelper, IUserRepository userRepository, IEmployeeRepository employeeRepository) : base(mapper)
     {
         _jwtHelper = jwtHelper;
         _userRepository = userRepository;
@@ -28,9 +28,10 @@ public class AuthController : BaseController
     [HttpPost]
     [Route("sign-in")]
     [AllowAnonymous]
-    public async Task<IActionResult> SignIn([FromBody] SignInRequest request)
+    public async Task<IActionResult> SignIn([FromBody] SignInRequest? request)
     {
         // Check if any user with given username exists
+        if (request == null) return BadRequest("Invalid request");
         var user = await _userRepository.GetByUsernameAsync(request.Username);
         if (user == null)
         {

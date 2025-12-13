@@ -24,7 +24,7 @@ public class BaseEmployeeController : BaseController
     /// <param name="db">The EF Core database context.</param>
     /// <param name="mapper">AutoMapper instance used for mapping entities to DTOs and vice versa.</param>
         
-    public BaseEmployeeController(AppDbContext db, IMapper mapper) : base(db, mapper)
+    public BaseEmployeeController(IMapper mapper) : base(mapper)
     {
     }
     /// <summary>

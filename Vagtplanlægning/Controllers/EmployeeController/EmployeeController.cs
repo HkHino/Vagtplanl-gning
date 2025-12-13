@@ -31,7 +31,7 @@ public class EmployeeController : BaseEmployeeController
     private readonly IUserRepository _userRepository;
 
 
-    public EmployeeController(AppDbContext db, IMapper mapper, IUserRepository userRepository) : base(db, mapper)
+    public EmployeeController(IMapper mapper, IUserRepository userRepository) : base(mapper)
     {
         _userRepository = userRepository;
     }

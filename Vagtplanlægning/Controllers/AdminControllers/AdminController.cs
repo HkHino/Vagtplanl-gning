@@ -8,7 +8,7 @@ namespace Vagtplanlægning.Controllers.AdminControllers;
 [Route("api/[controller]")]
 public class AdminController : BaseAdminController
 {
-    public AdminController(AppDbContext db, IMapper mapper) : base(db, mapper)
+    public AdminController(IMapper mapper) : base(mapper)
     {
     }
 

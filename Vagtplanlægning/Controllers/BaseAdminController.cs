@@ -9,7 +9,7 @@ namespace Vagtplanlægning.Controllers;
 [Authorize(Policy = "IsAdmin")]
 public class BaseAdminController : BaseController
 {
-    public BaseAdminController(AppDbContext db, IMapper mapper) : base(db, mapper)
+    public BaseAdminController(IMapper mapper) : base(mapper)
     {
     }
 }
