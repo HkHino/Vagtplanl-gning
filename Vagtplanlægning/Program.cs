@@ -11,8 +11,6 @@ using Vagtplanlægning.Repositories;
 using Vagtplanlægning.Repositories.MySqlRepository;
 using Vagtplanlægning.Services;
 using Serilog;
-using Serilog.Events;
-
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,9 +24,6 @@ Log.Logger = new LoggerConfiguration()
         shared: true
     )
     .CreateLogger();
-
-builder.Host.UseSerilog();
-
 
 builder.Host.UseSerilog();
 

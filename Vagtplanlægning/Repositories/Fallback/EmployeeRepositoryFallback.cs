@@ -49,7 +49,7 @@ public class EmployeeRepositoryFallback : IEmployeeRepository
         CancellationToken ct)
     {
         try
-        {   _logger.LogDebug("Attempting to execute action against MySQL employee repository.");
+        {   _logger.LogInformation("Attempting to execute action against MySQL employee repository.");
             return await action(_primary);
         }
         catch (Exception ex) when (IsTransient(ex))
