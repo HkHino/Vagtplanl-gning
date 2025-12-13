@@ -103,7 +103,7 @@ public class EmployeeController : BaseEmployeeController
     }
     
     [HttpDelete]
-    [Route("{userId:int}")]
+    [Route("delete-user/{userId:int}")]
     [AllowAnonymous]
     public async Task<IActionResult> Delete(int userId)
     {
