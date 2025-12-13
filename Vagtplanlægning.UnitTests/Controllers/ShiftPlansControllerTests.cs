@@ -480,5 +480,48 @@ namespace Vagtplanlægning.UnitTests.Controllers
                 Times.Never);
         }
 
+        [Fact]
+        public async Task UpdateName_PlanNotFound_ReturnsNotFound()
+        {
+            _repoMock
+                .Setup(r => r.GetByIdAsync("missing-plan", It.IsAny<CancellationToken>()))
+                .ReturnsAsync((ShiftPlan?)null);
+
+            var dto = new UpdateShiftPlanNameDto { Name = "New name" };
+
+            var result = await _controller.UpdateName("missing-plan", dto, CancellationToken.None);
+
+            Assert.IsType<NotFoundObjectResult>(result);
+
+            _repoMock.Verify(r => r.GetByIdAsync("missing-plan", It.IsAny<CancellationToken>()), Times.Once);
+            _repoMock.Verify(r => r.UpdateAsync(It.IsAny<ShiftPlan>(), It.IsAny<CancellationToken>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task UpdateShiftInPlan_PlanNotFound_ReturnsNotFound()
+        {
+            _repoMock
+                .Setup(r => r.GetByIdAsync("missing-plan", It.IsAny<CancellationToken>()))
+                .ReturnsAsync((ShiftPlan?)null);
+
+            var dto = new UpdateShiftInPlanDto
+            {
+                DateOfShift = new DateTime(2025, 1, 1),
+                EmployeeId = 1,
+                BicycleId = 1,
+                RouteId = 1,
+                SubstitutedId = 0
+            };
+
+            var result = await _controller.UpdateShiftInPlan("missing-plan", 0, dto, CancellationToken.None);
+
+            Assert.IsType<NotFoundObjectResult>(result.Result);
+
+            _repoMock.Verify(r => r.GetByIdAsync("missing-plan", It.IsAny<CancellationToken>()), Times.Once);
+            _repoMock.Verify(r => r.UpdateAsync(It.IsAny<ShiftPlan>(), It.IsAny<CancellationToken>()), Times.Never);
+        }
+
+
+
     }
 }

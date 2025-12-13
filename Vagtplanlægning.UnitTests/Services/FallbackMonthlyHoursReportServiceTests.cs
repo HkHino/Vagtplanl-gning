@@ -47,5 +47,38 @@ namespace Vagtplanlægning.UnitTests.Services
                 Times.Once
             );
         }
+
+
+
+        [Fact]
+        public async Task UsesMySql_WhenMySqlSucceeds_AndDoesNotCallMongo()
+        {
+            // Arrange
+            var mysql = new Mock<IMonthlyHoursReportService>();
+            var mongo = new Mock<IMonthlyHoursReportService>();
+            var logger = Mock.Of<ILogger<FallbackMonthlyHoursReportService>>();
+
+            var expected = new List<MonthlyHoursRow>
+    {
+        new MonthlyHoursRow { EmployeeId = 7, TotalMonthlyHours = 42m }
+    };
+
+            mysql.Setup(s => s.GetMonthlyHoursAsync(7, 2025, 11, It.IsAny<CancellationToken>()))
+                 .ReturnsAsync(expected);
+
+            var service = new FallbackMonthlyHoursReportService(mysql.Object, mongo.Object, logger);
+
+            // Act
+            var result = await service.GetMonthlyHoursAsync(7, 2025, 11, default);
+
+            // Assert
+            Assert.Single(result);
+            Assert.Equal(42m, result[0].TotalMonthlyHours);
+
+            mysql.Verify(s => s.GetMonthlyHoursAsync(7, 2025, 11, It.IsAny<CancellationToken>()), Times.Once);
+            mongo.Verify(s => s.GetMonthlyHoursAsync(It.IsAny<int?>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Never);
+        }
+
     }
+
 }

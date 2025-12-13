@@ -103,6 +103,89 @@ namespace Vagtplanlægning.UnitTests.Controllers
             );
         }
 
+        [Fact]
+        public async Task Login_ValidCredentials_ReturnsOk_WithTokenLikePayload()
+        {
+            // Arrange
+            var request = new SignInRequest
+            {
+                Username = "alice",
+                Password = "1234"
+            };
+
+            var passwordHash = PasswordHelper.HashPassword("1234");
+
+            var existingUser = new User
+            {
+                Username = "alice",
+                Hash = passwordHash,
+                Role = UserRole.Employee
+            };
+
+            _userRepository
+                .Setup(r => r.GetByUsernameAsync("alice"))
+                .ReturnsAsync(existingUser);
+
+            // Hvis jeres AuthController forsøger at slå employee op,
+            // så kan det være I skal "Setup" en metode på _employeeRepository her.
+            // (Hvis testen fejler med NullReference eller Verify-fejl, så paste fejlen til mig,
+            // og jeg tilpasser setup til præcis den metode jeres controller kalder.)
+
+            // Act
+            var result = await _controller.SignIn(request);
+
+            // Assert
+            var ok = Assert.IsType<OkObjectResult>(result);
+            Assert.NotNull(ok.Value);
+
+            // Tolerant check: enten string token eller objekt med token-property
+            if (ok.Value is string tokenString)
+            {
+                Assert.False(string.IsNullOrWhiteSpace(tokenString));
+                Assert.True(tokenString.Length >= 10); // “token-ish”
+            }
+            else
+            {
+                var tokenProp = ok.Value.GetType().GetProperty("token")
+                              ?? ok.Value.GetType().GetProperty("Token");
+
+                Assert.NotNull(tokenProp);
+
+                var token = tokenProp!.GetValue(ok.Value)?.ToString();
+                Assert.False(string.IsNullOrWhiteSpace(token));
+                Assert.True(token!.Length >= 10);
+            }
+
+            _userRepository.Verify(r => r.GetByUsernameAsync("alice"), Times.Once);
+        }
+
+        [Fact]
+        public async Task Login_UnknownUser_ReturnsNotFound()
+        {
+            // Arrange
+            var request = new SignInRequest
+            {
+                Username = "ghost",
+                Password = "whatever"
+            };
+
+            _userRepository
+                .Setup(r => r.GetByUsernameAsync("ghost"))
+                .ReturnsAsync((User?)null);
+
+            // Act
+            var result = await _controller.SignIn(request);
+
+            // Assert
+            var notFound = Assert.IsType<NotFoundObjectResult>(result);
+            Assert.NotNull(notFound.Value);
+
+            _userRepository.Verify(r => r.GetByUsernameAsync("ghost"), Times.Once);
+        }
+
+
+
+
         /*
 
         // --------------------------
