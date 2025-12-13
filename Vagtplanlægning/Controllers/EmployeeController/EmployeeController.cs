@@ -5,6 +5,7 @@ using Vagtplanlægning.Data;
 using Vagtplanlægning.DTOs;
 using Vagtplanlægning.Repositories;
 
+
 namespace Vagtplanlægning.Controllers.EmployeeController;
 /// <summary>
 /// API controller for the currently logged-in employee.

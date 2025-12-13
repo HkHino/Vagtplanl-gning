@@ -49,13 +49,22 @@ public class EmployeeRepositoryFallback : IEmployeeRepository
         CancellationToken ct)
     {
         try
-        {
+        {   _logger.LogDebug("Attempting to execute action against MySQL employee repository.");
             return await action(_primary);
         }
         catch (Exception ex) when (IsTransient(ex))
         {
-            _logger.LogWarning(ex, "MySQL unavailable – using MongoDB fallback for employees.");
-            return await action(_secondary);
+            try
+            {
+                _logger.LogWarning(ex, "MySQL unavailable – using MongoDB fallback for employees.");
+                return await action(_secondary);
+            }
+            catch (Exception logEx)
+            {
+                _logger.LogError(logEx, "Failed to log MongoDB unavailability.");
+                throw new Exception("server Error");
+            }           
+            
         }
     }
 

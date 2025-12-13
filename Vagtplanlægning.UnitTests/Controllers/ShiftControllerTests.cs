@@ -536,5 +536,6 @@ namespace Vagtplanlægning.UnitTests.Controllers
 
             _shiftRepo.Verify(r => r.DeleteAsync(123, It.IsAny<CancellationToken>()), Times.Once);
         }
+
     }
 }
