@@ -89,6 +89,8 @@ public class EmployeeController : BaseEmployeeController
     public async Task<IActionResult> GetEmployeeRoutesById(int employeeId)
     {
         // Get list of routes
+        if(employeeId <= 0) return BadRequest("Invalid employee ID");
+        
         var routes = await _userRepository.GetRoutesByEmployeeIdAsync(employeeId);
         Console.WriteLine("Routes:");
         foreach (var route in routes)
