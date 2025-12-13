@@ -49,7 +49,8 @@ namespace Vagtplanlægning.UnitTests.Controllers
                 _mapper,
                 _jwtHelper,
                 _userRepository.Object,
-                _employeeRepository.Object
+                _employeeRepository.Object,
+                null //Loggging not relevant for tests 
             );
 
         }
