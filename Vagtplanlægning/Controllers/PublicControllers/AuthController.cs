@@ -16,13 +16,20 @@ public class AuthController : BaseController
     private readonly JwtHelper _jwtHelper;
     private readonly IUserRepository _userRepository;
     private readonly IEmployeeRepository _employeeRepository;
+    private readonly ILogger<EmployeeRepositoryFallback> _logger;
 
 
-    public AuthController(IMapper mapper, JwtHelper jwtHelper, IUserRepository userRepository, IEmployeeRepository employeeRepository) : base(mapper)
+    public AuthController(IMapper mapper, 
+        JwtHelper jwtHelper, 
+        IUserRepository userRepository, 
+        IEmployeeRepository employeeRepository, 
+        ILogger<EmployeeRepositoryFallback> logger
+        ) : base(mapper)
     {
         _jwtHelper = jwtHelper;
         _userRepository = userRepository;
         _employeeRepository = employeeRepository;
+        _logger = logger;
     }
 
     [HttpPost]
@@ -32,22 +39,31 @@ public class AuthController : BaseController
     {
         // Check if any user with given username exists
         if (request == null) return BadRequest("Invalid request");
-        var user = await _userRepository.GetByUsernameAsync(request.Username);
-        if (user == null)
+        try
         {
-            return NotFound("User not found");
-        }
+            var user = await _userRepository.GetByUsernameAsync(request.Username);
+            if (user == null)
+            {
+                return NotFound("User not found");
+            }
 
-        // Checks if the passwords match between found user, and password in request
-        if (!PasswordHelper.VerifyHash(request.Password, user.Hash))
+            // Checks if the passwords match between found user, and password in request
+            if (!PasswordHelper.VerifyHash(request.Password, user.Hash))
+            {
+                return Unauthorized("Invalid password");
+            }
+
+            // Generates a JwT Token for the found user, if password matches
+            var token = _jwtHelper.GenerateToken(user);
+
+            return Ok(token);
+
+        }
+        catch (Exception e)
         {
-            return Unauthorized("Invalid password");
+            _logger.LogWarning("Failed login attempt for this request: {request} with error: {e.Message}", request, e.Message);
+            return NotFound("Not found.");
         }
-
-        // Generates a JwT Token for the found user, if password matches
-        var token = _jwtHelper.GenerateToken(user);
-
-        return Ok(token);
     }
 
     [HttpPost]

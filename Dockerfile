@@ -5,13 +5,13 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
 # Kopiér projektet
-COPY Vagtplanlaegning/ Vagtplanlaegning/
+COPY "Vagtplanlægning/" "Vagtplanlægning/"
 
 # Restore
-RUN dotnet restore Vagtplanlaegning/Vagtplanlaegning.csproj
+RUN dotnet restore "Vagtplanlægning/Vagtplanlægning.csproj"
 
 # Build + publish
-RUN dotnet publish Vagtplanlaegning/Vagtplanlaegning.csproj -c Release -o /app/publish
+RUN dotnet publish "Vagtplanlægning/Vagtplanlægning.csproj" -c Release -o /app/publish
 
 # ==================
 # Runtime stage
@@ -22,4 +22,4 @@ WORKDIR /app
 COPY --from=build /app/publish .
 
 EXPOSE 8080
-ENTRYPOINT ["dotnet", "Vagtplanlaegning.dll"]
+ENTRYPOINT ["dotnet", "Vagtplanlægning.dll"]
