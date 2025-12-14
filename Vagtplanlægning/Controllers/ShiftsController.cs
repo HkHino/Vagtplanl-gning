@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Vagtplanlægning.DTOs;
 using Vagtplanlægning.Repositories;
 using Vagtplanlægning.Services;
+using Vagtplanlægning.Models.DtoModels;
 
 namespace Vagtplanlægning.Controllers
 {
@@ -195,13 +196,59 @@ namespace Vagtplanlægning.Controllers
             
             return Ok(response);
         }
-        
-        [HttpDelete("shiftId")]
+
+
+        [HttpPut("{shiftId:int}")]
+        public async Task<IActionResult> Update(int shiftId, [FromBody] UpdateShiftDto dto)
+        {
+            // 1) Find shift
+            var existing = await _shiftRepo.GetByIdAsync(shiftId);
+            if (existing == null)
+            {
+                return NotFound(new { error = $"Shift with id {shiftId} not found." });
+            }
+
+            // 2) Validation (samme som Create)
+            var employees = (await _employeeRepo.GetAllAsync()).ToList();
+            if (!employees.Any(e => e.EmployeeId == dto.EmployeeId))
+            {
+                return BadRequest(new { error = $"Invalid employeeId: {dto.EmployeeId}." });
+            }
+
+            var bicycles = (await _bicycleRepo.GetAllAsync()).ToList();
+            if (!bicycles.Any(b => b.BicycleId == dto.BicycleId))
+            {
+                return BadRequest(new { error = $"Invalid bicycleId: {dto.BicycleId}." });
+            }
+
+            var routes = (await _routeRepo.GetAllAsync()).ToList();
+            if (!routes.Any(r => r.Id == dto.RouteId))
+            {
+                return BadRequest(new { error = $"Invalid routeId: {dto.RouteId}." });
+            }
+
+            // 3) substituted fallback
+            var effectiveSubstitutedId = dto.SubstitutedId > 0 ? dto.SubstitutedId : dto.EmployeeId;
+
+            // 4) Update fields
+            existing.DateOfShift = dto.DateOfShift;
+            existing.EmployeeId = dto.EmployeeId;
+            existing.BicycleId = dto.BicycleId;
+            existing.RouteId = dto.RouteId;
+            existing.SubstitutedId = effectiveSubstitutedId;
+
+            // 5) Persist
+            await _shiftRepo.UpdateAsync(existing); // skal eksistere i repo
+            return NoContent();
+        }
+
+
+
+        [HttpDelete("{shiftId:int}")]
         public async Task<IActionResult> Delete(int shiftId)
         {
             var result = await _shiftRepo.DeleteAsync(shiftId);
             return Ok(result);
         }
-        
     }
 }
