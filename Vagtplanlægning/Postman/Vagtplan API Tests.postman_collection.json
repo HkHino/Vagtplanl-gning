@@ -1,0 +1,5758 @@
+{
+	"info": {
+		"_postman_id": "27b44dd8-d22b-4e89-ab94-554e0d12233f",
+		"name": "Vagtplan API Tests",
+		"description": "This is a collection of tests for our Vagtplan project. here we will be testing some of our endpoints to provide documentation that our things function as they are supposed to.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "50755577",
+		"_collection_link": "https://team-ultra-super-mega-go.postman.co/workspace/team-ultra-super-mega-go!-Work~a55ed464-317d-43c4-8225-e3f122cd79db/collection/26161247-27b44dd8-d22b-4e89-ab94-554e0d12233f?action=share&source=collection_link&creator=50755577"
+	},
+	"item": [
+		{
+			"name": "AdminRequst",
+			"item": [
+				{
+					"name": "Negative",
+					"item": [
+						{
+							"name": "/Auth/sign-in username(Erik) with upcase insted lowcase",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"//shall findout if that okey?\r",
+											"pm.test(\"Status is 400 Created\", () => {\r",
+											"    pm.response.to.have.status(400);\r",
+											"});\r",
+											"pm.test(\"Response time under 500ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+											"});\r",
+											"if(pm.response.to.have.status(200)){\r",
+											"pm.environment.set(\"token\", pm.response.text());\r",
+											"}\r",
+											"\r",
+											"\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"username\": \"Erik\",\r\n  \"password\": \"1234\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://localhost:7129/Auth/sign-in",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"Auth",
+										"sign-in"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "/Auth/sign-in alice [ToGetToken]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status is 200 Created\", () => {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Response time under 500ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+									"});\r",
+									"\r",
+									"pm.environment.set(\"token\", pm.response.text());\r",
+									"\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"username\": \"alice\",\r\n  \"password\": \"1234\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:7129/Auth/sign-in",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7129",
+							"path": [
+								"Auth",
+								"sign-in"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/Admin/check-if-admin Positve",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response time under 500ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+									"});\r",
+									"pm.test(\"Response User successfully created\", () => {\r",
+									"    const data = pm.response.text(\"Admin Verified\");\r",
+									"    \r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:7129/api/Admin/check-if-admin",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7129",
+							"path": [
+								"api",
+								"Admin",
+								"check-if-admin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/Auth/sign-in erik [ToGetToken]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status is 200 Created\", () => {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Response time under 500ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+									"});\r",
+									"if(pm.response.to.have.status(200)){\r",
+									"pm.environment.set(\"token\", pm.response.text());\r",
+									"}\r",
+									"\r",
+									"\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"username\": \"erik\",\r\n  \"password\": \"1234\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:7129/Auth/sign-in",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7129",
+							"path": [
+								"Auth",
+								"sign-in"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/Admin/check-if-admin Positve nonAdmin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response time under 500ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:7129/api/Admin/check-if-admin",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7129",
+							"path": [
+								"api",
+								"Admin",
+								"check-if-admin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/Admin/check-if-admin Negtive false token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response time under 500ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+									"});\r",
+									"pm.test(\"Invalid token is rejected\", () => {\r",
+									"    pm.expect(pm.response.code).to.equal(401);\r",
+									"\r",
+									"    const authHeader = pm.response.headers.get(\"WWW-Authenticate\");\r",
+									"    pm.expect(authHeader).to.exist;\r",
+									"    pm.expect(authHeader).to.include('Bearer');\r",
+									"    pm.expect(authHeader).to.include('error=\"invalid_token\"');\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiIxNSIsInVuaXF1ZV9uYW1lIjoiQWxsYW4iLCJyb2xlIjoiQWRtaW4iLCJuYmYiOjE3NjU2MzIyNTcsImV4cCI6MTc2ODIyNDI1NywiaWF0IjoxNzY1NjMyMjU3LCJpc3MiOiJWYWd0cGxhbi5kayIsImF1ZCI6IlZhZ3RwbGFuLmRrIn0.9wRu_H-NlUV2S_ibCZIuD7JcqPxQqm8g_FioRhYBZqc\"",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://localhost:7129/api/Admin/check-if-admin",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7129",
+							"path": [
+								"api",
+								"Admin",
+								"check-if-admin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/Admin/check-if-admin Negtive no token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response time under 500ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+									"});\r",
+									"pm.test(\"Invalid token is rejected\", () => {\r",
+									"    pm.expect(pm.response.code).to.equal(401);\r",
+									"\r",
+									"    const authHeader = pm.response.headers.get(\"WWW-Authenticate\");\r",
+									"    pm.expect(authHeader).to.exist;\r",
+									"    pm.expect(authHeader).to.include('Bearer');\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:7129/api/Admin/check-if-admin",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7129",
+							"path": [
+								"api",
+								"Admin",
+								"check-if-admin"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "AuthRequst",
+			"item": [
+				{
+					"name": "Positive",
+					"item": [
+						{
+							"name": "/Auth/sign-up",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status is 200 Created\", () => {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"pm.test(\"Response time under 500ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+											"});\r",
+											"pm.test(\"Response User successfully created\", () => {\r",
+											"    const data = pm.response.text(\"User successfully created\");\r",
+											"    \r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"username\": \"Allan\",\r\n  \"password\": \"pik\",\r\n  \"firstName\": \"Allan\",\r\n  \"lastName\": \"Hansen\",\r\n  \"address\": \"Raorsvej\",\r\n  \"phone\": \"82345678\",\r\n  \"email\": \"fndn3@nfggf.com\",\r\n  \"experienceLevel\": 2\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://localhost:7129/Auth/sign-up",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"Auth",
+										"sign-up"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/Auth/sign-in wrong password",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status is 401 Created\", () => {\r",
+											"    pm.response.to.have.status(401);\r",
+											"});\r",
+											"pm.test(\"Response time under 500ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+											"});\r",
+											"pm.test(\"Response contains tekst\", () => {\r",
+											"    pm.expect(pm.response.text()).to.include(\"Invalid password\");\r",
+											"});\r",
+											"\r",
+											"\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"username\": \"allan\",\r\n  \"password\": \"pIk\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://localhost:7129/Auth/sign-in",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"Auth",
+										"sign-in"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/Auth/sign-in wrong User",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status is 404 Created\", () => {\r",
+											"    pm.response.to.have.status(404);\r",
+											"});\r",
+											"pm.test(\"Response time under 500ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+											"});\r",
+											"pm.test(\"Response contains tekst\", () => {\r",
+											"    pm.expect(pm.response.text()).to.include(\"User not found\");\r",
+											"});\r",
+											"\r",
+											"\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"username\": \"token\",\r\n  \"password\": \"pIk\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://localhost:7129/Auth/sign-in",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"Auth",
+										"sign-in"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/Auth/sign-in",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status is 200 Created\", () => {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"pm.test(\"Response time under 500ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+											"});\r",
+											"pm.test(\"Response contains JWT token\", () => {\r",
+											"    pm.expect(pm.response.text()).to.include(\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9\");\r",
+											"});\r",
+											"if(pm.response.to.have.status(200)){\r",
+											"    pm.environment.set(\"token\", pm.response.text());\r",
+											"}\r",
+											"\r",
+											"\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"username\": \"Allan\",\r\n  \"password\": \"pik\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://localhost:7129/Auth/sign-in",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"Auth",
+										"sign-in"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Negativ",
+					"item": [
+						{
+							"name": "/Auth/sign-in wrong User uppercase to lowercase",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status is 404 Created\", () => {\r",
+											"    pm.response.to.have.status(404);\r",
+											"});\r",
+											"pm.test(\"Response time under 500ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+											"});\r",
+											"pm.test(\"Response contains tekst\", () => {\r",
+											"    pm.expect(pm.response.text()).to.include(\"User not found\");\r",
+											"});\r",
+											"\r",
+											"\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"username\": \"allan\",\r\n  \"password\": \"pik\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://localhost:7129/Auth/sign-in",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"Auth",
+										"sign-in"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/Auth/sign-up wrong data",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status is 400 Created\", () => {\r",
+											"    pm.response.to.have.status(400);\r",
+											"});\r",
+											"pm.test(\"Response time under 500ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+											"});\r",
+											"pm.test(\"Response One or more validation errors occurred.\", () => {\r",
+											"   \r",
+											"    const data = pm.response.json();\r",
+											"    \r",
+											"    pm.expect(data.title).to.eql(\"One or more validation errors occurred.\")\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"username\": 1234,\r\n  \"password\": \"\",\r\n  \"firstName\": 1234,\r\n  \"lastName\": 1234,\r\n  \"address\": 1234,\r\n  \"phone\": 1,\r\n  \"email\": 1,\r\n  \"experienceLevel\": 17\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://localhost:7129/Auth/sign-up",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"Auth",
+										"sign-up"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "BicyclesRequst",
+			"item": [
+				{
+					"name": "Positive",
+					"item": [
+						{
+							"name": "GetAllBicycles-Positive",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status is 200 or 404\", function () {\r",
+											"    pm.expect([200, 404]).to.include(pm.response.code);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response time under 500ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+											"});\r",
+											"\r",
+											"//Response is a non-empty array\r",
+											"pm.test(\"Body is JSON array when 200\", function () {\r",
+											"    if (pm.response.code === 200) {\r",
+											"        const data = pm.response.json();\r",
+											"        pm.expect(data).to.be.an(\"array\");\r",
+											"        pm.expect(data.length).to.be.greaterThan(0);\r",
+											"    }\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Each item has bicycleId, bicycleNumber,inOperate with correct types\", () => {\r",
+											"    const data = pm.response.json();\r",
+											"    data.forEach(item => {\r",
+											"        pm.expect(item).to.have.property(\"bicycleId\");\r",
+											"        pm.expect(item.bicycleId).to.be.a(\"number\").and.to.be.greaterThan(0);\r",
+											"        pm.expect(item).to.have.property(\"bicycleNumber\");\r",
+											"        pm.expect(item.bicycleNumber).to.be.a(\"number\").and.to.be.greaterThan(0);\r",
+											"        pm.expect(item).to.have.property(\"inOperate\");\r",
+											"        pm.expect(item.inOperate).to.be.a(\"Boolean\");\r",
+											"    });\r",
+											"});\r",
+											"\r",
+											"pm.test(\"bicycleIds are unique\", () => {\r",
+											"    const data = pm.response.json();\r",
+											"    const ids = data.map(x => x.bicycleId);\r",
+											"    pm.expect(new Set(ids).size).to.eql(ids.length);\r",
+											"    \r",
+											"});\r",
+											"\r",
+											"pm.test(\"All bicycleId and bicycleNumber values are numbers\", function () {\r",
+											"    const bicycles = pm.response.json();\r",
+											"    const allIdsAreNumbers = bicycles.every(bike => typeof bike.bicycleId === \"number\");\r",
+											"    const allNumbersAreNumbers = bicycles.every(bike => typeof bike.bicycleNumber === \"number\");\r",
+											"    pm.expect(allIdsAreNumbers).to.be.true;\r",
+											"    pm.expect(allNumbersAreNumbers).to.be.true;\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://localhost:7129/api/Bicycles",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"Bicycles"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "POSTBicycles-Positive",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status is 201 Created\", () => {\r",
+											"    pm.response.to.have.status(201);\r",
+											"});\r",
+											"pm.test(\"Response time under 500ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+											"});\r",
+											"pm.test(\"Response contains id and bicycleNumber\", () => {\r",
+											"    const data = pm.response.json();\r",
+											"    pm.expect(data).to.have.property(\"bicycleId\");\r",
+											"    pm.expect(data).to.have.property(\"bicycleNumber\");\r",
+											"     pm.expect(data).to.have.property(\"inOperate\");\r",
+											"    pm.expect(data.bicycleNumber).to.eql(pm.request.body.raw ? JSON.parse(pm.request.body.raw).bicycleNumber : undefined);\r",
+											"});\r",
+											"\r",
+											"\r",
+											"//--------------------------------------------------------------------------------------\r",
+											"pm.environment.set(\"bicycleId\", pm.response.json().bicycleId);\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"bicycleNumber\": 77,\r\n  \"inOperate\": false\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://localhost:7129/api/Bicycles",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"Bicycles"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetBicycles{id}_VerifyCreationOfPost",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status is 200\", () => {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"pm.test(\"Response time under 500ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Bicycle id and bicycleNumber and inOperate are correct\", () => {\r",
+											"    const data = pm.response.json();\r",
+											"    pm.expect(data.bicycleId).to.eql(Number(pm.environment.get(\"bicycleId\")));\r",
+											"    pm.expect(data.bicycleNumber).to.be.a(\"number\");\r",
+											"   pm.expect(data.inOperate).to.be.a(\"boolean\");  // check type\r",
+											"    pm.expect(data.inOperate).to.eql(false); \r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://localhost:7129/api/Bicycles/{{bicycleId}}",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"Bicycles",
+										"{{bicycleId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "PutBicycles{id}_Update Bicycles",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status is 204\", () => {\r",
+											"    pm.response.to.have.status(204);\r",
+											"});\r",
+											"pm.test(\"Response time under 500ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+											"});\r",
+											"pm.test(\"204 NoContent has empty body\", function () {\r",
+											"    if (pm.response.code === 204) {\r",
+											"        pm.expect(pm.response.text()).to.eql(\"\");\r",
+											"    }\r",
+											"});\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"bicycleNumber\": 44,\r\n  \"inOperate\": true\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://localhost:7129/api/Bicycles/{{bicycleId}}",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"Bicycles",
+										"{{bicycleId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetBicycles{id}Verify Update Copy",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status is 200\", () => {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"bicycleNumber is 44\", () => {\r",
+											"    const data = pm.response.json();\r",
+											"    pm.expect(data.bicycleNumber).to.eql(44);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"inOperate is false\", () => {\r",
+											"    const data = pm.response.json();\r",
+											"    pm.expect(data.inOperate).to.be.a(\"boolean\");  // check type\r",
+											"    pm.expect(data.inOperate).to.eql(true);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://localhost:7129/api/Bicycles/{{bicycleId}}",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"Bicycles",
+										"{{bicycleId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "DeleteBicycles{id}",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status is 204\", function () {\r",
+											"    pm.expect([204]).to.include(pm.response.code);\r",
+											"}); \r",
+											"pm.test(\"Response time under 500ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+											"});\r",
+											"pm.test(\"Delete returns 200 or 204\", () => {\r",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 204]);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "https://localhost:7129/api/Bicycles/{{bicycleId}}",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"Bicycles",
+										"{{bicycleId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetBicycles{id}-Verify Deleting",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status is 404 Not Found\", () => {\r",
+											"    pm.response.to.have.status(404);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://localhost:7129/api/Bicycles/{{bicycleId}}",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"Bicycles",
+										"{{bicycleId}}"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Negativ",
+					"item": [
+						{
+							"name": "PostBicycles-missing fields",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status is 404 Not Found\", () => {\r",
+											"    pm.response.to.have.status(400);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Validation error contains required fields\", () => {\r",
+											"    const body = pm.response.json();\r",
+											"    pm.expect(body).to.have.property(\"errors\");\r",
+											"});\r",
+											"\r",
+											"if (pm.response.code === 201) {\r",
+											"    pm.environment.set(\"bicycleId\", pm.response.json().bicycleId);\r",
+											"}\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://localhost:7129/api/Bicycles",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"Bicycles"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete-PostBicycles missing field",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status is 404\", function () {\r",
+											"    pm.expect([404]).to.include(pm.response.code);\r",
+											"}); "
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "https://localhost:7129/api/Bicycles/{{bicycleId}}",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"Bicycles",
+										"{{bicycleId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "PostBicycles wrong types",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status 400 for invalid types\", () => {\r",
+											"    pm.response.to.have.status(400);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Errors show wrong numeric + boolean types\", () => {\r",
+											"    const body = pm.response.json();\r",
+											"    pm.expect(body.errors).to.exist;\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"bicycleNumber\": \"abc\",\r\n  \"inOperate\": \"potato\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://localhost:7129/api/Bicycles",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"Bicycles"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "DeleteBicycles wrong types",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status is 404\", function () {\r",
+											"    pm.expect([404]).to.include(pm.response.code);\r",
+											"}); "
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "https://localhost:7129/api/Bicycles/{{bicycleId}}",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"Bicycles",
+										"{{bicycleId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "PostBicycles numbers to String",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status 400 for invalid types\", () => {\r",
+											"    pm.response.to.have.status(400);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Errors show wrong numeric + boolean types\", () => {\r",
+											"    const body = pm.response.json();\r",
+											"    pm.expect(body.errors).to.exist;\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"bicycleNumber\": \"7\",\r\n  \"inOperate\": \"1\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://localhost:7129/api/Bicycles",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"Bicycles"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "DeleteBicycles numbers to String",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status is 404\", function () {\r",
+											"    pm.expect([404]).to.include(pm.response.code);\r",
+											"}); "
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "https://localhost:7129/api/Bicycles/{{bicycleId}}",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"Bicycles",
+										"{{bicycleId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "PostBicycles bolean in string",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status 400 for invalid types\", () => {\r",
+											"    pm.response.to.have.status(400);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Errors show wrong numeric + boolean types\", () => {\r",
+											"    const body = pm.response.json();\r",
+											"    pm.expect(body.errors).to.exist;\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"bicycleNumber\": \"66\",\r\n  \"inOperate\": \"false\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://localhost:7129/api/Bicycles",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"Bicycles"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "DeleteBicycles bolean in string",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status is 404\", function () {\r",
+											"    pm.expect([404]).to.include(pm.response.code);\r",
+											"}); "
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "https://localhost:7129/api/Bicycles/{{bicycleId}}",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"Bicycles",
+										"{{bicycleId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "PostBicycles bolean in integer",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status 400 for invalid types\", () => {\r",
+											"    pm.response.to.have.status(400);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Errors show wrong numeric + boolean types\", () => {\r",
+											"    const body = pm.response.json();\r",
+											"    pm.expect(body.errors).to.exist;\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"bicycleNumber\": \"66\",\r\n  \"inOperate\": 0\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://localhost:7129/api/Bicycles",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"Bicycles"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "DeleteBicycles bolean in integer",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status is 404\", function () {\r",
+											"    pm.expect([404]).to.include(pm.response.code);\r",
+											"}); "
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "https://localhost:7129/api/Bicycles/{{bicycleId}}",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"Bicycles",
+										"{{bicycleId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetAllBicycles id not exist",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 404 NotFound\", function () {\r",
+											"    pm.expect(pm.response.code).to.eql(404);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Error message present\", function () {\r",
+											"    const body = pm.response.json();\r",
+											"    pm.expect(body).to.have.property(\"error\");\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://localhost:7129/api/Bicycles/2231",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"Bicycles",
+										"2231"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "PutBicycles number not exist",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status 404 for invalid PUT body\", () => {\r",
+											"    pm.response.to.have.status(404);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Error field present in body\", function () {\r",
+											"    const body = pm.response.json();\r",
+											"    pm.expect(body).to.have.property(\"error\");\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"bicycleNumber\": 1001,\r\n  \"inOperate\": false\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://localhost:7129/api/Bicycles/999999",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"Bicycles",
+										"999999"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "PutBicycles number not exist Copy",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status 400 for invalid PUT body\", () => {\r",
+											"    pm.response.to.have.status(400);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Error field present in body\", function () {\r",
+											"    const body = pm.response.json();\r",
+											"    pm.expect(body).to.have.property(\"errors\");\r",
+											"});\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"bicycleNumber\": \"x\",\r\n  \"inOperate\": \"nope\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://localhost:7129/api/Bicycles/{{bicycleId}}",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"Bicycles",
+										"{{bicycleId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "PostBicycles-bicycleNumber =Zero/0",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status is 404 Not Found\", () => {\r",
+											"    pm.response.to.have.status(400);\r",
+											"});\r",
+											"\r",
+											"if (pm.response.code === 201) {\r",
+											"    pm.environment.set(\"bicycleId\", pm.response.json().bicycleId);\r",
+											"}"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"bicycleNumber\": \"0\",\r\n  \"inOperate\": false\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://localhost:7129/api/Bicycles",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"Bicycles"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "PostBicycles-bicycleNumber =Zero/0 delete post",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status is 204\", function () {\r",
+											"    pm.expect([204]).to.include(pm.response.code);\r",
+											"}); "
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "https://localhost:7129/api/Bicycles/{{bicycleId}}",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"Bicycles",
+										"{{bicycleId}}"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "EmployeeRequst",
+			"item": [
+				{
+					"name": "Positive",
+					"item": [
+						{
+							"name": "get-user-info",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"pm.test(\"Response time under 500ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+											"});\r",
+											"const d = pm.response.json();\r",
+											"\r",
+											"pm.test(\"user-info have expected fields\", function () {\r",
+											"    if (pm.response.code === 200) {\r",
+											"        const data = pm.response.json();\r",
+											"        \r",
+											"        pm.expect(data).to.have.property(\"userId\").that.is.a(\"number\");\r",
+											"        pm.expect(data).to.have.property(\"username\").that.is.a(\"string\");\r",
+											"        pm.expect(data).to.have.property(\"role\").that.is.a(\"string\");\r",
+											"        pm.expect(data).to.have.property(\"employeeId\").that.is.a(\"number\");\r",
+											"        pm.expect(data.employee).to.have.property(\"employeeId\").that.is.a(\"number\");\r",
+											"        pm.expect(data.employee).to.have.property(\"firstName\").that.is.a(\"string\");\r",
+											"        pm.expect(data.employee).to.have.property(\"lastName\").that.is.a(\"string\");\r",
+											"        pm.expect(data.employee).to.have.property(\"address\").that.is.a(\"string\");\r",
+											"        pm.expect(data.employee).to.have.property(\"phone\").that.is.a(\"string\");\r",
+											"        pm.expect(data.employee).to.have.property(\"email\").that.is.a(\"string\");\r",
+											"        pm.expect(data.employee).to.have.property(\"experienceLevel\").that.is.a(\"number\");\r",
+											"        pm.expect(data.employee.employeeId).to.be.equal(data.employeeId)\r",
+											"        pm.expect(Number(data.employee.phone)).to.be.a(\"number\");\r",
+											"    }\r",
+											"});\r",
+											"\r",
+											"pm.environment.set(\"new-userid\", d.userId);\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://localhost:7129/api/Employee/get-user-info",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"Employee",
+										"get-user-info"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get-employee-shifts",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"pm.test(\"Body is JSON array when 200\", function () {\r",
+											"    if (pm.response.code === 200) {\r",
+											"        const data = pm.response.json();\r",
+											"        pm.expect(data).to.be.an(\"array\");\r",
+											"        pm.expect(data.length).to.be.greaterThanOrEqual(0);\r",
+											"    }\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Body is JSON array when 200\", function () {\r",
+											"    if (pm.response.code === 200) {\r",
+											"        if(data.length>0){\r",
+											"            const data = pm.response.json();\r",
+											"            data.forEach(d => {\r",
+											"                pm.expect(d).to.have.property(\"shiftId\").that.is.a(\"number\");\r",
+											"                pm.expect(d).to.have.property(\"dateOfShift\").that.is.a(\"date\");\r",
+											"                pm.expect(d).to.have.property(\"substitutedId\").that.is.a(\"number\");\r",
+											"                pm.expect(d).to.have.property(\"routeId\").that.is.a(\"number\");\r",
+											"                pm.expect(d).to.have.property(\"startTime\").that.is.a(\"time\"|null);\r",
+											"                pm.expect(d).to.have.property(\"endTime\").that.is.a(\"time\"|null);\r",
+											"                pm.expect(d).to.have.property(\"totalHours\").that.is.a(\"decimal\"|null);\r",
+											"            })\r",
+											"        }\r",
+											"    }\r",
+											"\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://localhost:7129/api/Employee/get-employee-shifts",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"Employee",
+										"get-employee-shifts"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get-employee-routes-by-id",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Body is JSON array when 200\", function () {\r",
+											"    if (pm.response.code === 200) {\r",
+											"        const data = pm.response.json();\r",
+											"        pm.expect(data).to.be.an(\"array\");\r",
+											"        pm.expect(data.length).to.be.greaterThanOrEqual(0);\r",
+											"    }\r",
+											"});\r",
+											"\r",
+											"pm.test(\"response have expected fields\", function () {\r",
+											"    if (pm.response.code === 200) {\r",
+											"        const data = pm.response.json();\r",
+											"        const first = data[0];\r",
+											"        pm.expect(first).to.have.property(\"id\");\r",
+											"        pm.expect(first).to.have.property(\"routeNumber\");\r",
+											"    }\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Fields have correct types\", function () {\r",
+											"    if (pm.response.code === 200) {\r",
+											"        const data = pm.response.json();\r",
+											"        data.forEach(d =>{\r",
+											"            pm.expect(d).to.have.property(\"id\").that.is.a(\"number\");\r",
+											"            pm.expect(d).to.have.property(\"routeNumber\").that.is.a(\"number\");\r",
+											"        })\r",
+											"    }\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://localhost:7129/api/Employee/get-employee-routes-by-id/3",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"Employee",
+										"get-employee-routes-by-id",
+										"3"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "api/Employee/delete-user/{userid}",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"}); \r",
+											"pm.test(\"Response boolean\", () => {\r",
+											"    const data = pm.response.json();\r",
+											"    pm.expect(data).to.be.a(\"boolean\");\r",
+											"    pm.expect(data).to.equal(true);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://localhost:7129/api/Employee/delete-user/{{new-userid}}",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"Employee",
+										"delete-user",
+										"{{new-userid}}"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Negativ",
+					"item": [
+						{
+							"name": "get-user-info  no token",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"\r",
+											"\r",
+											"pm.test(\"Status code is 401\", function () {\r",
+											"    pm.response.to.have.status(401);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response time under 500ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+											"});\r",
+											"pm.test(\"Invalid token is rejected\", () => {\r",
+											"    pm.expect(pm.response.code).to.equal(401);\r",
+											"\r",
+											"    const authHeader = pm.response.headers.get(\"WWW-Authenticate\");\r",
+											"    pm.expect(authHeader).to.exist;\r",
+											"    pm.expect(authHeader).to.include('Bearer');\r",
+											"});\r",
+											"pm.test(\"Content-Length = 0\", () => {\r",
+											"    pm.expect(pm.response.code).to.equal(401);\r",
+											"\r",
+											"    const authHeader = pm.response.headers.get(\"Content-Length\");\r",
+											"    pm.expect(authHeader).to.exist;\r",
+											"    pm.expect(authHeader).to.eql('0');\r",
+											"});\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://localhost:7129/api/Employee/get-user-info",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"Employee",
+										"get-user-info"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get-employee-shifts noToken",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {\r",
+											"    pm.response.to.have.status(401);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response time under 500ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+											"});\r",
+											"pm.test(\"Invalid token is rejected\", () => {\r",
+											"    pm.expect(pm.response.code).to.equal(401);\r",
+											"\r",
+											"    const authHeader = pm.response.headers.get(\"WWW-Authenticate\");\r",
+											"    pm.expect(authHeader).to.exist;\r",
+											"    pm.expect(authHeader).to.include('Bearer');\r",
+											"});\r",
+											"pm.test(\"Content-Length = 0\", () => {\r",
+											"    pm.expect(pm.response.code).to.equal(401);\r",
+											"\r",
+											"    const authHeader = pm.response.headers.get(\"Content-Length\");\r",
+											"    pm.expect(authHeader).to.exist;\r",
+											"    pm.expect(authHeader).to.eql('0');\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://localhost:7129/api/Employee/get-employee-shifts",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"Employee",
+										"get-employee-shifts"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/Auth/sign-in wrong User check user not exist",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status is 404 Created\", () => {\r",
+											"    pm.response.to.have.status(404);\r",
+											"});\r",
+											"pm.test(\"Response time under 500ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+											"});\r",
+											"pm.test(\"Response contains tekst\", () => {\r",
+											"    pm.expect(pm.response.text()).to.include(\"User not found\");\r",
+											"});\r",
+											"\r",
+											"\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"username\": \"{{new-username}}\",\r\n  \"password\": \"{{new-password}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://localhost:7129/Auth/sign-in",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"Auth",
+										"sign-in"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "DeleteEmployees{id} check",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status is 204 Created\", function () {\r",
+											"    pm.response.to.have.status(204);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "https://localhost:7129/api/Employees/{{new-userid}}",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"Employees",
+										"{{new-userid}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetEmployees{Id} check user not exist",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// {{employeeId}} : is a globe Environment variable some is places in post employees \r",
+											"pm.test(\"Status is 404\", () => {\r",
+											"    pm.response.to.have.status(404);\r",
+											"});\r",
+											"\r",
+											"// Required fields should exist-------------------------------------------------------------\r",
+											"pm.test(\"Required employee fields exist\", function () {\r",
+											"    if (pm.response.code === 404) {\r",
+											"        const data = pm.response.json();\r",
+											"        pm.expect(data.error).to.be.a(\"string\");\r",
+											"    }\r",
+											"});\r",
+											"\r",
+											"\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": []
+								},
+								"url": {
+									"raw": "https://localhost:7129/api/Employees/{{new-userid}}",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"Employees",
+										"{{new-userid}}"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "GetEmployee{Id}",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"body": {
+											"mode": "formdata",
+											"formdata": []
+										},
+										"url": {
+											"raw": "https://localhost:7129/api/Employees/{{employeeId}}",
+											"protocol": "https",
+											"host": [
+												"localhost"
+											],
+											"port": "7129",
+											"path": [
+												"api",
+												"Employees",
+												"{{employeeId}}"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": null,
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Date",
+											"value": "Thu, 11 Dec 2025 22:56:10 GMT"
+										},
+										{
+											"key": "Server",
+											"value": "Kestrel"
+										},
+										{
+											"key": "Transfer-Encoding",
+											"value": "chunked"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"employeeId\": 2,\n    \"firstName\": \"Bob\",\n    \"lastName\": \"Bendtsen\",\n    \"address\": \"Street 2\",\n    \"phone\": \"22222222\",\n    \"email\": \"bob@mail.com\",\n    \"experienceLevel\": 1\n}"
+								}
+							]
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "EmployeesRequst",
+			"item": [
+				{
+					"name": "Positive",
+					"item": [
+						{
+							"name": "GetAllEmployees",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// 1) Statuskode stadig OK/404\r",
+											"pm.test(\"Status is 200 or 404\", function () {\r",
+											"    pm.expect([200, 404]).to.include(pm.response.code);\r",
+											"});\r",
+											"pm.test(\"Response time under 500ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+											"});\r",
+											"// 2) Hvis 200: body skal være et array\r",
+											"pm.test(\"Body is JSON array when 200\", function () {\r",
+											"    if (pm.response.code === 200) {\r",
+											"        const data = pm.response.json();\r",
+											"        pm.expect(data).to.be.an(\"array\");\r",
+											"        pm.expect(data.length).to.be.greaterThan(0);\r",
+											"    }\r",
+											"});\r",
+											"\r",
+											"// 3) Hvis 200: første element har nogle vigtige felter\r",
+											"pm.test(\"Employees have expected fields\", function () {\r",
+											"    if (pm.response.code === 200) {\r",
+											"        const data = pm.response.json();\r",
+											"        data.forEach(d=>{\r",
+											"            pm.expect(d).to.have.property(\"employeeId\");\r",
+											"            pm.expect(d).to.have.property(\"firstName\");\r",
+											"            pm.expect(d).to.have.property(\"lastName\");\r",
+											"            pm.expect(d).to.have.property(\"address\");\r",
+											"            pm.expect(d).to.have.property(\"phone\");\r",
+											"            pm.expect(d).to.have.property(\"email\");\r",
+											"            pm.expect(d).to.have.property(\"experienceLevel\");\r",
+											"        });\r",
+											"\r",
+											"        \r",
+											"    }\r",
+											"});\r",
+											"pm.test(\"Fields have correct types\", function () {\r",
+											"    if (pm.response.code === 200) {\r",
+											"        const data = pm.response.json();\r",
+											"        data.forEach(d => {\r",
+											"            pm.expect(d.employeeId).to.be.a(\"number\").and.to.be.greaterThan(0);\r",
+											"            pm.expect(d.firstName).to.be.a(\"string\");\r",
+											"            pm.expect(d.lastName).to.be.a(\"string\");\r",
+											"            pm.expect(d.address).to.be.a(\"string\");\r",
+											"            pm.expect(Number(d.phone)).to.be.a(\"number\").and.to.be.greaterThan(0);\r",
+											"            pm.expect(d.email).to.be.a(\"string\");\r",
+											"            pm.expect(d.experienceLevel).to.be.a(\"number\").and.to.be.greaterThan(0);\r",
+											"        });\r",
+											"    }\r",
+											"});\r",
+											"\r",
+											"pm.test(\"IDs are unique\", () => {\r",
+											"    const data = pm.response.json();\r",
+											"    const ids = data.map(x => x.employeeId);\r",
+											"    pm.expect(new Set(ids).size).to.eql(ids.length);\r",
+											"});\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://localhost:7129/api/Employees",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"Employees"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "post employees",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status is 201 Created\", function () {\r",
+											"    pm.response.to.have.status(201);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response is an object\", function () {\r",
+											"    const data = pm.response.json();\r",
+											"    pm.expect(data).to.be.an(\"object\");\r",
+											"});\r",
+											"\r",
+											"// Check required fields exist\r",
+											"pm.test(\"Response contains required fields\", function () {\r",
+											"    const d = pm.response.json();\r",
+											"\r",
+											"    [\"employeeId\", \"firstName\", \"lastName\", \"address\", \"phone\", \"email\", \"experienceLevel\"]\r",
+											"        .forEach(f => pm.expect(d).to.have.property(f));\r",
+											"});\r",
+											"\r",
+											"// employeeId must be a number and generated by server\r",
+											"pm.test(\"employeeId is a number and greater than 0\", function () {\r",
+											"    const d = pm.response.json();\r",
+											"    pm.expect(d.employeeId).to.be.a(\"number\");\r",
+											"    pm.expect(d.employeeId).to.be.greaterThan(0);\r",
+											"});\r",
+											"\r",
+											"// Optional: verify the server returned what you sent\r",
+											"pm.test(\"Returned data matches request body\", function () {\r",
+											"    const sent = pm.request.body ? JSON.parse(pm.request.body.raw) : {};\r",
+											"    const d = pm.response.json();\r",
+											"\r",
+											"    pm.expect(d.firstName).to.eql(sent.firstName);\r",
+											"    pm.expect(d.lastName).to.eql(sent.lastName);\r",
+											"    pm.expect(d.address).to.eql(sent.address);\r",
+											"    pm.expect(d.phone).to.eql(sent.phone);\r",
+											"    pm.expect(d.email).to.eql(sent.email);\r",
+											"    pm.expect(d.experienceLevel).to.eql(sent.experienceLevel);\r",
+											"});\r",
+											"\r",
+											"//Capture employeeId in POST response to set environment variable for future requests e.g. GET, PUT and DELETE\r",
+											"const data = pm.response.json();                  // parse response JSON\r",
+											"pm.environment.set(\"employeeId\", data.employeeId);"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"firstName\": \"Ib\",\r\n  \"lastName\": \"Larsen\",\r\n  \"address\": \"hello street 2\",\r\n  \"phone\": \"12345678\",\r\n  \"email\": \"dsdds@gfg.com\",\r\n  \"experienceLevel\": 1\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://localhost:7129/api/Employees",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"Employees"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetEmployees{Id}",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// {{employeeId}} : is a globe Environment variable some is places in post employees \r",
+											"pm.test(\"Status is 200 or 404\", function () {\r",
+											"    pm.expect([200, 404]).to.include(pm.response.code);\r",
+											"});\r",
+											"console.log(pm.environment.get(\"employeeId\"));\r",
+											"//--------------------------------------------------------------------------------------\r",
+											"pm.test(\"Response time below 500ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+											"});\r",
+											"\r",
+											"// Body must be an object (not an array)-------------------------------------------------\r",
+											"pm.test(\"Response is an object, not an array\", function () {\r",
+											"    const data = pm.response.json();\r",
+											"    pm.expect(data).to.be.an(\"object\");\r",
+											"    pm.expect(data).not.to.be.an(\"array\");\r",
+											"})\r",
+											"// Required fields should exist-------------------------------------------------------------\r",
+											"pm.test(\"Required employee fields exist\", function () {\r",
+											"    if (pm.response.code === 200) {\r",
+											"        const data = pm.response.json();\r",
+											"\r",
+											"        const required = [\r",
+											"            \"employeeId\",\r",
+											"            \"firstName\",\r",
+											"            \"lastName\",\r",
+											"            \"address\",\r",
+											"            \"phone\",\r",
+											"            \"email\",\r",
+											"            \"experienceLevel\"\r",
+											"        ];\r",
+											"        required.forEach(f => pm.expect(data).to.have.property(f));\r",
+											"    }\r",
+											"});\r",
+											"//--------------------------------------------------------------------------------------\r",
+											"pm.test(\"Fields have correct types\", function () {\r",
+											"    if (pm.response.code === 200) {\r",
+											"        const d = pm.response.json();\r",
+											"\r",
+											"        pm.expect(d.employeeId).to.be.a(\"number\");\r",
+											"        pm.expect(d.firstName).to.be.a(\"string\");\r",
+											"        pm.expect(d.lastName).to.be.a(\"string\");\r",
+											"        pm.expect(d.address).to.be.a(\"string\");\r",
+											"        pm.expect(Number(d.phone)).to.be.a(\"number\");\r",
+											"        pm.expect(d.email).to.be.a(\"string\");\r",
+											"        pm.expect(d.experienceLevel).to.be.a(\"number\");\r",
+											"    }\r",
+											"});\r",
+											"//-------------------------------------------------------------------------\r",
+											"pm.test(\"No string fields are empty\", function () {\r",
+											"    const d = pm.response.json();\r",
+											"\r",
+											"    [\"firstName\", \"lastName\", \"address\", \"phone\", \"email\"].forEach(f => {\r",
+											"        pm.expect(d[f].length).to.be.greaterThan(0);\r",
+											"    });\r",
+											"});\r",
+											"\r",
+											"// ID in the object must match the one in the URL\r",
+											"pm.test(\"employeeId matches URL\", function () {\r",
+											"    const d = pm.response.json();\r",
+											"    const url = pm.request.url.toString();\r",
+											"    const idFromUrl = Number(url.split(\"/\").pop());\r",
+											"    pm.expect(d.employeeId).to.eql(idFromUrl);\r",
+											"});\r",
+											"\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": []
+								},
+								"url": {
+									"raw": "https://localhost:7129/api/Employees/{{employeeId}}",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"Employees",
+										"{{employeeId}}"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "GetEmployee{Id}",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"body": {
+											"mode": "formdata",
+											"formdata": []
+										},
+										"url": {
+											"raw": "https://localhost:7129/api/Employees/{{employeeId}}",
+											"protocol": "https",
+											"host": [
+												"localhost"
+											],
+											"port": "7129",
+											"path": [
+												"api",
+												"Employees",
+												"{{employeeId}}"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": null,
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Date",
+											"value": "Thu, 11 Dec 2025 22:56:10 GMT"
+										},
+										{
+											"key": "Server",
+											"value": "Kestrel"
+										},
+										{
+											"key": "Transfer-Encoding",
+											"value": "chunked"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"employeeId\": 2,\n    \"firstName\": \"Bob\",\n    \"lastName\": \"Bendtsen\",\n    \"address\": \"Street 2\",\n    \"phone\": \"22222222\",\n    \"email\": \"bob@mail.com\",\n    \"experienceLevel\": 1\n}"
+								}
+							]
+						},
+						{
+							"name": "PutEmployees{id}",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// {{employeeId}} : is a globe Environment variable some is places in post employees \r",
+											"pm.test(\"Status is 200 or 204 or 404\", function () {\r",
+											"    pm.expect([200,204, 404]).to.include(pm.response.code);\r",
+											"});\r",
+											"console.log(pm.environment.get(\"employeeId\"));\r",
+											"pm.test(\"Response time below 500ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+											"});\r",
+											"pm.test(\"Response body is empty or valid JSON\", function () {\r",
+											"    const raw = pm.response.text().trim();\r",
+											"\r",
+											"    if (raw === \"\") {\r",
+											"        pm.expect(raw).to.eql(\"\");  // pass when empty\r",
+											"    } else {\r",
+											"        pm.expect(() => pm.response.json()).not.to.throw(); // pass when valid JSON\r",
+											"    }\r",
+											"});\r",
+											"\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"firstName\": \"Ib\",\r\n  \"lastName\": \"Larsen\",\r\n  \"address\": \"hello street 2\",\r\n  \"phone\": \"12355678\",\r\n  \"email\": \"dsdds@gfg.com\",\r\n  \"experienceLevel\": 3\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://localhost:7129/api/Employees/{{employeeId}}",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"Employees",
+										"{{employeeId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "PutCheckGetEmployees{id}",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// {{employeeId}} : is a globe Environment variable some is places in post employees \r",
+											"pm.test(\"Status is 200 Created\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"//--------------------------------------------------------------------------------------\r",
+											"pm.test(\"Response time below 500ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+											"});\r",
+											"//-----------------------------------------------------------------------------------\r",
+											"pm.test(\"GET returns updated employee\", () => {\r",
+											"    const body = pm.response.json();\r",
+											"    pm.expect(body.phone).to.eql(\"12355678\");\r",
+											"});\r",
+											"\r",
+											"// Body must be an object (not an array)-------------------------------------------------\r",
+											"pm.test(\"Response is an object, not an array\", function () {\r",
+											"    const data = pm.response.json();\r",
+											"    pm.expect(data).to.be.an(\"object\");\r",
+											"    pm.expect(data).not.to.be.an(\"array\");\r",
+											"})\r",
+											"// Required fields should exist-------------------------------------------------------------\r",
+											"pm.test(\"Required employee fields exist\", function () {\r",
+											"    if (pm.response.code === 200) {\r",
+											"        const data = pm.response.json();\r",
+											"\r",
+											"        const required = [\r",
+											"            \"employeeId\",\r",
+											"            \"firstName\",\r",
+											"            \"lastName\",\r",
+											"            \"address\",\r",
+											"            \"phone\",\r",
+											"            \"email\",\r",
+											"            \"experienceLevel\"\r",
+											"        ];\r",
+											"        required.forEach(f => pm.expect(data).to.have.property(f));\r",
+											"    }\r",
+											"});\r",
+											"//--------------------------------------------------------------------------------------\r",
+											"pm.test(\"Fields have correct types\", function () {\r",
+											"    if (pm.response.code === 200) {\r",
+											"        const d = pm.response.json();\r",
+											"\r",
+											"        pm.expect(d.employeeId).to.be.a(\"number\");\r",
+											"        pm.expect(d.firstName).to.be.a(\"string\");\r",
+											"        pm.expect(d.lastName).to.be.a(\"string\");\r",
+											"        pm.expect(d.address).to.be.a(\"string\");\r",
+											"        pm.expect(Number(d.phone)).to.be.a(\"number\");\r",
+											"        pm.expect(d.email).to.be.a(\"string\");\r",
+											"        pm.expect(d.experienceLevel).to.be.a(\"number\");\r",
+											"    }\r",
+											"});\r",
+											"//-------------------------------------------------------------------------\r",
+											"pm.test(\"No string fields are empty\", function () {\r",
+											"    const d = pm.response.json();\r",
+											"\r",
+											"    [\"firstName\", \"lastName\", \"address\", \"phone\", \"email\"].forEach(f => {\r",
+											"        pm.expect(d[f].length).to.be.greaterThan(0);\r",
+											"    });\r",
+											"});\r",
+											"\r",
+											"// ID in the object must match the one in the URL\r",
+											"pm.test(\"employeeId matches URL\", function () {\r",
+											"    const d = pm.response.json();\r",
+											"    const url = pm.request.url.toString();\r",
+											"    const idFromUrl = Number(url.split(\"/\").pop());\r",
+											"    pm.expect(d.employeeId).to.eql(idFromUrl);\r",
+											"});\r",
+											"\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": []
+								},
+								"url": {
+									"raw": "https://localhost:7129/api/Employees/{{employeeId}}",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"Employees",
+										"{{employeeId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "DeleteEmployees{id}",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status is 204 Created\", function () {\r",
+											"    pm.response.to.have.status(204);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "https://localhost:7129/api/Employees/{{employeeId}}",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"Employees",
+										"{{employeeId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "DeleteCheckEmployees",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// {{employeeId}} : is a globe Environment variable some is places in post employees \r",
+											"pm.test(\"Status is 404\", function () {\r",
+											"    pm.expect([404]).to.include(pm.response.code);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Employee with id not found\", function () {\r",
+											"    const p = pm.response.json();\r",
+											"    const id = pm.environment.get(\"employeeId\");\r",
+											"\r",
+											"    // Build the expected message using the actual id value\r",
+											"    const expected = `Employee with id ${id} not found.`;\r",
+											"\r",
+											"    pm.expect(p.error).to.eql(expected);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://localhost:7129/api/Employees/{{employeeId}}",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"Employees",
+										"{{employeeId}}"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Negativ",
+					"item": [
+						{
+							"name": "GetEmployees{Id} wrong id",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// {{employeeId}} : is a globe Environment variable some is places in post employees \r",
+											"pm.test(\"Status is 200 or 404\", function () {\r",
+											"    pm.expect([200, 404]).to.include(pm.response.code);\r",
+											"});\r",
+											"console.log(pm.environment.get(\"employeeId\"));\r",
+											"//--------------------------------------------------------------------------------------\r",
+											"pm.test(\"Response time below 500ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Status is 404\", function () {\r",
+											"    pm.expect([404]).to.include(pm.response.code);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Employee with id not found\", function () {\r",
+											"    const p = pm.response.json();\r",
+											"    const id = pm.environment.get(\"employeeId\");\r",
+											"\r",
+											"    // Build the expected message using the actual id value\r",
+											"    const expected = `Employee with id 7777 not found.`;\r",
+											"\r",
+											"    pm.expect(p.error).to.eql(expected);\r",
+											"});\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": []
+								},
+								"url": {
+									"raw": "https://localhost:7129/api/Employees/7777",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"Employees",
+										"7777"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "GetEmployee{Id}",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"body": {
+											"mode": "formdata",
+											"formdata": []
+										},
+										"url": {
+											"raw": "https://localhost:7129/api/Employees/{{employeeId}}",
+											"protocol": "https",
+											"host": [
+												"localhost"
+											],
+											"port": "7129",
+											"path": [
+												"api",
+												"Employees",
+												"{{employeeId}}"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": null,
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Date",
+											"value": "Thu, 11 Dec 2025 22:56:10 GMT"
+										},
+										{
+											"key": "Server",
+											"value": "Kestrel"
+										},
+										{
+											"key": "Transfer-Encoding",
+											"value": "chunked"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"employeeId\": 2,\n    \"firstName\": \"Bob\",\n    \"lastName\": \"Bendtsen\",\n    \"address\": \"Street 2\",\n    \"phone\": \"22222222\",\n    \"email\": \"bob@mail.com\",\n    \"experienceLevel\": 1\n}"
+								}
+							]
+						},
+						{
+							"name": "GetEmployees{Id} letter id",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status is 404\", function () {\r",
+											"    pm.expect([404]).to.include(pm.response.code);\r",
+											"});\r",
+											"\r",
+											"//--------------------------------------------------------------------------------------\r",
+											"pm.test(\"Response time below 500ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+											"});\r",
+											"\r",
+											"\r",
+											"// Required fields should exist-------------------------------------------------------------\r",
+											"pm.test(\"Required employee fields exist\", function () {\r",
+											"    if (pm.response.code === 200) {\r",
+											"        const data = pm.response.json();\r",
+											"\r",
+											"        const required = [\r",
+											"            \"employeeId\",\r",
+											"            \"firstName\",\r",
+											"            \"lastName\",\r",
+											"            \"address\",\r",
+											"            \"phone\",\r",
+											"            \"email\",\r",
+											"            \"experienceLevel\"\r",
+											"        ];\r",
+											"        required.forEach(f => pm.expect(data).to.have.property(f));\r",
+											"    }\r",
+											"});\r",
+											"//--------------------------------------------------------------------------------------\r",
+											"pm.test(\"Fields have correct types\", function () {\r",
+											"    if (pm.response.code === 200) {\r",
+											"        const d = pm.response.json();\r",
+											"\r",
+											"        pm.expect(d.employeeId).to.be.a(\"number\");\r",
+											"        pm.expect(d.firstName).to.be.a(\"string\");\r",
+											"        pm.expect(d.lastName).to.be.a(\"string\");\r",
+											"        pm.expect(d.address).to.be.a(\"string\");\r",
+											"        pm.expect(Number(d.phone)).to.be.a(\"number\");\r",
+											"        pm.expect(d.email).to.be.a(\"string\");\r",
+											"        pm.expect(d.experienceLevel).to.be.a(\"number\");\r",
+											"    }\r",
+											"});\r",
+											"\r",
+											"\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": []
+								},
+								"url": {
+									"raw": "https://localhost:7129/api/Employees/d",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"Employees",
+										"d"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "GetEmployee{Id}",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"body": {
+											"mode": "formdata",
+											"formdata": []
+										},
+										"url": {
+											"raw": "https://localhost:7129/api/Employees/{{employeeId}}",
+											"protocol": "https",
+											"host": [
+												"localhost"
+											],
+											"port": "7129",
+											"path": [
+												"api",
+												"Employees",
+												"{{employeeId}}"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": null,
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Date",
+											"value": "Thu, 11 Dec 2025 22:56:10 GMT"
+										},
+										{
+											"key": "Server",
+											"value": "Kestrel"
+										},
+										{
+											"key": "Transfer-Encoding",
+											"value": "chunked"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"employeeId\": 2,\n    \"firstName\": \"Bob\",\n    \"lastName\": \"Bendtsen\",\n    \"address\": \"Street 2\",\n    \"phone\": \"22222222\",\n    \"email\": \"bob@mail.com\",\n    \"experienceLevel\": 1\n}"
+								}
+							]
+						},
+						{
+							"name": "GetEmployees{Id} string id Copy",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status is 404\", function () {\r",
+											"    pm.expect([404]).to.include(pm.response.code);\r",
+											"});\r",
+											"\r",
+											"//--------------------------------------------------------------------------------------\r",
+											"pm.test(\"Response time below 500ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+											"});\r",
+											"\r",
+											"\r",
+											"// Required fields should exist-------------------------------------------------------------\r",
+											"pm.test(\"Required employee fields exist\", function () {\r",
+											"    if (pm.response.code === 200) {\r",
+											"        const data = pm.response.json();\r",
+											"\r",
+											"        const required = [\r",
+											"            \"employeeId\",\r",
+											"            \"firstName\",\r",
+											"            \"lastName\",\r",
+											"            \"address\",\r",
+											"            \"phone\",\r",
+											"            \"email\",\r",
+											"            \"experienceLevel\"\r",
+											"        ];\r",
+											"        required.forEach(f => pm.expect(data).to.have.property(f));\r",
+											"    }\r",
+											"});\r",
+											"//--------------------------------------------------------------------------------------\r",
+											"pm.test(\"Fields have correct types\", function () {\r",
+											"    if (pm.response.code === 200) {\r",
+											"        const d = pm.response.json();\r",
+											"\r",
+											"        pm.expect(d.employeeId).to.be.a(\"number\");\r",
+											"        pm.expect(d.firstName).to.be.a(\"string\");\r",
+											"        pm.expect(d.lastName).to.be.a(\"string\");\r",
+											"        pm.expect(d.address).to.be.a(\"string\");\r",
+											"        pm.expect(Number(d.phone)).to.be.a(\"number\");\r",
+											"        pm.expect(d.email).to.be.a(\"string\");\r",
+											"        pm.expect(d.experienceLevel).to.be.a(\"number\");\r",
+											"    }\r",
+											"});\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": []
+								},
+								"url": {
+									"raw": "https://localhost:7129/api/Employees/\"d\"",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"Employees",
+										"\"d\""
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "GetEmployee{Id}",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"body": {
+											"mode": "formdata",
+											"formdata": []
+										},
+										"url": {
+											"raw": "https://localhost:7129/api/Employees/{{employeeId}}",
+											"protocol": "https",
+											"host": [
+												"localhost"
+											],
+											"port": "7129",
+											"path": [
+												"api",
+												"Employees",
+												"{{employeeId}}"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": null,
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Date",
+											"value": "Thu, 11 Dec 2025 22:56:10 GMT"
+										},
+										{
+											"key": "Server",
+											"value": "Kestrel"
+										},
+										{
+											"key": "Transfer-Encoding",
+											"value": "chunked"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"employeeId\": 2,\n    \"firstName\": \"Bob\",\n    \"lastName\": \"Bendtsen\",\n    \"address\": \"Street 2\",\n    \"phone\": \"22222222\",\n    \"email\": \"bob@mail.com\",\n    \"experienceLevel\": 1\n}"
+								}
+							]
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "HealthRequst -",
+			"item": [
+				{
+					"name": "Negativ",
+					"item": []
+				},
+				{
+					"name": "Positive",
+					"item": []
+				}
+			]
+		},
+		{
+			"name": "ReportsRequst",
+			"item": [
+				{
+					"name": "Negativ",
+					"item": [
+						{
+							"name": "api/monthly-hours user not exist",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status is 401\", () => {\r",
+											"    pm.response.to.have.status(401);\r",
+											"});\r",
+											"pm.test(\"Response time under 500ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+											"});\r",
+											"pm.test(\"Body is JSON array when 200\", function () {\r",
+											"    if (pm.response.code === 200) {\r",
+											"        const data = pm.response.json();\r",
+											"        pm.expect(data).to.be.an(\"array\");\r",
+											"        pm.expect(data.length).to.be.greaterThanOrEqual(0);\r",
+											"    }\r",
+											"});\r",
+											"pm.test(\"Each item has monthly-hours with correct types\", () => {\r",
+											"    const data = pm.response.json();\r",
+											"    data.forEach(item => {\r",
+											"        pm.expect(item).to.have.property(\"employeeId\").that.is.a(\"Number\");\r",
+											"        pm.expect(item).to.have.property(\"firstName\").that.is.a(\"String\");\r",
+											"        pm.expect(item).to.have.property(\"lastName\").that.is.a(\"String\");\r",
+											"        pm.expect(item).to.have.property(\"year\").that.is.a(\"Number\");\r",
+											"        pm.expect(item).to.have.property(\"month\").that.is.a(\"Number\");\r",
+											"        pm.expect(item).to.have.property(\"totalMonthlyHours\").that.is.a(\"number\");\r",
+											"        pm.expect(item).to.have.property(\"hasSubstituted\").that.is.a(\"Boolean\");\r",
+											"    });\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://localhost:7129/api/reports/monthly-hours?employeeId=7777&year={{year}}&month={{moth}}",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"reports",
+										"monthly-hours"
+									],
+									"query": [
+										{
+											"key": "employeeId",
+											"value": "7777"
+										},
+										{
+											"key": "year",
+											"value": "{{year}}"
+										},
+										{
+											"key": "month",
+											"value": "{{moth}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "api/monthly-hours user not exist Copy",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status is 400\", () => {\r",
+											"    pm.response.to.have.status(400);\r",
+											"});\r",
+											"pm.test(\"Response time under 500ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+											"});\r",
+											"pm.test(\"Body is JSON array when 200\", function () {\r",
+											"    if (pm.response.code === 200) {\r",
+											"        const data = pm.response.json();\r",
+											"        pm.expect(data).to.be.an(\"array\");\r",
+											"        pm.expect(data.length).to.be.greaterThanOrEqual(0);\r",
+											"    }\r",
+											"});\r",
+											"pm.test(\"Response structure is correct\", () => {\r",
+											"    const data = pm.response.json();\r",
+											"    \r",
+											"    pm.expect(data).to.have.property(\"errors\").that.is.a(\"Object\");\r",
+											"    pm.expect(data.title).to.equal(\"One or more validation errors occurred.\");\r",
+											"    pm.expect(data.errors.employeeId[0]).to.equal(\"The value 'employee' is not valid.\");\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://localhost:7129/api/reports/monthly-hours?employeeId=employee&year={{year}}&month={{moth}}",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"reports",
+										"monthly-hours"
+									],
+									"query": [
+										{
+											"key": "employeeId",
+											"value": "employee"
+										},
+										{
+											"key": "year",
+											"value": "{{year}}"
+										},
+										{
+											"key": "month",
+											"value": "{{moth}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "api/monthly-hours year 9999",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status is 401\", () => {\r",
+											"    pm.response.to.have.status(401);\r",
+											"});\r",
+											"pm.test(\"Response time under 500ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+											"});\r",
+											"pm.test(\"Body is JSON array when 200\", function () {\r",
+											"    if (pm.response.code === 200) {\r",
+											"        const data = pm.response.json();\r",
+											"        pm.expect(data).to.be.an(\"array\");\r",
+											"        pm.expect(data.length).to.be.greaterThanOrEqual(0);\r",
+											"    }\r",
+											"});\r",
+											"pm.test(\"Each item has monthly-hours with correct types\", () => {\r",
+											"    const data = pm.response.json();\r",
+											"    data.forEach(item => {\r",
+											"        pm.expect(item).to.have.property(\"employeeId\").that.is.a(\"Number\");\r",
+											"        pm.expect(item).to.have.property(\"firstName\").that.is.a(\"String\");\r",
+											"        pm.expect(item).to.have.property(\"lastName\").that.is.a(\"String\");\r",
+											"        pm.expect(item).to.have.property(\"year\").that.is.a(\"Number\");\r",
+											"        pm.expect(item).to.have.property(\"month\").that.is.a(\"Number\");\r",
+											"        pm.expect(item).to.have.property(\"totalMonthlyHours\").that.is.a(\"number\");\r",
+											"        pm.expect(item).to.have.property(\"hasSubstituted\").that.is.a(\"Boolean\");\r",
+											"    });\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://localhost:7129/api/reports/monthly-hours?employeeId={{employeeId}}&year=9999&month={{moth}}",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"reports",
+										"monthly-hours"
+									],
+									"query": [
+										{
+											"key": "employeeId",
+											"value": "{{employeeId}}"
+										},
+										{
+											"key": "year",
+											"value": "9999"
+										},
+										{
+											"key": "month",
+											"value": "{{moth}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "api/monthly-hours yearString \"9999\"",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status is 400\", () => {\r",
+											"    pm.response.to.have.status(400);\r",
+											"});\r",
+											"pm.test(\"Response time under 500ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+											"});\r",
+											"pm.test(\"Body is JSON array when 200\", function () {\r",
+											"    if (pm.response.code === 200) {\r",
+											"        const data = pm.response.json();\r",
+											"        pm.expect(data).to.be.an(\"array\");\r",
+											"        pm.expect(data.length).to.be.greaterThanOrEqual(0);\r",
+											"    }\r",
+											"});\r",
+											"pm.test(\"Response structure is correct\", () => {\r",
+											"    const data = pm.response.json();\r",
+											"    \r",
+											"    pm.expect(data).to.have.property(\"errors\").that.is.a(\"Object\");\r",
+											"    pm.expect(data.title).to.equal(\"One or more validation errors occurred.\");\r",
+											"    pm.expect(data.errors.year[0]).to.equal(\"The value '\\\"9999\\\"' is not valid.\");\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://localhost:7129/api/reports/monthly-hours?employeeId={{employeeId}}&year=\"9999\"&month={{moth}}",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"reports",
+										"monthly-hours"
+									],
+									"query": [
+										{
+											"key": "employeeId",
+											"value": "{{employeeId}}"
+										},
+										{
+											"key": "year",
+											"value": "\"9999\""
+										},
+										{
+											"key": "month",
+											"value": "{{moth}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "api/monthly-hours moth 13",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status is 400\", () => {\r",
+											"    pm.response.to.have.status(400);\r",
+											"});\r",
+											"pm.test(\"Response time under 500ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+											"});\r",
+											"pm.test(\"Body is JSON array when 200\", function () {\r",
+											"    if (pm.response.code === 200) {\r",
+											"        const data = pm.response.json();\r",
+											"        pm.expect(data).to.be.an(\"array\");\r",
+											"        pm.expect(data.length).to.be.greaterThanOrEqual(0);\r",
+											"    }\r",
+											"});\r",
+											"pm.test(\"Response structure is correct\", () => {\r",
+											"    const data = pm.response.json();\r",
+											"    \r",
+											"    pm.expect(data).to.have.property(\"error\").that.is.a(\"string\");\r",
+											"    pm.expect(data.error).to.equal(\"Month must be between 1 and 12.\");\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://localhost:7129/api/reports/monthly-hours?employeeId={{employeeId}}&year={{year}}&month=13",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"reports",
+										"monthly-hours"
+									],
+									"query": [
+										{
+											"key": "employeeId",
+											"value": "{{employeeId}}"
+										},
+										{
+											"key": "year",
+											"value": "{{year}}"
+										},
+										{
+											"key": "month",
+											"value": "13"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "api/monthly-hours mothString \"13\"",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status is 400\", () => {\r",
+											"    pm.response.to.have.status(400);\r",
+											"});\r",
+											"pm.test(\"Response time under 500ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+											"});\r",
+											"pm.test(\"Body is JSON array when 200\", function () {\r",
+											"    if (pm.response.code === 200) {\r",
+											"        const data = pm.response.json();\r",
+											"        pm.expect(data).to.be.an(\"array\");\r",
+											"        pm.expect(data.length).to.be.greaterThanOrEqual(0);\r",
+											"    }\r",
+											"});\r",
+											"pm.test(\"Response structure is correct\", () => {\r",
+											"    const data = pm.response.json();\r",
+											"    \r",
+											"    pm.expect(data).to.have.property(\"errors\").that.is.a(\"Object\");\r",
+											"    pm.expect(data.title).to.equal(\"One or more validation errors occurred.\");\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://localhost:7129/api/reports/monthly-hours?employeeId={{employeeId}}&year={{year}}&month=d",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"reports",
+										"monthly-hours"
+									],
+									"query": [
+										{
+											"key": "employeeId",
+											"value": "{{employeeId}}"
+										},
+										{
+											"key": "year",
+											"value": "{{year}}"
+										},
+										{
+											"key": "month",
+											"value": "d"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Positive",
+					"item": [
+						{
+							"name": "monthly-hours",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status is 200\", () => {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"pm.test(\"Response time under 500ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+											"});\r",
+											"pm.test(\"Body is JSON array when 200\", function () {\r",
+											"    if (pm.response.code === 200) {\r",
+											"        const data = pm.response.json();\r",
+											"        pm.expect(data).to.be.an(\"array\");\r",
+											"        pm.expect(data.length).to.be.greaterThanOrEqual(0);\r",
+											"    }\r",
+											"});\r",
+											"pm.test(\"Each item has monthly-hours with correct types\", () => {\r",
+											"    const data = pm.response.json();\r",
+											"    data.forEach(item => {\r",
+											"        pm.expect(item).to.have.property(\"employeeId\").that.is.a(\"Number\");\r",
+											"        pm.expect(item).to.have.property(\"firstName\").that.is.a(\"String\");\r",
+											"        pm.expect(item).to.have.property(\"lastName\").that.is.a(\"String\");\r",
+											"        pm.expect(item).to.have.property(\"year\").that.is.a(\"Number\");\r",
+											"        pm.expect(item).to.have.property(\"month\").that.is.a(\"Number\");\r",
+											"        pm.expect(item).to.have.property(\"totalMonthlyHours\").that.is.a(\"number\");\r",
+											"        pm.expect(item).to.have.property(\"hasSubstituted\").that.is.a(\"Boolean\");\r",
+											"    });\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://localhost:7129/api/reports/monthly-hours?employeeId={{employeeId}}&year={{year}}&month={{moth}}",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"reports",
+										"monthly-hours"
+									],
+									"query": [
+										{
+											"key": "employeeId",
+											"value": "{{employeeId}}"
+										},
+										{
+											"key": "year",
+											"value": "{{year}}"
+										},
+										{
+											"key": "month",
+											"value": "{{moth}}"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "RoutesRequst",
+			"item": [
+				{
+					"name": "Positive",
+					"item": [
+						{
+							"name": "GetAllRoutes-Positive",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status is 200 or 404\", function () {\r",
+											"    pm.expect([200, 404]).to.include(pm.response.code);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response time under 500ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+											"});\r",
+											"\r",
+											"//Response is a non-empty array\r",
+											"pm.test(\"Body is JSON array when 200\", function () {\r",
+											"    if (pm.response.code === 200) {\r",
+											"        const data = pm.response.json();\r",
+											"        pm.expect(data).to.be.an(\"array\");\r",
+											"        pm.expect(data.length).to.be.greaterThan(0);\r",
+											"    }\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Each item has id and routeNumber with correct types\", () => {\r",
+											"    const data = pm.response.json();\r",
+											"    data.forEach(item => {\r",
+											"        pm.expect(item).to.have.property(\"id\");\r",
+											"        pm.expect(item.id).to.be.a(\"number\").and.to.be.greaterThan(0);\r",
+											"        pm.expect(item).to.have.property(\"routeNumber\");\r",
+											"        pm.expect(item.routeNumber).to.be.a(\"number\").and.to.be.greaterThan(0);\r",
+											"    });\r",
+											"});\r",
+											"\r",
+											"pm.test(\"IDs are unique\", () => {\r",
+											"    const data = pm.response.json();\r",
+											"    const ids = data.map(x => x.id);\r",
+											"    pm.expect(new Set(ids).size).to.eql(ids.length);\r",
+											"});\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://localhost:7129/api/Routes",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"Routes"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "POSTRoutes-Positive",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status is 201 Created\", () => {\r",
+											"    pm.response.to.have.status(201);\r",
+											"});\r",
+											"pm.test(\"Response time under 500ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+											"});\r",
+											"pm.test(\"Response contains id and routeNumber\", () => {\r",
+											"    const data = pm.response.json();\r",
+											"    pm.expect(data).to.have.property(\"id\");\r",
+											"    pm.expect(data).to.have.property(\"routeNumber\");\r",
+											"    pm.expect(data.routeNumber).to.eql(pm.request.body.raw ? JSON.parse(pm.request.body.raw).routeNumber : undefined);\r",
+											"});\r",
+											"\r",
+											"//--------------------------------------------------------------------------------------\r",
+											"pm.environment.set(\"routeId\", pm.response.json().id);\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"routeNumber\": 77\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://localhost:7129/api/Routes/",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"Routes",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetRoutes{id}_VerifyCreationOfPost",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status is 200\", () => {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"pm.test(\"Response time under 500ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Route id and routeNumber are correct\", () => {\r",
+											"    const data = pm.response.json();\r",
+											"    pm.expect(data.id).to.eql(Number(pm.environment.get(\"routeId\")));\r",
+											"    pm.expect(data.routeNumber).to.be.a(\"number\");\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://localhost:7129/api/Routes/{{routeId}}",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"Routes",
+										"{{routeId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "PutRoute{id}_Update Route",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status is 204\", () => {\r",
+											"    pm.response.to.have.status(204);\r",
+											"});\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"routeNumber\": 44\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://localhost:7129/api/Routes/{{routeId}}",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"Routes",
+										"{{routeId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetRoutes{id}Verify Update",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status is 200\", () => {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"RouteNumber is 456\", () => {\r",
+											"    const data = pm.response.json();\r",
+											"    pm.expect(data.routeNumber).to.eql(44);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://localhost:7129/api/Routes/{{routeId}}",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"Routes",
+										"{{routeId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "DeleteRoutes{id}",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status is 204\", function () {\r",
+											"    pm.expect([204]).to.include(pm.response.code);\r",
+											"}); "
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "https://localhost:7129/api/Routes/{{routeId}}",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"Routes",
+										"{{routeId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetRoutes{id}Verify Deleting",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status is 404 Not Found\", () => {\r",
+											"    pm.response.to.have.status(404);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://localhost:7129/api/Routes/{{routeId}}",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"Routes",
+										"{{routeId}}"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Negativ",
+					"item": [
+						{
+							"name": "PostRoutes-String",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status is 400 Not Found\", () => {\r",
+											"    pm.response.to.have.status(400);\r",
+											"});\r",
+											"const body = pm.response.json();\r",
+											"\r",
+											"pm.test(\"Status is 400\", () => {\r",
+											"    pm.response.to.have.status(400);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Error structure is valid\", () => {\r",
+											"    pm.expect(body).to.have.property(\"errors\");\r",
+											"    pm.expect(body.errors).to.have.property(\"$.routeNumber\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"routeNumber error says invalid integer\", () => {\r",
+											"    const msg = body.errors[\"$.routeNumber\"][0];\r",
+											"    pm.expect(msg).to.include(\"could not be converted\");\r",
+											"});\r",
+											"\r",
+											"if (pm.response.code === 201) {\r",
+											"    pm.environment.set(\"routeId\", pm.response.json().id);\r",
+											"}\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"routeNumber\": \"d\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://localhost:7129/api/Routes/",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"Routes",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "DeleteRoutes string",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status is 404\", function () {\r",
+											"    pm.expect([404]).to.include(pm.response.code);\r",
+											"}); "
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "https://localhost:7129/api/Routes/{{routeId}}",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"Routes",
+										"{{routeId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "PostRoutes-negativNumber",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status is 404 Not Found\", () => {\r",
+											"    pm.response.to.have.status(400);\r",
+											"});\r",
+											"\r",
+											"if (pm.response.code === 201) {\r",
+											"    pm.environment.set(\"routeId\", pm.response.json().id);\r",
+											"}"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"routeNumber\": -1\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://localhost:7129/api/Routes/",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"Routes",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete-PostRoutes-negativNumber",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status is 404\", function () {\r",
+											"    pm.expect([404]).to.include(pm.response.code);\r",
+											"}); "
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "https://localhost:7129/api/Routes/{{routeId}}",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"Routes",
+										"{{routeId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "PostRoutes-NullValue",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status is 404 Not Found\", () => {\r",
+											"    pm.response.to.have.status(400);\r",
+											"});\r",
+											"\r",
+											"if (pm.response.code === 201) {\r",
+											"    pm.environment.set(\"routeId\", pm.response.json().id);\r",
+											"}"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"routeNumber\": null\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://localhost:7129/api/Routes/",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"Routes",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "DeleteRoutes NullValue",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status is 404\", function () {\r",
+											"    pm.expect([404]).to.include(pm.response.code);\r",
+											"}); "
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "https://localhost:7129/api/Routes/{{routeId}}",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"Routes",
+										"{{routeId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "PostRoutes-Zero/0",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status is 404 Not Found\", () => {\r",
+											"    pm.response.to.have.status(400);\r",
+											"});\r",
+											"\r",
+											"if (pm.response.code === 201) {\r",
+											"    pm.environment.set(\"routeId\", pm.response.json().id);\r",
+											"}"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"routeNumber\": 0\r\n  \r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://localhost:7129/api/Routes/",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"Routes",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete-PostRoutes Zero/0",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status is 404\", function () {\r",
+											"    pm.expect([404]).to.include(pm.response.code);\r",
+											"}); "
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "https://localhost:7129/api/Routes/{{routeId}}",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"Routes",
+										"{{routeId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "PostRoutes-missing fields",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status is 404 Not Found\", () => {\r",
+											"    pm.response.to.have.status(400);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Validation error contains required fields\", () => {\r",
+											"    const body = pm.response.json();\r",
+											"    pm.expect(body).to.have.property(\"errors\");\r",
+											"});\r",
+											"\r",
+											"if (pm.response.code === 201) {\r",
+											"    pm.environment.set(\"routeId\", pm.response.json().id);\r",
+											"}\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://localhost:7129/api/Routes/",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"Routes",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete-PostRoutes missing field",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status is 404\", function () {\r",
+											"    pm.expect([404]).to.include(pm.response.code);\r",
+											"}); "
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "https://localhost:7129/api/Routes/{{routeId}}",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"Routes",
+										"{{routeId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "PutRoutes number not exist",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 404 NotFound\", function () {\r",
+											"    pm.response.to.have.status(404);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Error field present in body\", function () {\r",
+											"    const body = pm.response.json();\r",
+											"    pm.expect(body).to.have.property(\"error\");\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"bicycleNumber\": 1001,\r\n  \"inOperate\": false\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://localhost:7129/api/Routes/999999",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"Routes",
+										"999999"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetRoutes id not exist Copy",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 404 NotFound\", function () {\r",
+											"    pm.expect(pm.response.code).to.eql(404);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Error message present\", function () {\r",
+											"    const body = pm.response.json();\r",
+											"    pm.expect(body).to.have.property(\"error\");\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://localhost:7129/api/Routes/2231",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"Routes",
+										"2231"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "ShiftRequst -",
+			"item": [
+				{
+					"name": "Positive",
+					"item": [
+						{
+							"name": "POSTapi/Shift-Positive",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// ad a shift\r",
+											"pm.test(\"Status is 204 Created\", () => {\r",
+											"    pm.response.to.have.status(204);\r",
+											"});\r",
+											"pm.test(\"Response time under 500ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+											"});\r",
+											"\r",
+											"\r",
+											"//--------------------------------------------------------------------------------------\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"dateOfShift\": \"2025-12-15\",\r\n  \"employeeId\": 8,\r\n  \"bicycleId\": 3,\r\n  \"routeId\": 1,\r\n  \"substitutedId\": 32\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://localhost:7129/api/Shift",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"Shift"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetAllShift",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"pm.test(\"Response time under 500ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+											"});\r",
+											"pm.test(\"Response is an array\", function () {\r",
+											"    const json = pm.response.json();\r",
+											"    pm.expect(json).to.be.an(\"array\");\r",
+											"});\r",
+											"pm.test(\"If there are Shift, they have expected fields\", function () {\r",
+											"    const list = pm.response.json();\r",
+											"    if (list.length > 0) {\r",
+											"        list.forEach(b => {\r",
+											"            pm.expect(b).to.have.property(\"shiftId\").that.has.a(\"number\");\r",
+											"            pm.expect(b).to.have.property(\"dateOfShift\").that.has.a(\"string\");\r",
+											"            pm.expect(b).to.have.property(\"substitutedId\").that.has.a(\"number\");\r",
+											"            pm.expect(b).to.have.property(\"routeId\").that.has.a(\"number\");\r",
+											"            pm.expect(b.startTime === null || typeof b.startTime === \"string\").to.be.true;\r",
+											"            pm.expect(b.endTime === null || typeof b.endTime === \"string\").to.be.true;\r",
+											"            pm.expect(b.totalHours === null || typeof b.totalHours === \"number\").to.be.true});\r",
+											"    }\r",
+											"});\r",
+											"pm.test(\"IDs are unique\", () => {\r",
+											"    const data = pm.response.json();\r",
+											"    const ids = data.map(x => x.shiftId);\r",
+											"    pm.expect(new Set(ids).size).to.eql(ids.length);\r",
+											"});\r",
+											"pm.test(\"Body is JSON array when 200\", function () {\r",
+											"    if (pm.response.code === 200) {\r",
+											"        const data = pm.response.json();\r",
+											"        pm.expect(data).to.be.an(\"array\");\r",
+											"        pm.expect(data.length).to.be.greaterThan(0);\r",
+											"    }\r",
+											"});\r",
+											"\r",
+											"//---------------Find forige posted shift shiftId----------------------------------------------\r",
+											"function normalizeDate(d) {\r",
+											"    return d.split(\"T\")[0];\r",
+											"}\r",
+											"const shifts = pm.response.json();\r",
+											"// to post id \r",
+											"const match = shifts.find(s =>\r",
+											"    normalizeDate(s.dateOfShift) ===\"2025-12-15\" &&\r",
+											"    s.routeId === 1 &&\r",
+											"    s.substitutedId === 32\r",
+											");\r",
+											"\r",
+											"if (match) {\r",
+											"    pm.environment.set(\"shiftID\", match.shiftId);\r",
+											"}"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://localhost:7129/api/Shift",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"Shift"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/api/Shift//start?startTime{id}",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 204\", function () {\r",
+											"    pm.response.to.have.status(204);\r",
+											"});\r",
+											"pm.test(\"Response time under 500ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"url": {
+									"raw": "https://localhost:7129/api/Shift/{{shiftID}}/start?startTime=8%3A00",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"Shift",
+										"{{shiftID}}",
+										"start"
+									],
+									"query": [
+										{
+											"key": "startTime",
+											"value": "8%3A00"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/api/Shift/end?endTime{id}",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 204\", function () {\r",
+											"    pm.response.to.have.status(204);\r",
+											"});\r",
+											"pm.test(\"Response time under 500ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"url": {
+									"raw": "https://localhost:7129/api/Shift/{{shiftID}}/end?endTime=23%3A30",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"Shift",
+										"{{shiftID}}",
+										"end"
+									],
+									"query": [
+										{
+											"key": "endTime",
+											"value": "23%3A30"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/api/Shift/{id}/substitution-flag",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 204\", function () {\r",
+											"    pm.response.to.have.status(204);\r",
+											"});\r",
+											"pm.test(\"Response time under 500ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"url": {
+									"raw": "https://localhost:7129/api/Shift/{{shiftID}}/substitution-flag?hasSubstituted=true",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"Shift",
+										"{{shiftID}}",
+										"substitution-flag"
+									],
+									"query": [
+										{
+											"key": "hasSubstituted",
+											"value": "true"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetShift/{id}Verify Put startTime and EndTime",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status is 200\", () => {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"pm.test(\"Response time under 500ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+											"});\r",
+											"const shifts = pm.response.json();\r",
+											"\r",
+											"// Find shiftId 33\r",
+											"const shift = shifts.find(s => s.shiftId === pm.environment.get(\"shiftID\"));\r",
+											"\r",
+											"pm.test(\"Shift 33 exists\", () => {\r",
+											"    pm.expect(shift).to.not.be.undefined;\r",
+											"});\r",
+											"\r",
+											"// Only run if shift exists\r",
+											"if (shift) {\r",
+											"    pm.test(\"startTime is not null\", () => {\r",
+											"        pm.expect(shift.startTime).to.not.be.null;\r",
+											"    });\r",
+											"\r",
+											"    pm.test(\"endTime is not null\", () => {\r",
+											"        pm.expect(shift.endTime).to.not.be.null;\r",
+											"    });\r",
+											"\r",
+											"    pm.test(\"totalHours is not null\", () => {\r",
+											"        pm.expect(shift.totalHours).to.not.be.null;\r",
+											"    });\r",
+											"}"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://localhost:7129/api/Shift",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"Shift"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "DeleteShift{id} Copy",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status is 200\", function () {\r",
+											"    pm.expect(pm.response.code).to.eql(200);\r",
+											"}); \r",
+											"pm.test(\"Response boolean\", () => {\r",
+											"    const data = pm.response.json();\r",
+											"    pm.expect(data).to.be.a(\"boolean\");\r",
+											"    //pm.expect(data).to.equal(true|false);\r",
+											"});\r",
+											"pm.test(\"Response boolean to be true\", () => {\r",
+											"    const data = pm.response.json();\r",
+											"    pm.expect(data).to.equal(true);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "https://localhost:7129/api/Shift/shiftId?shiftId={{shiftID}}",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"Shift",
+										"shiftId"
+									],
+									"query": [
+										{
+											"key": "shiftId",
+											"value": "{{shiftID}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetShift/{id}Verify Deleting Copy",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status is 200 Not Found\", () => {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"pm.test(\"Response time under 500ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+											"});\r",
+											"\r",
+											"const shifts = pm.response.json();\r",
+											"// Try to find shiftId 33\r",
+											"const shift = shifts.find(s => s.shiftId === pm.environment.get(\"shiftID\"));\r",
+											"\r",
+											"pm.test(\"Shift {{shiftID}} should no longer exist\", () => {\r",
+											"    pm.expect(shift).to.be.undefined;\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://localhost:7129/api/Shift/",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"Shift",
+										""
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Negativ",
+					"item": []
+				}
+			]
+		},
+		{
+			"name": "ShiftPlansRequst -",
+			"item": [
+				{
+					"name": "Positive",
+					"item": [
+						{
+							"name": "New Request",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 201\", function () {\r",
+											"    pm.response.to.have.status(201);\r",
+											"});\r",
+											"pm.test(\"Response time under 500ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+											"});\r",
+											"pm.test(\"Response is an array\", function () {\r",
+											"    const json = pm.response.json();\r",
+											"    pm.expect(json).to.be.an(\"object\");\r",
+											"});\r",
+											"pm.test(\"If there are Shift, they have expected fields\", function () {\r",
+											"    const data= pm.response.json();\r",
+											"    pm.expect(data).to.have.property(\"shiftPlanId\").that.has.a(\"string\");\r",
+											"    pm.expect(data).to.have.property(\"name\").that.has.a(\"string\");\r",
+											"    pm.expect(data).to.have.property(\"startDate\").that.has.a(\"string\");\r",
+											"    pm.expect(data).to.have.property(\"endDate\").that.has.a(\"string\");\r",
+											"    pm.expect(data).to.have.property(\"shifts\").that.is.an(\"array\");\r",
+											"    const list = data.shifts    \r",
+											"    if (list.length > 0) {\r",
+											"        list.forEach(b => {\r",
+											"            pm.expect(b).to.have.property(\"shiftId\").that.has.a(\"number\");\r",
+											"            pm.expect(b).to.have.property(\"dateOfShift\").that.has.a(\"string\");\r",
+											"            pm.expect(b).to.have.property(\"employeeId\").that.has.a(\"number\");\r",
+											"            pm.expect(b).to.have.property(\"routeId\").that.has.a(\"number\");\r",
+											"            pm.expect(b).to.have.property(\"bicycleId\").that.has.a(\"number\");\r",
+											"            pm.expect(b).to.have.property(\"substitutedId\").that.has.a(\"number\");\r",
+											"            pm.expect(b.startTime === null || typeof b.startTime === \"string\").to.be.true;\r",
+											"            pm.expect(b.endTime === null || typeof b.endTime === \"string\").to.be.true;\r",
+											"            pm.expect(b.totalHours === null || typeof b.totalHours === \"number\").to.be.true});\r",
+											"    }\r",
+											"});\r",
+											"const data= pm.response.json();\r",
+											"pm.environment.set(\"shiftPlanId\", data.shiftPlanId);"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"startDate\": \"2025-12-14T00:17:45.853Z\",\r\n  \"weeks\": 1\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://localhost:7129/api/ShiftPlans/generate-6weeks",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"ShiftPlans",
+										"generate-6weeks"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetShiftPlans",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"pm.test(\"Response time under 500ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+											"});\r",
+											"pm.test(\"If there are Shift, they have expected fields\", function () {\r",
+											"    const data= pm.response.json();\r",
+											"    data.forEach(b => {\r",
+											"        pm.expect(b).to.have.property(\"shiftPlanId\").that.has.a(\"string\");\r",
+											"        pm.expect(b).to.have.property(\"name\").that.has.a(\"string\");\r",
+											"        pm.expect(b).to.have.property(\"startDate\").that.has.a(\"string\");\r",
+											"        pm.expect(b).to.have.property(\"endDate\").that.has.a(\"string\");\r",
+											"        pm.expect(b).to.have.property(\"shiftCount\").that.is.an(\"number\");\r",
+											"    });\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://localhost:7129/api/ShiftPlans",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"ShiftPlans"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "PutShiftPlans/{id}/name",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 204\", function () {\r",
+											"    pm.response.to.have.status(204);\r",
+											"});\r",
+											"pm.test(\"Response time under 500ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"name\": \"blabla\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://localhost:7129/api/ShiftPlans/{{shiftPlanId}}/name",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"ShiftPlans",
+										"{{shiftPlanId}}",
+										"name"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "PutShiftPlans/{shiftID}",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 204\", function () {\r",
+											"    pm.response.to.have.status(204);\r",
+											"});\r",
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"pm.test(\"Response time under 500ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"dateOfShift\": \"2025-12-14T01:04:04.781Z\",\r\n  \"employeeId\": 2,\r\n  \"bicycleId\": 0,\r\n  \"routeId\": 0,\r\n  \"substitutedId\": 0\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://localhost:7129/api/ShiftPlans/{{shiftPlanId}}/shifts/2",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"ShiftPlans",
+										"{{shiftPlanId}}",
+										"shifts",
+										"2"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetShiftPlans/{id}",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"pm.test(\"Response time under 500ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+											"});\r",
+											"pm.test(\"If there are Shift, they have expected fields\", function () {\r",
+											"    const data= pm.response.json();\r",
+											"    pm.expect(data).to.have.property(\"shiftPlanId\").that.has.a(\"string\");\r",
+											"    pm.expect(data).to.have.property(\"name\").that.has.a(\"string\");\r",
+											"    pm.expect(data).to.have.property(\"startDate\").that.has.a(\"string\");\r",
+											"    pm.expect(data).to.have.property(\"endDate\").that.has.a(\"string\");\r",
+											"    pm.expect(data).to.have.property(\"shifts\").that.is.an(\"array\");\r",
+											"    const list = data.shifts    \r",
+											"    if (list.length > 0) {\r",
+											"        list.forEach(b => {\r",
+											"            pm.expect(b).to.have.property(\"shiftId\").that.has.a(\"number\");\r",
+											"            pm.expect(b).to.have.property(\"dateOfShift\").that.has.a(\"string\");\r",
+											"            pm.expect(b).to.have.property(\"employeeId\").that.has.a(\"number\");\r",
+											"            pm.expect(b).to.have.property(\"routeId\").that.has.a(\"number\");\r",
+											"            pm.expect(b).to.have.property(\"bicycleId\").that.has.a(\"number\");\r",
+											"            pm.expect(b).to.have.property(\"substitutedId\").that.has.a(\"number\");\r",
+											"            pm.expect(b.startTime === null || typeof b.startTime === \"string\").to.be.true;\r",
+											"            pm.expect(b.endTime === null || typeof b.endTime === \"string\").to.be.true;\r",
+											"            pm.expect(b.totalHours === null || typeof b.totalHours === \"number\").to.be.true});\r",
+											"    }\r",
+											"});\r",
+											"\r",
+											"\r",
+											"pm.test(\"check ShiftPlans/{id}/name, name is updated to blabla\", function () {\r",
+											"    const data = pm.response.json();\r",
+											"    pm.expect(data.name).to.equal(\"blabla\");\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://localhost:7129/api/ShiftPlans/{{shiftPlanId}}",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"ShiftPlans",
+										"{{shiftPlanId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "DeleteShiftPlans/{{shiftPlanId}}",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 204\", function () {\r",
+											"    pm.response.to.have.status(204);\r",
+											"});\r",
+											"pm.test(\"Response time under 500ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "https://localhost:7129/api/ShiftPlans/{{shiftPlanId}}",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"ShiftPlans",
+										"{{shiftPlanId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetShiftPlans/{id} Verfie Delete",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 404 not found.\", function () {\r",
+											"    pm.response.to.have.status(404);\r",
+											"});\r",
+											"pm.test(\"Response time under 500ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+											"});\r",
+											"pm.test(\"ShiftPlan with id ... not found.\", function () {\r",
+											"    const data= pm.response.json();\r",
+											"    pm.expect(data).to.have.property(\"error\").that.is.a(\"string\");\r",
+											"    const id = pm.environment.get(\"shiftPlanId\");\r",
+											"    pm.expect(data.error).to.equal(\r",
+											"        `ShiftPlan with id '${id}' not found.`\r",
+											"    );\r",
+											"\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://localhost:7129/api/ShiftPlans/{{shiftPlanId}}",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "7129",
+									"path": [
+										"api",
+										"ShiftPlans",
+										"{{shiftPlanId}}"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Negativ",
+					"item": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "requestTimestamp",
+			"value": ""
+		}
+	]
+}
