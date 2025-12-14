@@ -215,11 +215,11 @@ var assemblies = [
     "classes": [
       { "name": "BicycleRepositoryFallback", "rp": "Vagtplanlægning_BicycleRepositoryFallback.html", "cl": 18, "ucl": 18, "cal": 36, "tl": 70, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
       { "name": "EmployeeProfile", "rp": "Vagtplanlægning_EmployeeProfile.html", "cl": 6, "ucl": 0, "cal": 6, "tl": 21, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "EmployeeRepositoryFallback", "rp": "Vagtplanlægning_EmployeeRepositoryFallback.html", "cl": 23, "ucl": 19, "cal": 42, "tl": 94, "cb": 1, "tb": 10, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "EmployeeRepositoryFallback", "rp": "Vagtplanlægning_EmployeeRepositoryFallback.html", "cl": 24, "ucl": 23, "cal": 47, "tl": 103, "cb": 1, "tb": 10, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
       { "name": "MongoBicycleRepository", "rp": "Vagtplanlægning_MongoBicycleRepository.html", "cl": 6, "ucl": 25, "cal": 31, "tl": 53, "cb": 0, "tb": 6, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
       { "name": "MongoRouteRepository", "rp": "Vagtplanlægning_MongoRouteRepository.html", "cl": 13, "ucl": 21, "cal": 34, "tl": 56, "cb": 0, "tb": 4, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
       { "name": "MySqlBicycleRepository", "rp": "Vagtplanlægning_MySqlBicycleRepository.html", "cl": 6, "ucl": 15, "cal": 21, "tl": 41, "cb": 0, "tb": 2, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "Program", "rp": "Vagtplanlægning_Program.html", "cl": 95, "ucl": 35, "cal": 130, "tl": 233, "cb": 23, "tb": 40, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "Program", "rp": "Vagtplanlægning_Program.html", "cl": 106, "ucl": 35, "cal": 141, "tl": 248, "cb": 23, "tb": 40, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
       { "name": "RouteMapping", "rp": "Vagtplanlægning_RouteMapping.html", "cl": 0, "ucl": 12, "cal": 12, "tl": 23, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
       { "name": "Substituted", "rp": "Vagtplanlægning_Substituted.html", "cl": 0, "ucl": 4, "cal": 4, "tl": 19, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
       { "name": "Vagtplanlægning.Authentication.JwtHelper", "rp": "Vagtplanlægning_JwtHelper.html", "cl": 27, "ucl": 9, "cal": 36, "tl": 56, "cb": 1, "tb": 2, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
@@ -237,7 +237,7 @@ var assemblies = [
       { "name": "Vagtplanlægning.Controllers.BaseController", "rp": "Vagtplanlægning_BaseController.html", "cl": 4, "ucl": 0, "cal": 4, "tl": 17, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
       { "name": "Vagtplanlægning.Controllers.BaseEmployeeController", "rp": "Vagtplanlægning_BaseEmployeeController.html", "cl": 0, "ucl": 7, "cal": 7, "tl": 46, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
       { "name": "Vagtplanlægning.Controllers.BicyclesController", "rp": "Vagtplanlægning_BicyclesController.html", "cl": 55, "ucl": 0, "cal": 55, "tl": 100, "cb": 6, "tb": 6, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "Vagtplanlægning.Controllers.EmployeeController.EmployeeController", "rp": "Vagtplanlægning_EmployeeController.html", "cl": 0, "ucl": 30, "cal": 30, "tl": 113, "cb": 0, "tb": 6, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "Vagtplanlægning.Controllers.EmployeeController.EmployeeController", "rp": "Vagtplanlægning_EmployeeController.html", "cl": 0, "ucl": 30, "cal": 30, "tl": 114, "cb": 0, "tb": 6, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
       { "name": "Vagtplanlægning.Controllers.EmployeesController", "rp": "Vagtplanlægning_EmployeesController.html", "cl": 39, "ucl": 93, "cal": 132, "tl": 265, "cb": 2, "tb": 6, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
       { "name": "Vagtplanlægning.Controllers.HealthController", "rp": "Vagtplanlægning_HealthController.html", "cl": 0, "ucl": 44, "cal": 44, "tl": 79, "cb": 0, "tb": 14, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
       { "name": "Vagtplanlægning.Controllers.PublicControllers.AuthController", "rp": "Vagtplanlægning_AuthController.html", "cl": 18, "ucl": 26, "cal": 44, "tl": 91, "cb": 6, "tb": 10, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
@@ -291,7 +291,7 @@ var assemblies = [
       { "name": "Vagtplanlægning.Repositories.MySqlShiftRepository", "rp": "Vagtplanlægning_MySqlShiftRepository.html", "cl": 0, "ucl": 47, "cal": 47, "tl": 86, "cb": 0, "tb": 6, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
       { "name": "Vagtplanlægning.Repositories.Neo4jEmployeeRepository", "rp": "Vagtplanlægning_Neo4jEmployeeRepository.html", "cl": 0, "ucl": 119, "cal": 119, "tl": 167, "cb": 0, "tb": 34, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
       { "name": "Vagtplanlægning.Repositories.RouteRepositoryFallback", "rp": "Vagtplanlægning_RouteRepositoryFallback.html", "cl": 25, "ucl": 28, "cal": 53, "tl": 87, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "Vagtplanlægning.Services.EmailService", "rp": "Vagtplanlægning_EmailService.html", "cl": 0, "ucl": 23, "cal": 23, "tl": 45, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "Vagtplanlægning.Services.EmailService", "rp": "Vagtplanlægning_EmailService.html", "cl": 0, "ucl": 28, "cal": 28, "tl": 52, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
       { "name": "Vagtplanlægning.Services.FallbackMonthlyHoursReportService", "rp": "Vagtplanlægning_FallbackMonthlyHoursReportService.html", "cl": 26, "ucl": 0, "cal": 26, "tl": 56, "cb": 3, "tb": 6, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
       { "name": "Vagtplanlægning.Services.MongoMonthlyHoursReportService", "rp": "Vagtplanlægning_MongoMonthlyHoursReportService.html", "cl": 39, "ucl": 1, "cal": 40, "tl": 67, "cb": 9, "tb": 12, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
       { "name": "Vagtplanlægning.Services.MySqlMonthlyHoursReportService", "rp": "Vagtplanlægning_MySqlMonthlyHoursReportService.html", "cl": 83, "ucl": 1, "cal": 84, "tl": 106, "cb": 2, "tb": 2, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
@@ -336,9 +336,9 @@ var riskHotspots = [
       { "value": 8, "exceeded": false },
     ]},
   {
-    "assembly": "Vagtplanlægning", "class": "Program", "reportPath": "Vagtplanlægning_Program.html", "methodName": "<Main>$(System.String[])", "methodShortName": "<Main>$(...)", "fileIndex": 0, "line": 14,
+    "assembly": "Vagtplanlægning", "class": "Program", "reportPath": "Vagtplanlægning_Program.html", "methodName": "<Main>$(System.String[])", "methodShortName": "<Main>$(...)", "fileIndex": 0, "line": 15,
     "metrics": [
-      { "value": 71, "exceeded": true },
+      { "value": 64, "exceeded": true },
       { "value": 40, "exceeded": true },
     ]},
   {
