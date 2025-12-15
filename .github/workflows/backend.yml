@@ -2,9 +2,9 @@ name: Backend CI (.NET 8)
 
 on:
   push:
-    branches: ["master"]
+    branches: ["TestBranch"]
   pull_request:
-    branches: ["master"]
+    branches: ["TestBranch"]
 
 jobs:
   build_and_test:
