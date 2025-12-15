@@ -249,8 +249,20 @@ builder.Services.AddCors(options =>
             .AllowCredentials();
     });
 });
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontendDeployed", policy =>
+    {
+        policy
+            .WithOrigins("https://vagtplan-frontend.onrender.com")
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+    });
+});
 var app = builder.Build();
 app.UseCors("AllowFrontend");
+app.UseCors("AllowFrontendDeployed");
 app.UseSwagger();
 app.UseSwaggerUI();
 app.UseAuthentication();
