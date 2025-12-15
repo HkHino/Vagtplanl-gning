@@ -238,7 +238,7 @@ builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
 // --------------------------------------------------------
 // 6) Setup App and run the application
 // --------------------------------------------------------
-builder.Services.AddCors(options =>
+/*builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
@@ -248,10 +248,10 @@ builder.Services.AddCors(options =>
             .AllowAnyMethod() 
             .AllowCredentials();
     });
-});
+});*/
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowFrontendDeployed", policy =>
+    options.AddPolicy("AllowFrontend", policy =>
     {
         policy
             .WithOrigins("https://vagtplan-frontend.onrender.com")
@@ -262,7 +262,6 @@ builder.Services.AddCors(options =>
 });
 var app = builder.Build();
 app.UseCors("AllowFrontend");
-app.UseCors("AllowFrontendDeployed");
 app.UseSwagger();
 app.UseSwaggerUI();
 app.UseAuthentication();
