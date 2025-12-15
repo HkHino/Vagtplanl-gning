@@ -253,6 +253,8 @@ var app = builder.Build();
 app.UseCors("AllowFrontend");
 app.UseSwagger();
 app.UseSwaggerUI();
+app.UseAuthentication();
+app.UseAuthorization();
 app.MapControllers();
 app.Run();
 

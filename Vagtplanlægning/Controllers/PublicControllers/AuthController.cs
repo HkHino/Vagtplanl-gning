@@ -37,41 +37,64 @@ public class AuthController : BaseController
     [AllowAnonymous]
     public async Task<IActionResult> SignIn([FromBody] SignInRequest? request)
     {
-        // Check if any user with given username exists
         if (request == null) return BadRequest("Invalid request");
+
         try
         {
             var user = await _userRepository.GetByUsernameAsync(request.Username);
-            if (user == null)
-            {
-                return NotFound("User not found");
-            }
+            if (user == null) return NotFound("User not found");
 
-            // Checks if the passwords match between found user, and password in request
             if (!PasswordHelper.VerifyHash(request.Password, user.Hash))
-            {
                 return Unauthorized("Invalid password");
-            }
 
-            // Generates a JwT Token for the found user, if password matches
             var token = _jwtHelper.GenerateToken(user);
 
             Response.Cookies.Append("access_token", token, new CookieOptions
             {
                 HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.Strict
+                SameSite = SameSiteMode.Lax,
+                Secure = Request.IsHttps,              // dev http => false, prod https => true
+                Expires = DateTimeOffset.UtcNow.AddDays(1),
+                Path = "/"
             });
-            return Ok(
-                user.Role.ToString()
-            ); 
+
+            // return role so frontend can route immediately without reading JWT
+            return Ok(new { role = user.Role.ToString().ToLowerInvariant() });
         }
         catch (Exception e)
         {
-            _logger.LogWarning("Failed login attempt for this request: {request} with error: {e.Message}", request, e.Message);
+            _logger.LogWarning("Failed login attempt for {request} error: {Message}", request, e.Message);
             return NotFound("Not found.");
         }
     }
+
+
+    [HttpPost]
+    [Route("sign-out")]
+    public IActionResult SignOut()
+    {
+        Response.Cookies.Delete("access_token", new CookieOptions
+        {
+            Path = "/",
+            HttpOnly = true,
+            SameSite = SameSiteMode.Lax,
+            Secure = Request.IsHttps
+        });
+
+        return Ok();
+    }
+
+
+
+    [HttpGet]
+    [Route("me")]
+    [Authorize]
+    public IActionResult Me()
+    {
+        var u = JwtHelper.GetUser(User);
+        return Ok(new { id = u.Id, username = u.Username, role = u.Role.ToLowerInvariant() });
+    }
+
 
     [HttpPost]
     [Route("sign-up")]
