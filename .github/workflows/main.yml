@@ -27,3 +27,4 @@ jobs:
 
       - name: Test
         run: dotnet test Vagtplanlægning.sln --configuration Release --no-build
+
