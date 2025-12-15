@@ -248,7 +248,7 @@ builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
             .AllowAnyMethod() 
             .AllowCredentials();
     });
-});*/
+});
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
@@ -259,9 +259,9 @@ builder.Services.AddCors(options =>
             .AllowAnyMethod()
             .AllowCredentials();
     });
-});
+});*/
 var app = builder.Build();
-app.UseCors("AllowFrontend");
+app.UseCors("AllowAll");
 app.UseSwagger();
 app.UseSwaggerUI();
 app.UseAuthentication();
