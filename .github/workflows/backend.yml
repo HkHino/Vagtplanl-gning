@@ -1,0 +1,46 @@
+name: Backend CI (.NET 8)
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build_and_test:
+    runs-on: ubuntu-latest
+
+    env:
+      ASPNETCORE_ENVIRONMENT: Test
+      DOTNET_NOLOGO: true
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+          cache: true
+          cache-dependency-path: |
+            **/*.csproj
+            **/*.sln
+            **/packages.lock.json
+            **/nuget.config
+
+      - name: Restore
+        run: dotnet restore Vagtplanlægning.sln
+
+      - name: Build (Release)
+        run: dotnet build Vagtplanlægning.sln --no-restore -c Release
+
+      - name: Test (Release)
+        run: dotnet test Vagtplanlægning.sln --no-build -c Release --logger "trx;LogFileName=test_results.trx" --results-directory TestResults
+
+      - name: Upload test results (optional)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: TestResults
