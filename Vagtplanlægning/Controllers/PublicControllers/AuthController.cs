@@ -1,8 +1,8 @@
-﻿using AutoMapper;
+﻿using System.Security.Claims;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Vagtplanlægning.Authentication;
-using Vagtplanlægning.Data;
 using Vagtplanlægning.Models;
 using Vagtplanlægning.Models.ApiModels;
 using Vagtplanlægning.Repositories;
@@ -56,8 +56,15 @@ public class AuthController : BaseController
             // Generates a JwT Token for the found user, if password matches
             var token = _jwtHelper.GenerateToken(user);
 
-            return Ok(token);
-
+            Response.Cookies.Append("access_token", token, new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Strict
+            });
+            return Ok(
+                user.Role.ToString()
+            ); 
         }
         catch (Exception e)
         {

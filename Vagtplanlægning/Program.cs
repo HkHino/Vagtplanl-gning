@@ -238,8 +238,19 @@ builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
 // --------------------------------------------------------
 // 6) Setup App and run the application
 // --------------------------------------------------------
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy
+            .WithOrigins("http://localhost:3000")
+            .AllowAnyHeader()
+            .AllowAnyMethod() 
+            .AllowCredentials();
+    });
+});
 var app = builder.Build();
-app.UseCors("AllowAll");
+app.UseCors("AllowFrontend");
 app.UseSwagger();
 app.UseSwaggerUI();
 app.MapControllers();
