@@ -52,7 +52,7 @@ public class AuthController : BaseController
             Response.Cookies.Append("access_token", token, new CookieOptions
             {
                 HttpOnly = true,
-                SameSite = SameSiteMode.Strict,
+                SameSite = SameSiteMode.None,
                 Secure = Request.IsHttps,              // dev http => false, prod https => true
                 Expires = DateTimeOffset.UtcNow.AddDays(1),
                 Path = "/"
@@ -77,7 +77,7 @@ public class AuthController : BaseController
         {
             Path = "/",
             HttpOnly = true,
-            SameSite = SameSiteMode.Strict,
+            SameSite = SameSiteMode.None,
             Secure = Request.IsHttps
         });
 
