@@ -1383,3 +1383,25 @@ GRANT ALL PRIVILEGES ON cykelBudDB.* TO 'jan' @'127.0.0.1';
                    ('2026-01-08', 8, 8, 8, 8),
                    ('2026-01-09', 9, 9, 9, 9),
                    ('2026-01-10', 10, 10, 10, 10);
+                   
+CREATE TABLE OutboxEvents (
+    Id BIGINT AUTO_INCREMENT PRIMARY KEY,
+
+    AggregateType VARCHAR(100) NOT NULL,
+    AggregateId INT NOT NULL,
+
+    EventType VARCHAR(50) NOT NULL,
+    -- Created | Updated | Deleted
+
+    PayloadJson JSON NULL,
+    -- optional, usually re-fetch from MySQL
+
+    CreatedUtc DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    ProcessedUtc DATETIME NULL,
+
+    RetryCount INT NOT NULL DEFAULT 0,
+    LastError TEXT NULL,
+
+    INDEX idx_outbox_unprocessed (ProcessedUtc),
+    INDEX idx_outbox_aggregate (AggregateType, AggregateId)
+);
