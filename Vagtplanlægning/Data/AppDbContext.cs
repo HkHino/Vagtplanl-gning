@@ -22,6 +22,7 @@ public class AppDbContext : DbContext
 
     // DbSets -----------------------------------------------------------------
 
+    public DbSet<OutboxEvent> OutboxEvents => Set<OutboxEvent>();
     public DbSet<Bicycle> Bicycles => Set<Bicycle>();
     public DbSet<Employee> Employees => Set<Employee>();
     public DbSet<Substituted> Substituteds => Set<Substituted>();
@@ -236,5 +237,27 @@ public class AppDbContext : DbContext
                 .HasColumnName("hasSubstituted");
         });
 
+        // OutboxEvents ---------------------------------------------------------
+        modelBuilder.Entity<OutboxEvent>(e =>
+        {
+            e.ToTable("OutboxEvents");
+            e.HasKey(x => x.Id);
+
+            e.Property(x => x.AggregateType)
+                .HasMaxLength(100)
+                .IsRequired();
+
+            e.Property(x => x.EventType)
+                .HasMaxLength(50)
+                .IsRequired();
+
+            e.Property(x => x.CreatedUtc)
+                .HasColumnName("CreatedUtc");
+
+            e.Property(x => x.ProcessedUtc)
+                .HasColumnName("ProcessedUtc");
+        });
     }
+
+
 }

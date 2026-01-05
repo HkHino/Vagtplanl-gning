@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Vagtplanlægning.Data;
 using Vagtplanlægning.Models;
+using Vagtplanlægning.Services;
 
 namespace Vagtplanlægning.Repositories
 {
@@ -12,11 +13,14 @@ namespace Vagtplanlægning.Repositories
     public class MySqlEmployeeRepository : IEmployeeRepository
     {
         private readonly AppDbContext _db;
+        private readonly OutboxWriter _outboxWriter;
 
-        public MySqlEmployeeRepository(AppDbContext db)
+        public MySqlEmployeeRepository(AppDbContext db, OutboxWriter outboxWriter)
         {
             _db = db;
+            _outboxWriter = outboxWriter;
         }
+
 
         public async Task<IEnumerable<Employee>> GetAllAsync(CancellationToken ct = default)
         {
@@ -32,11 +36,33 @@ namespace Vagtplanlægning.Repositories
                 .FirstOrDefaultAsync(e => e.EmployeeId == id, ct);
         }
 
+        //this has been altered to include Outbox pattern
         public async Task AddAsync(Employee employee, CancellationToken ct = default)
         {
-            _db.Employees.Add(employee);
-            await _db.SaveChangesAsync(ct);
+            await using var tx = await _db.Database.BeginTransactionAsync(ct);
+
+            try
+            {
+                _db.Employees.Add(employee);
+                await _db.SaveChangesAsync(ct);
+
+                // IMPORTANT: employeeId exists only after SaveChanges
+                _outboxWriter.AddEvent(
+                    aggregateType: "Employee",
+                    aggregateId: employee.EmployeeId,
+                    eventType: "Created"
+                );
+
+                await _db.SaveChangesAsync(ct);
+                await tx.CommitAsync(ct);
+            }
+            catch
+            {
+                await tx.RollbackAsync(ct);
+                throw;
+            }
         }
+
 
         public async Task UpdateAsync(Employee employee, CancellationToken ct = default)
         {

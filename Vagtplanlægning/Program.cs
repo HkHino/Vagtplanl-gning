@@ -27,6 +27,9 @@ Log.Logger = new LoggerConfiguration()
 
 builder.Host.UseSerilog();
 
+builder.Services.AddScoped<OutboxWriter>();
+builder.Services.AddScoped<MongoProjectionService>();
+builder.Services.AddHostedService<OutboxSyncWorker>();
 
 // Read which provider we want to use: "MySql", "Mongo", "MySqlWithMongoFallback", "Neo4j"
 var providerRaw = builder.Configuration["DatabaseProvider"] ?? "mysqlwithmongofallback";
