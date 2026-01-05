@@ -2,7 +2,7 @@
 
 public class OutboxEvent
 {
-    public long Id { get; set; }
+    public int Id { get; set; }
 
     public string AggregateType { get; set; } = null!;
     public int AggregateId { get; set; }

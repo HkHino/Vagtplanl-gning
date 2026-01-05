@@ -39,7 +39,8 @@ namespace Vagtplanlægning.Repositories
                 AggregateType = "Route",
                 AggregateId = route.Id,
                 EventType = "Created",
-                CreatedUtc = DateTime.UtcNow
+                CreatedUtc = DateTime.UtcNow,
+                PayloadJson = null
             });
 
             await _db.SaveChangesAsync(ct);
@@ -58,7 +59,8 @@ namespace Vagtplanlægning.Repositories
                 AggregateType = "Route",
                 AggregateId = route.Id,
                 EventType = "Updated",
-                CreatedUtc = DateTime.UtcNow
+                CreatedUtc = DateTime.UtcNow,
+                PayloadJson = null
             });
 
             await _db.SaveChangesAsync(ct);
@@ -81,7 +83,8 @@ namespace Vagtplanlægning.Repositories
                 AggregateType = "Route",
                 AggregateId = id,
                 EventType = "Deleted",
-                CreatedUtc = DateTime.UtcNow
+                CreatedUtc = DateTime.UtcNow,
+                PayloadJson = null
             });
 
             await _db.SaveChangesAsync(ct);

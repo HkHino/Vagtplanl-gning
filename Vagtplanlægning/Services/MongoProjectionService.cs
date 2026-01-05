@@ -1,5 +1,4 @@
 ﻿using MongoDB.Driver;
-using Vagtplanlægning.Data;
 using Vagtplanlægning.Models;
 
 namespace Vagtplanlægning.Services;
@@ -7,10 +6,12 @@ namespace Vagtplanlægning.Services;
 public class MongoProjectionService
 {
     private readonly IMongoDatabase _mongo;
+    private readonly IMongoCollection<Bicycle> _bicycles;
 
     public MongoProjectionService(IMongoDatabase mongo)
     {
         _mongo = mongo;
+        _bicycles = _mongo.GetCollection<Bicycle>("Bicycles");
     }
 
     // EMPLOYEES -------------------------------------------------------------
@@ -40,27 +41,36 @@ public class MongoProjectionService
         );
     }
 
-    // Bicycles -------------------------------------------------------------
+    // BICYCLES --------------------------------------------------------------
+
     public async Task UpsertBicycleAsync(Bicycle b, CancellationToken ct)
     {
-        var col = _mongo.GetCollection<Bicycle>("Bicycles");
+        var filter = Builders<Bicycle>.Filter
+            .Eq(x => x.BicycleId, b.BicycleId);
 
-        await col.ReplaceOneAsync(
-            x => x.BicycleId == b.BicycleId,
-            b,
-            new ReplaceOptions { IsUpsert = true },
+        var update = Builders<Bicycle>.Update
+            .Set(x => x.BicycleId, b.BicycleId)
+            .Set(x => x.BicycleNumber, b.BicycleNumber)
+            .Set(x => x.InOperate, b.InOperate);
+
+        await _bicycles.UpdateOneAsync(
+            filter,
+            update,
+            new UpdateOptions { IsUpsert = true },
             ct
         );
     }
 
     public async Task DeleteBicycleAsync(int bicycleId, CancellationToken ct)
     {
-        var col = _mongo.GetCollection<Bicycle>("Bicycles");
-
-        await col.DeleteOneAsync(x => x.BicycleId == bicycleId, ct);
+        await _bicycles.DeleteOneAsync(
+            x => x.BicycleId == bicycleId,
+            ct
+        );
     }
 
-    // Routes ----------------------------------------------------------------
+    // ROUTES ----------------------------------------------------------------
+
     public async Task UpsertRouteAsync(RouteEntity r, CancellationToken ct)
     {
         var col = _mongo.GetCollection<RouteEntity>("Routes");
@@ -80,7 +90,8 @@ public class MongoProjectionService
         await col.DeleteOneAsync(x => x.Id == routeId, ct);
     }
 
-    // Shifts ----------------------------------------------------------------
+    // SHIFTS ----------------------------------------------------------------
+
     public async Task UpsertShiftAsync(Shift s, CancellationToken ct)
     {
         var col = _mongo.GetCollection<Shift>("Shifts");
@@ -100,7 +111,8 @@ public class MongoProjectionService
         await col.DeleteOneAsync(x => x.ShiftId == shiftId, ct);
     }
 
-    // WorkHoursInMonths -----------------------------------------------------
+    // WORK HOURS ------------------------------------------------------------
+
     public async Task UpsertWorkHoursAsync(WorkHoursInMonth w, CancellationToken ct)
     {
         var col = _mongo.GetCollection<WorkHoursInMonth>("WorkHoursInMonth");
@@ -112,7 +124,9 @@ public class MongoProjectionService
             ct
         );
     }
-    // Substitueds -----------------------------------------------------------
+
+    // SUBSTITUTEDS ----------------------------------------------------------
+
     public async Task UpsertSubstitutedAsync(Substituted s, CancellationToken ct)
     {
         var col = _mongo.GetCollection<Substituted>("Substituteds");
@@ -131,5 +145,4 @@ public class MongoProjectionService
 
         await col.DeleteOneAsync(x => x.SubstitutedId == substitutedId, ct);
     }
-
 }
