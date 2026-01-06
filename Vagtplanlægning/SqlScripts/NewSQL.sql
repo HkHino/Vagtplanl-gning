@@ -106,6 +106,30 @@ CREATE TABLE IF NOT EXISTS WorkHoursInMonths (
     hasSubstituted BOOLEAN NOT NULL DEFAULT FALSE,
     CONSTRAINT fk_workhours_employee FOREIGN KEY (employeeId) REFERENCES Employees(employeeId) ON DELETE CASCADE
     );
+
+    -- OutboxEvents -----------------------------------------------------------------------
+    CREATE TABLE OutboxEvents (
+    Id BIGINT AUTO_INCREMENT PRIMARY KEY,
+
+    AggregateType VARCHAR(100) NOT NULL,
+    AggregateId INT NOT NULL,
+
+    EventType VARCHAR(50) NOT NULL,
+    -- Created | Updated | Deleted
+
+    PayloadJson JSON NULL,
+    -- optional, usually re-fetch from MySQL
+
+    CreatedUtc DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    ProcessedUtc DATETIME NULL,
+
+    RetryCount INT NOT NULL DEFAULT 0,
+    LastError TEXT NULL,
+
+    INDEX idx_outbox_unprocessed (ProcessedUtc),
+    INDEX idx_outbox_aggregate (AggregateType, AggregateId)
+);
+
 -- =========================
 -- Create indexes --------------------------------------------------------------
 -- =========================
@@ -917,7 +941,7 @@ BEGIN
                            'userId', OLD.userId,
                            'userName', OLD.userName,
                            'employeeId', OLD.employeeId,
-                           'role' , NEW.role
+                           'role' , OLD.role
                    ),
                    JSON_OBJECT(
                            'userId', NEW.userId,
@@ -942,7 +966,7 @@ BEGIN
                                'userId', OLD.userId,
                                'userName', OLD.userName,
                                'employeeId', OLD.employeeId,
-                               'role' , NEW.role
+                               'role' , OLD.role
                        )
                    );
             END$$
@@ -1324,35 +1348,42 @@ GRANT ALL PRIVILEGES ON cykelBudDB.* TO 'jan' @'127.0.0.1';
                    (113);
 -- Substituteds (10 employees, substitute != employeeId) ---------------------
             INSERT INTO Substituteds (employeeId, hasSubstituted)
-            VALUES (1, FALSE),
-                   (2, FALSE),
-                   (3, FALSE),
-                   (4, FALSE),
-                   (5, FALSE),
-                   (6, FALSE),
-                   (7, FALSE),
-                   (8, FALSE),
-                   (9, FALSE),
-                   (10, FALSE);
+            VALUES  (2, FALSE),
+                    (3, FALSE),
+                    (4, FALSE),
+                    (5, TRUE),
+                    (6, FALSE),
+                    (7, FALSE),
+                    (8, FALSE),
+                    (9, FALSE),
+                    (10, FALSE),
+                    (1, FALSE),
+                    (2, FALSE),
+                    (3, FALSE),
+                    (4, FALSE),
+                    (5, FALSE),
+                    (6, TRUE),
+                    (7, FALSE),
+                    (8, FALSE),
+                    (9, FALSE),
+                    (10, TRUE),
+                    (1, FALSE),
+                    (2, FALSE),
+                    (6, FALSE),
+                    (7, TRUE),
+                    (9, FALSE),
+                    (10, FALSE);
             -- ListOfShift 30 shifts ------------------------------------------------------
 -- For simplicity, we will assign shifts 1-10 to November, 11-20 December, 21-30 January
-            INSERT INTO ListOfShift (
-                dateOfShift,
-                employeeId,
-                bicycleId,
-                substitutedId,
-                routeId,
-                startTime,
-                endTime
-            ) -- before today (3 with hasSubstituted TRUE)
-            VALUES ('2025-11-01', 1, 1, 2, 1, '08:00', '12:00'),
+            INSERT INTO ListOfShift (dateOfShift, employeeId, bicycleId,substitutedId,routeId,startTime,endTime) -- before today (3 with hasSubstituted TRUE)
+            VALUES ('2025-11-01', 1, 1, 1, 1, '08:00', '12:00'),
                    -- Alice, substituted by Bob
-                   ('2025-11-02', 2, 2, 3, 2, '09:00', '13:00'),
+                   ('2025-11-02', 2, 2, 2, 2, '09:00', '13:00'),
                    -- Bob, substituted by Charlie
-                   ('2025-11-03', 3, 3, 4, 3, '07:00', '11:00'),
+                   ('2025-11-03', 3, 3, 3, 3, '07:00', '11:00'),
                    -- Charlie, substituted by Diana
-                   ('2025-11-04', 4, 4, 5, 4, '08:00', '12:00'),
-                   ('2025-11-05', 5, 5, 6, 5, '10:00', '14:00');
+                   ('2025-11-04', 4, 4, 4, 4, '08:00', '12:00'),
+                   ('2025-11-05', 5, 5, 5, 5, '10:00', '14:00');
 -- December shifts (all after today, no startTime/endTime)
             INSERT INTO ListOfShift (
                 dateOfShift,
@@ -1361,16 +1392,16 @@ GRANT ALL PRIVILEGES ON cykelBudDB.* TO 'jan' @'127.0.0.1';
                 substitutedId,
                 routeId
             )
-            VALUES ('2025-12-01', 1, 1, 1, 1),
-                   ('2025-12-02', 2, 2, 2, 2),
-                   ('2025-12-03', 3, 3, 3, 3),
-                   ('2025-12-04', 4, 4, 4, 4),
-                   ('2025-12-05', 5, 5, 5, 5),
-                   ('2025-12-06', 6, 6, 6, 6),
-                   ('2025-12-07', 7, 7, 7, 7),
-                   ('2025-12-08', 8, 8, 8, 8),
-                   ('2025-12-09', 9, 9, 9, 9),
-                   ('2025-12-10', 10, 10, 10, 10);
+            VALUES ('2025-12-01', 1, 1, 6, 1),
+                   ('2025-12-02', 2, 2, 7, 2),
+                   ('2025-12-03', 3, 3, 8, 3),
+                   ('2025-12-04', 4, 4, 9, 4),
+                   ('2025-12-05', 5, 5, 10, 5),
+                   ('2025-12-06', 6, 6, 11, 6),
+                   ('2025-12-07', 7, 7, 12, 7),
+                   ('2025-12-08', 8, 8, 13, 8),
+                   ('2025-12-09', 9, 9, 14, 9),
+                   ('2025-12-10', 10, 10, 15, 10);
 -- January shifts (all after today, no startTime/endTime)
             INSERT INTO ListOfShift (
                 dateOfShift,
@@ -1379,35 +1410,14 @@ GRANT ALL PRIVILEGES ON cykelBudDB.* TO 'jan' @'127.0.0.1';
                 substitutedId,
                 routeId
             )
-            VALUES ('2026-01-01', 1, 1, 1, 1),
-                   ('2026-01-02', 2, 2, 2, 2),
-                   ('2026-01-03', 3, 3, 3, 3),
-                   ('2026-01-04', 4, 4, 4, 4),
-                   ('2026-01-05', 5, 5, 5, 5),
-                   ('2026-01-06', 6, 6, 6, 6),
-                   ('2026-01-07', 7, 7, 7, 7),
-                   ('2026-01-08', 8, 8, 8, 8),
-                   ('2026-01-09', 9, 9, 9, 9),
-                   ('2026-01-10', 10, 10, 10, 10);
-                   
-CREATE TABLE OutboxEvents (
-    Id BIGINT AUTO_INCREMENT PRIMARY KEY,
+            VALUES ('2026-01-01', 1, 1, 16, 1),
+                   ('2026-01-02', 2, 2, 17, 2),
+                   ('2026-01-03', 3, 3, 18, 3),
+                   ('2026-01-04', 4, 4, 19, 4),
+                   ('2026-01-05', 5, 5, 20, 5),
+                   ('2026-01-06', 6, 6, 21, 6),
+                   ('2026-01-07', 7, 7, 22, 7),
+                   ('2026-01-08', 8, 8, 23, 8),
+                   ('2026-01-09', 9, 9, 24, 9),
+                   ('2026-01-10', 10, 10, 25, 10);            
 
-    AggregateType VARCHAR(100) NOT NULL,
-    AggregateId INT NOT NULL,
-
-    EventType VARCHAR(50) NOT NULL,
-    -- Created | Updated | Deleted
-
-    PayloadJson JSON NULL,
-    -- optional, usually re-fetch from MySQL
-
-    CreatedUtc DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    ProcessedUtc DATETIME NULL,
-
-    RetryCount INT NOT NULL DEFAULT 0,
-    LastError TEXT NULL,
-
-    INDEX idx_outbox_unprocessed (ProcessedUtc),
-    INDEX idx_outbox_aggregate (AggregateType, AggregateId)
-);
