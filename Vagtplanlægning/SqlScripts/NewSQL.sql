@@ -1,7 +1,11 @@
 -- drop database if exists -----------------------------------------------------
 DROP DATABASE IF EXISTS cykelBudDB;
 -- =========================
-
+-- create database ------------------------------------------------------------
+-- =========================
+CREATE DATABASE IF NOT EXISTS cykelBudDB;
+USE cykelBudDB;
+-- =========================
 -- drop tables if exist --------------------------------------------------------
 DROP TABLE IF EXISTS AuditLog;
 DROP TABLE IF EXISTS WorkHoursInMonths;
@@ -14,9 +18,6 @@ DROP TABLE IF EXISTS Routes;
 DROP TABLE IF EXISTS ShiftPlans;
 DROP TABLE IF EXISTS OutboxEvents;
 -- =========================
--- create database ------------------------------------------------------------
-CREATE DATABASE IF NOT EXISTS cykelBudDB;
-USE cykelBudDB;
 -- Create Tabels
 -- =========================
 -- AuditLog --------------------------------------------------------------
