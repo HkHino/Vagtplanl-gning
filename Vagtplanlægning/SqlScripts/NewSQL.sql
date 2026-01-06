@@ -1,9 +1,7 @@
 -- drop database if exists -----------------------------------------------------
 DROP DATABASE IF EXISTS cykelBudDB;
 -- =========================
--- create database ------------------------------------------------------------
-CREATE DATABASE IF NOT EXISTS cykelBudDB;
-USE cykelBudDB;
+
 -- drop tables if exist --------------------------------------------------------
 DROP TABLE IF EXISTS AuditLog;
 DROP TABLE IF EXISTS WorkHoursInMonths;
@@ -13,17 +11,18 @@ DROP TABLE IF EXISTS Bicycles;
 DROP TABLE IF EXISTS Substituteds;
 DROP TABLE IF EXISTS Employees;
 DROP TABLE IF EXISTS Routes;
+DROP TABLE IF EXISTS ShiftPlans;
+DROP TABLE IF EXISTS OutboxEvents;
 -- =========================
 -- create database ------------------------------------------------------------
 CREATE DATABASE IF NOT EXISTS cykelBudDB;
 USE cykelBudDB;
--- =========================
 -- Create Tabels
 -- =========================
 -- AuditLog --------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS AuditLog (
-                                        auditId INT AUTO_INCREMENT PRIMARY KEY,
-                                        tableName VARCHAR(255) NOT NULL,
+    auditId INT AUTO_INCREMENT PRIMARY KEY,
+    tableName VARCHAR(255) NOT NULL,
     recordId VARCHAR(255) NOT NULL,
     action ENUM('INSERT', 'UPDATE', 'DELETE') NOT NULL,
     changedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -33,9 +32,9 @@ CREATE TABLE IF NOT EXISTS AuditLog (
     );
 -- bicycles -------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS Bicycles (
-                                        id INT AUTO_INCREMENT PRIMARY KEY,
-                                        bicycleNumber INT NOT NULL UNIQUE,
-                                        inOperate BOOLEAN NOT NULL DEFAULT FALSE
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    bicycleNumber INT NOT NULL UNIQUE,
+    inOperate BOOLEAN NOT NULL DEFAULT FALSE
 );
 -- employees ------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS Employees (
@@ -898,7 +897,8 @@ BEGIN
                JSON_OBJECT(
                        'userId', NEW.userId,
                        'userName', NEW.userName,
-                       'employeeId', NEW.employeeId
+                       'employeeId', NEW.employeeId,
+                       'role' , NEW.role
                )
            );
     END$$
@@ -916,12 +916,14 @@ BEGIN
                    JSON_OBJECT(
                            'userId', OLD.userId,
                            'userName', OLD.userName,
-                           'employeeId', OLD.employeeId
+                           'employeeId', OLD.employeeId,
+                           'role' , NEW.role
                    ),
                    JSON_OBJECT(
                            'userId', NEW.userId,
                            'userName', NEW.userName,
-                           'employeeId', NEW.employeeId
+                           'employeeId', NEW.employeeId,
+                           'role' , NEW.role
                    )
                );
         END$$
@@ -939,7 +941,8 @@ BEGIN
                        JSON_OBJECT(
                                'userId', OLD.userId,
                                'userName', OLD.userName,
-                               'employeeId', OLD.employeeId
+                               'employeeId', OLD.employeeId,
+                               'role' , NEW.role
                        )
                    );
             END$$
@@ -1068,6 +1071,7 @@ GRANT SELECT,
             INSERT,
             DELETE ON cykelBudDB.WorkHoursInMonths TO 'api' @'127.0.0.1';
 GRANT SELECT ON cykelBudDB.AuditLog TO 'api' @'127.0.0.1';
+GRANT SELECT, INSERT, DELETE ON cykelBudDB.OutboxEvents TO 'api' @'127.0.0.1';
             GRANT EXECUTE ON cykelBudDB.* TO 'api' @'127.0.0.1';
 -- FLUSH PRIVILEGES;
 -- create migration user ------------------------------------------------------------------
@@ -1117,7 +1121,7 @@ GRANT SELECT ON cykelBudDB.Bicycles TO 'readOnly' @'127.0.0.1';
             GRANT SELECT ON cykelBudDB.Routes TO 'readOnly' @'127.0.0.1';
             GRANT SELECT ON cykelBudDB.ShiftPlans TO 'readOnly' @'127.0.0.1';
             GRANT SELECT ON cykelBudDB.Substituteds TO 'readOnly' @'127.0.0.1';
-            GRANT SELECT ON cykelBudDB.WorkHoursInMonths TO 'readOnly' @'127.0.0.1';
+            GRANT SELECT ON cykelBudDB.WorkHoursInMonths TO 'readOnly' @'127.0.0.1';            
             GRANT SELECT,
             UPDATE,
             INSERT,
@@ -1129,6 +1133,8 @@ GRANT SELECT ON cykelBudDB.Bicycles TO 'readOnly' @'127.0.0.1';
 CREATE USER IF NOT EXISTS 'jan' @'127.0.0.1' IDENTIFIED BY '123456';
 GRANT ALL PRIVILEGES ON cykelBudDB.* TO 'jan' @'127.0.0.1';
 -- FLUSH PRIVILEGES;
+
+
 -- =========================
 -- input test data
 -- =========================
